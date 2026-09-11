@@ -46,6 +46,7 @@
         <div class="title" th:text="${board.title}">제목</div>
         <div class="content" th:text="${board.content}">내용</div>
         <div class="btn-area">
+            <button class="btn-delete"><a th:href="@{/board/update(id=${board.id})}">저장</a></button>
             <button class="btn-delete"><a th:href="@{/board/delete(id=${board.id})}">삭제</a></button>
         </div>
     </div>
