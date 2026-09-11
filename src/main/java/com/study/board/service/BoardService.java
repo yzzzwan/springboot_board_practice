@@ -13,7 +13,7 @@ public class BoardService {
     private BoardRepository boardRepository;
 
     // 게시글 작성
-    public void write(Board board){
+    public void boardWrite(Board board){
         boardRepository.save(board);
     }
 
@@ -26,5 +26,9 @@ public class BoardService {
     public Board boardView(Integer id){
 
         return boardRepository.findById(id).get();
+    }
+
+    public void boardDelete(Integer id){
+        boardRepository.deleteById(id);
     }
 }

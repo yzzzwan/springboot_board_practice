@@ -5,6 +5,7 @@ import com.study.board.service.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -20,14 +21,12 @@ public class BoardController {
 
     @GetMapping("/board/write") // localhost:8080/board/write
     public String boardWriteForm(){
-
         return "boardwrite";
     }
 
     @PostMapping("/board/writepro")
     public Board boardWritePro(Board board){
-        boardService.write(board);
-
+        boardService.boardWrite(board);
         return board;
     }
 
@@ -40,7 +39,16 @@ public class BoardController {
     @GetMapping("/board/view") //localhost:8080/board/view?id=1
     public String boardView(Model model, Integer id){
         model.addAttribute("board", boardService.boardView(id));
-
         return "boardview";
     }
+
+    @GetMapping("/board/delete")
+    public String boardDelete(Integer id){
+        boardService.boardDelete(id);
+        return "redirect:/board/list";
+    }
+
+//    @DeleteMapping("/board/view"){
+//
+//    }
 }
