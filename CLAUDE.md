@@ -468,6 +468,33 @@ claude 자료/게시글 작성 POST 처리 및 DB 저장 기능 추가.html
 claude 자료/게시글 목록 조회 기능 추가.html
 ```
 
+## HTML 파일 형식 — 기준 파일 참조 필수
+
+새 HTML을 만들 때는 **반드시 기존 자료 파일의 CSS 구조를 그대로 재사용**한다.
+
+기준 파일: `docs/claude 자료/게시글 목록 조회 페이지.html`
+
+재사용해야 하는 핵심 CSS 클래스 목록:
+
+| 클래스 | 역할 |
+|---|---|
+| `.step` + `.step-label` | 각 STEP 카드 |
+| `.learn-box` / `.learn-row` / `.learn-card` | 중요도 구분 박스 |
+| `.red-card` / `.yellow-card` / `.green-card` | 중요도 색상 카드 |
+| `.warn` | 초보자 착각 경고 (노란 좌측 border) |
+| `.compare-grid` / `.compare-card` | 이전/현재 비교 나란히 배치 |
+| `.summary-list` | 오늘 배운 것 체크리스트 |
+| `.question-list` | 이해도 질문 (Q1. Q2. 스타일, details 정답 보기) |
+| `.practice-box` | 작은 실습 박스 |
+| `.next-list` | 다음 커밋 준비 리스트 |
+| `.toc` | 고정 사이드 목차 (IntersectionObserver 활성화 포함) |
+
+폰트: `'Segoe UI', 'Malgun Gothic', sans-serif` (body 기본)
+
+**절대로 새로운 CSS 구조를 발명하지 않는다.** 기준 파일의 스타일을 그대로 복사하여 사용한다.
+
+---
+
 ## HTML 파일 형식 요구사항
 
 - **상단에 커밋 링크 배치**: commit hash를 클릭하면 GitHub commit 페이지로 이동하는 링크

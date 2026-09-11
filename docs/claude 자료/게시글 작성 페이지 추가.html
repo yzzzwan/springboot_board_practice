@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>게시글 작성 페이지 추가 — Spring 수업</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0f1117;
+    color: #c9d1d9;
+    font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    padding: 40px 20px;
+  }
+  .container { max-width: 860px; margin: 0 auto; }
+
+  .commit-link {
+    display: inline-block;
+    margin-bottom: 32px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 10px 18px;
+    color: #58a6ff;
+    text-decoration: none;
+    font-size: 13px;
+    font-family: monospace;
+  }
+  .commit-link:hover { background: #1f2937; }
+
+  h1 {
+    font-size: 26px;
+    color: #e6edf3;
+    margin-bottom: 8px;
+  }
+  .subtitle { color: #8b949e; margin-bottom: 40px; font-size: 14px; }
+
+  .learn-box {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin-bottom: 40px;
+  }
+  .learn-box h2 { color: #e6edf3; font-size: 16px; margin-bottom: 16px; }
+  .learn-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .learn-card { border-radius: 8px; padding: 16px; }
+  .learn-card h3 { font-size: 13px; margin-bottom: 8px; }
+  .learn-card ul { padding-left: 16px; font-size: 13px; line-height: 1.8; }
+  .red-card  { background: #2d1515; border: 1px solid #7f2020; }
+  .red-card h3 { color: #f85149; }
+  .yellow-card { background: #2d2200; border: 1px solid #7f5d00; }
+  .yellow-card h3 { color: #e3b341; }
+  .green-card { background: #0d2d16; border: 1px solid #1a7f37; }
+  .green-card h3 { color: #3fb950; }
+
+  .step {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 28px 32px;
+    margin-bottom: 28px;
+  }
+  .step-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #58a6ff;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .step h2 {
+    font-size: 18px;
+    color: #e6edf3;
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #21262d;
+  }
+
+  h3 { color: #e6edf3; font-size: 15px; margin: 20px 0 10px; }
+  h4 { color: #8b949e; font-size: 13px; margin: 14px 0 6px; font-weight: 600; }
+  p { margin-bottom: 10px; }
+
+  pre {
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 12px 0;
+  }
+  pre code.hljs {
+    font-family: 'Consolas', 'D2Coding', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    border-radius: 6px;
+    padding: 16px;
+  }
+  p code, li code {
+    background: #21262d;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 12px;
+  }
+
+  .flow-box {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 2.2;
+    color: #c9d1d9;
+  }
+  .flow-box .highlight { color: #58a6ff; font-weight: 700; }
+
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 14px;
+  }
+  .compare-card {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 16px;
+    font-family: monospace;
+    font-size: 13px;
+    line-height: 2;
+  }
+  .compare-card h4 { font-family: 'Segoe UI', sans-serif; margin-bottom: 10px; color: #8b949e; }
+  .compare-card .new { color: #3fb950; }
+
+  .warn {
+    border-left: 4px solid #e3b341;
+    background: #1c1a00;
+    padding: 14px 18px;
+    border-radius: 0 6px 6px 0;
+    margin: 12px 0;
+    font-size: 14px;
+  }
+  .warn strong { color: #e3b341; display: block; margin-bottom: 4px; }
+
+  ul, ol { padding-left: 20px; margin-bottom: 10px; }
+  li { margin-bottom: 4px; }
+
+  .summary-list {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 20px 24px;
+    list-style: none;
+    padding-left: 24px;
+  }
+  .summary-list li {
+    padding: 6px 0;
+    border-bottom: 1px solid #21262d;
+    font-size: 14px;
+  }
+  .summary-list li:last-child { border-bottom: none; }
+  .summary-list li::before { content: "✓ "; color: #3fb950; font-weight: 700; }
+
+  /* 정답 보기 */
+  .question-list details { background: #1e293b; border-radius: 4px; padding: 4px 10px; margin-top: 6px; }
+  .question-list details summary { color: #475569; font-size: 11px; cursor: pointer; user-select: none; list-style: none; }
+  .question-list details summary::-webkit-details-marker { display: none; }
+  .question-list details summary::before { content: "▶ 정답 보기"; }
+  .question-list details[open] summary::before { content: "▼ 정답 보기"; }
+  .question-list details[open] summary { margin-bottom: 4px; color: #64748b; }
+  .question-list details p { color: #cbd5e1; font-size: 13px; margin: 0; }
+
+  .question-list { counter-reset: q; padding-left: 0; list-style: none; }
+  .question-list li {
+    counter-increment: q;
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+  .question-list li::before {
+    content: "Q" counter(q) ". ";
+    color: #58a6ff;
+    font-weight: 700;
+  }
+
+  .practice-box {
+    background: #0d2d16;
+    border: 1px solid #1a7f37;
+    border-radius: 8px;
+    padding: 20px 24px;
+  }
+  .practice-box h3 { color: #3fb950; margin-top: 0; }
+
+  .next-list { padding-left: 0; list-style: none; counter-reset: n; }
+  .next-list li {
+    counter-increment: n;
+    padding: 10px 14px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+  .next-list li::before {
+    content: counter(n) ". ";
+    color: #58a6ff;
+    font-weight: 700;
+  }
+  .next-list li strong { color: #e6edf3; }
+
+  /* 관점 레이어 */
+  .perspective-list { margin: 0; padding: 0; list-style: none; }
+  .perspective-item { display: flex; gap: 16px; margin-bottom: 16px; align-items: flex-start; }
+  .perspective-item .label { font-size: 11px; font-weight: 700; letter-spacing: 1px; padding: 3px 10px; border-radius: 20px; white-space: nowrap; margin-top: 2px; }
+  .label-beginner { background: #21262d; color: #8b949e; }
+  .label-java     { background: #1a2e4a; color: #79c0ff; }
+  .label-spring   { background: #0d2d16; color: #3fb950; }
+  .label-oop      { background: #2d1f30; color: #c084fc; }
+  .perspective-item .text { color: #c9d1d9; font-size: 14px; }
+
+  /* 파일 카드 */
+  .file-card { background: #0d1117; border: 1px solid #30363d; border-radius: 10px; padding: 20px; margin-bottom: 16px; }
+  .file-card .filename { font-family: monospace; font-size: 13px; color: #79c0ff; background: #161b22; display: inline-block; padding: 3px 10px; border-radius: 4px; margin-bottom: 12px; }
+  .file-card table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .file-card table td { padding: 6px 8px; vertical-align: top; color: #8b949e; }
+  .file-card table td:first-child { color: #6e7681; white-space: nowrap; width: 120px; }
+
+  /* why 카드 */
+  .why-card { background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 16px 20px; margin-bottom: 14px; }
+  .why-card .question { font-size: 13px; color: #8b949e; margin-bottom: 6px; }
+  .why-card .answer { font-size: 14px; color: #c9d1d9; }
+
+  /* 플로우 다이어그램 */
+  .flow {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 20px 28px;
+    margin: 16px 0;
+    font-family: monospace;
+    font-size: 13px;
+    color: #8b949e;
+  }
+  .flow .highlight { color: #58a6ff; font-weight: bold; }
+  .flow .arrow { color: #6e7681; }
+
+  /* 비교 박스 */
+  .compare-box {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 16px;
+    font-family: monospace;
+    font-size: 13px;
+  }
+  .compare-box h4 { color: #6e7681; font-size: 11px; letter-spacing: 1px; margin-bottom: 10px; }
+  .compare-box .node { color: #c9d1d9; }
+  .compare-box .arrow { color: #30363d; }
+  .compare-box .new { color: #3fb950; }
+
+  /* 중요도 섹션 */
+  .importance-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 40px; }
+  .importance-card { border-radius: 10px; padding: 16px; }
+  .importance-card.red   { background: #2d1515; border: 1px solid #7f2020; }
+  .importance-card.yellow{ background: #2d2200; border: 1px solid #7f5d00; }
+  .importance-card.green { background: #0d2d16; border: 1px solid #1a7f37; }
+  .importance-card h3 { font-size: 13px; margin-bottom: 8px; }
+  .importance-card.red h3    { color: #f85149; }
+  .importance-card.yellow h3 { color: #e3b341; }
+  .importance-card.green h3  { color: #3fb950; }
+  .importance-card ul { list-style: none; padding: 0; }
+  .importance-card ul li { font-size: 13px; color: #8b949e; margin-bottom: 4px; }
+  .importance-card ul li::before { content: "- "; }
+
+  .importance-section { margin-bottom: 20px; }
+  .importance-section h3 { font-size: 15px; margin-bottom: 8px; }
+  .importance-section ul { list-style: none; padding: 0; }
+  .importance-section ul li { font-size: 13px; color: #8b949e; margin-bottom: 5px; padding-left: 12px; }
+  .importance-section ul li::before { content: "→ "; color: #6e7681; }
+
+  /* 목차 */
+  .toc { position: fixed; top: 40px; right: 24px; width: 164px; background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 14px 16px; z-index: 100; }
+  .toc-title { font-size: 10px; font-weight: 700; color: #58a6ff; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+  .toc ul { list-style: none; padding: 0; margin: 0; }
+  .toc ul li { margin-bottom: 5px; }
+  .toc ul li a { font-size: 12px; color: #8b949e; text-decoration: none; line-height: 1.4; display: block; }
+  .toc ul li a:hover { color: #c9d1d9; }
+  .toc ul li a.toc-active { color: #58a6ff; }
+  @media (max-width: 1200px) { .toc { display: none; } }
+</style>
+</head>
+<body>
+<nav class="toc">
+  <div class="toc-title">목차</div>
+  <ul>
+    <li><a href="#learn">배우는 것</a></li>
+    <li><a href="#step1">1. 한눈에 보기</a></li>
+    <li><a href="#step2">2. 변경 파일</a></li>
+    <li><a href="#step3">3. 핵심 코드</a></li>
+    <li><a href="#step4">4. 왜 이렇게?</a></li>
+    <li><a href="#step5">5. 실행 흐름</a></li>
+    <li><a href="#step6">6. 이전과 비교</a></li>
+    <li><a href="#step7">7. 초보자 착각</a></li>
+    <li><a href="#step8">8. 중요도</a></li>
+    <li><a href="#step9">9. 오늘 배운 것</a></li>
+    <li><a href="#step10">10. 이해도 질문</a></li>
+    <li><a href="#step11">11. 작은 실습</a></li>
+    <li><a href="#step12">12. 다음 준비</a></li>
+  </ul>
+</nav>
+<div class="container">
+
+  <a class="commit-link" href="https://github.com/yzzzwan/springboot_board_practice/commit/8499e5c830d77edf661fde53bcd9f072a3358ff6" target="_blank">
+    커밋 보기: 8499e5c
+  </a>
+
+  <h1>게시글 작성 페이지 추가</h1>
+  <p class="subtitle">feat: 게시글 작성 페이지 추가 — Spring 수업</p>
+
+  <!-- 중요도 요약 -->
+  <div class="importance-grid" id="learn">
+    <div class="importance-card red">
+      <h3>🔴 반드시 이해</h3>
+      <ul>
+        <li>@Controller</li>
+        <li>@GetMapping</li>
+        <li>return값 → View 이름</li>
+      </ul>
+    </div>
+    <div class="importance-card yellow">
+      <h3>🟡 개념만 이해</h3>
+      <ul>
+        <li>Spring MVC 구조</li>
+        <li>ViewResolver</li>
+        <li>Thymeleaf</li>
+      </ul>
+    </div>
+    <div class="importance-card green">
+      <h3>🟢 나중에 공부</h3>
+      <ul>
+        <li>DispatcherServlet</li>
+        <li>ViewResolver 구현체</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="step" id="step1">
+    <div class="step-label">STEP 01</div>
+    <h2>이번 Commit 한눈에 보기</h2>
+    <p>이번 커밋은 Spring 프로젝트에 처음으로 <strong>웹 페이지를 연결하는 코드</strong>를 추가한 것입니다. 사용자가 브라우저에서 <code>localhost:8080/board/write</code>를 입력하면 게시글 작성 화면이 나타나게 됩니다.</p>
+    <p>이를 위해 두 가지 파일이 필요했습니다. 하나는 <strong>URL 요청을 받아 처리하는 Java 클래스</strong>(Controller), 다른 하나는 <strong>실제 화면을 그려주는 HTML 파일</strong>입니다.</p>
+    <p>이 커밋이 사실상 "Spring 웹 개발의 시작점"입니다.</p>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step" id="step2">
+    <div class="step-label">STEP 02</div>
+    <h2>무엇이 변경되었는지</h2>
+
+    <div class="file-card">
+      <div class="filename">BoardController.java</div>
+      <table>
+        <tr><td>어떤 파일인가?</td><td>브라우저의 HTTP 요청을 받아 처리하는 Java 클래스</td></tr>
+        <tr><td>왜 추가되었나?</td><td>URL(<code>/board/write</code>)과 Java 메서드를 연결하기 위해</td></tr>
+        <tr><td>어떤 역할인가?</td><td>GET /board/write 요청이 오면 <code>boardWriteForm()</code>이 실행되고 <code>"boardwrite"</code>를 반환 → Spring이 HTML 파일을 찾아 응답</td></tr>
+        <tr><td>연결 관계</td><td><code>boardwrite.html</code>과 이름으로 연결됨</td></tr>
+      </table>
+    </div>
+
+    <div class="file-card">
+      <div class="filename">boardwrite.html</div>
+      <table>
+        <tr><td>어떤 파일인가?</td><td>브라우저에 보여줄 게시글 작성 폼 화면</td></tr>
+        <tr><td>왜 추가되었나?</td><td>Controller가 반환한 <code>"boardwrite"</code>에 대응하는 View 파일이 필요하기 때문</td></tr>
+        <tr><td>어떤 역할인가?</td><td>제목 입력칸, 내용 입력칸, 작성 버튼을 가진 HTML 화면 렌더링</td></tr>
+        <tr><td>위치가 중요</td><td><code>src/main/resources/templates/</code> 안에 있어야 Thymeleaf가 찾을 수 있음</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step" id="step3">
+    <div class="step-label">STEP 03</div>
+    <h2>핵심 코드 설명</h2>
+
+    <pre><code>@Controller
+public class BoardController {
+
+    @GetMapping("/board/write") // localhost:8080/board/write
+    public String boardWriteForm(){
+        return "boardwrite";
+        // 쌍따옴표 안 = 어떤 html 파일(view)로 보내줄 것인지
+    }
+}</code></pre>
+
+    <ul class="perspective-list">
+      <li class="perspective-item">
+        <span class="label label-beginner">초보자</span>
+        <span class="text"><code>/board/write</code> 주소로 들어오면 <code>boardWriteForm</code> 함수가 실행되고, <code>boardwrite.html</code>을 보여줍니다.</span>
+      </li>
+      <li class="perspective-item">
+        <span class="label label-java">Java</span>
+        <span class="text"><code>boardWriteForm()</code>은 그냥 <code>String</code>을 반환하는 일반 메서드입니다. Java 문법으로는 전혀 특별하지 않습니다.</span>
+      </li>
+      <li class="perspective-item">
+        <span class="label label-spring">Spring</span>
+        <span class="text"><code>@Controller</code>가 붙은 클래스 안에서 <code>String</code>을 반환하면, Spring은 그 문자열을 <strong>View 이름</strong>으로 해석합니다. ViewResolver가 <code>templates/boardwrite.html</code>을 찾아 브라우저에 응답합니다.</span>
+      </li>
+      <li class="perspective-item">
+        <span class="label label-oop">설계</span>
+        <span class="text">Controller는 "어떤 URL에 어떤 화면을 보여줄지"만 결정합니다. 화면을 직접 그리지 않습니다. 역할을 분리한 것입니다.</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step" id="step4">
+    <div class="step-label">STEP 04</div>
+    <h2>왜 이렇게 작성했는가?</h2>
+
+    <div class="why-card">
+      <div class="question">왜 @Controller를 붙이는가?</div>
+      <div class="answer">붙이지 않으면 Spring은 이 클래스를 그냥 일반 Java 클래스로 봅니다. URL 요청이 와도 연결되지 않습니다. <code>@Controller</code>를 붙여야 Spring이 "이 클래스는 웹 요청을 처리하는 역할이구나"라고 인식하고 Bean으로 등록합니다.</div>
+    </div>
+
+    <div class="why-card">
+      <div class="question">왜 return "boardwrite"인가?</div>
+      <div class="answer">Thymeleaf 설정상 <code>templates/</code> 폴더 + 반환값 + <code>.html</code> 을 자동으로 조합합니다. 즉 <code>"boardwrite"</code> → <code>templates/boardwrite.html</code>이 됩니다. 경로를 하드코딩하지 않아도 됩니다.</div>
+    </div>
+
+    <div class="why-card">
+      <div class="question">왜 @GetMapping인가?</div>
+      <div class="answer">HTTP 요청에는 여러 방식이 있습니다. 브라우저 주소창에서 URL을 입력하는 것은 <code>GET</code> 방식입니다. 나중에 폼 데이터를 서버로 전송할 때는 <code>POST</code> 방식을 씁니다. 지금은 "화면을 달라"는 요청이니 <code>GET</code>이 맞습니다.</div>
+    </div>
+  </div>
+
+  <!-- STEP 5 -->
+  <div class="step" id="step5">
+    <div class="step-label">STEP 05</div>
+    <h2>실행 흐름</h2>
+
+    <div class="flow">
+      사용자가 브라우저에 <span class="highlight">localhost:8080/board/write</span> 입력<br>
+      <span class="arrow">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br>
+      Spring (DispatcherServlet) 이 요청을 받음<br>
+      <span class="arrow">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br>
+      <span class="highlight">@GetMapping("/board/write")</span> 와 매칭되는 메서드 찾음<br>
+      <span class="arrow">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br>
+      <span class="highlight">BoardController.boardWriteForm()</span> 실행<br>
+      <span class="arrow">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br>
+      <span class="highlight">"boardwrite"</span> 문자열 반환<br>
+      <span class="arrow">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br>
+      ViewResolver가 <span class="highlight">templates/boardwrite.html</span> 을 찾음<br>
+      <span class="arrow">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br>
+      HTML을 브라우저에 응답<br>
+      <span class="arrow">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br>
+      사용자 화면에 게시글 작성 폼이 표시됨
+    </div>
+  </div>
+
+  <!-- STEP 6 -->
+  <div class="step" id="step6">
+    <div class="step-label">STEP 06</div>
+    <h2>이전 Commit과 연결</h2>
+
+    <div class="compare-grid">
+      <div class="compare-box">
+        <h4>이전 상태 (초기 설정)</h4>
+        <span class="node">Spring Boot 앱 실행 가능</span><br>
+        <span class="arrow">↓</span><br>
+        <span class="node">URL 없음 → 접속 시 에러</span>
+      </div>
+      <div class="compare-box">
+        <h4>이번 Commit</h4>
+        <span class="node">브라우저 GET /board/write</span><br>
+        <span class="arrow">↓</span><br>
+        <span class="new">BoardController</span><br>
+        <span class="arrow">↓ return "boardwrite"</span><br>
+        <span class="new">boardwrite.html (화면)</span>
+      </div>
+    </div>
+
+    <p>이번 커밋으로 프로젝트에 처음으로 <strong>URL — Java 코드 — HTML</strong> 삼각 연결이 완성되었습니다.</p>
+  </div>
+
+  <!-- STEP 7 -->
+  <div class="step" id="step7">
+    <div class="step-label">STEP 07</div>
+    <h2>초보자가 하기 쉬운 착각</h2>
+
+    <div class="misconception">
+      <code>return "boardwrite"</code>가 HTML 파일을 직접 실행하는 것 같아 보이지만, 사실은 <strong>Spring에게 View 이름을 전달하는 것</strong>입니다. 실제로 HTML을 찾아서 브라우저에 보내는 건 Spring 내부(ViewResolver)가 합니다.
+    </div>
+
+    <div class="misconception">
+      <code>@Controller</code>와 <code>@GetMapping</code>은 별개입니다. <code>@Controller</code>는 "이 클래스는 컨트롤러야", <code>@GetMapping</code>은 "이 메서드는 이 URL을 처리해"라고 각각 알려주는 것입니다.
+    </div>
+
+    <div class="misconception">
+      <code>templates/</code> 폴더 위치가 중요합니다. <code>boardwrite.html</code>을 다른 위치에 두면 Spring이 찾지 못합니다.
+    </div>
+  </div>
+
+  <!-- STEP 8 -->
+  <div class="step" id="step8">
+    <div class="step-label">STEP 08</div>
+    <h2>중요도 구분</h2>
+
+    <div class="importance-section">
+      <h3 style="color:#f87171">🔴 반드시 이해</h3>
+      <ul>
+        <li><code>@Controller</code> — Spring에게 이 클래스가 웹 요청을 처리한다고 알리는 것</li>
+        <li><code>@GetMapping</code> — 특정 URL과 메서드를 연결하는 것</li>
+        <li><code>return "boardwrite"</code> — 어떤 HTML을 보여줄지 결정하는 것</li>
+      </ul>
+    </div>
+
+    <div class="importance-section">
+      <h3 style="color:#fbbf24">🟡 개념만 이해</h3>
+      <ul>
+        <li>ViewResolver — <code>"boardwrite"</code> 문자열을 <code>templates/boardwrite.html</code>로 바꿔주는 Spring 내부 컴포넌트</li>
+        <li>Thymeleaf — Spring에서 자주 쓰는 템플릿 엔진 (HTML을 동적으로 만들 수 있음)</li>
+      </ul>
+    </div>
+
+    <div class="importance-section">
+      <h3 style="color:#4ade80">🟢 나중에 공부</h3>
+      <ul>
+        <li>DispatcherServlet — 모든 요청을 받아 Controller에 전달하는 Spring의 핵심 컴포넌트</li>
+        <li>ViewResolver 구현체 종류</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- STEP 9 -->
+  <div class="step" id="step9">
+    <div class="step-label">STEP 09</div>
+    <h2>오늘 배운 것</h2>
+
+    <ul class="summary-list">
+      <li><code>@Controller</code>를 붙이면 Spring이 해당 클래스를 웹 요청 처리 클래스로 인식한다.</li>
+      <li><code>@GetMapping</code>으로 특정 URL을 메서드에 연결할 수 있다.</li>
+      <li>Controller 메서드가 String을 반환하면 Spring은 그것을 View(HTML) 이름으로 해석한다.</li>
+      <li>HTML 파일은 <code>src/main/resources/templates/</code> 폴더에 있어야 한다.</li>
+      <li>URL → Controller → HTML 의 흐름이 Spring MVC의 기본 구조다.</li>
+    </ul>
+  </div>
+
+  <!-- STEP 10 -->
+  <div class="step" id="step10">
+    <div class="step-label">STEP 10</div>
+    <h2>이해도 확인 질문</h2>
+    <p style="margin-bottom:16px; font-size:13px; color:#475569">정답은 바로 알려드리지 않습니다. 생각해보고 답해보세요.</p>
+
+    <ol class="question-list">
+      <li>
+        <div class="q-wrap">
+          <span><code>@Controller</code>를 클래스에 붙이지 않으면 어떻게 될까요? <code>/board/write</code>로 접속하면 무슨 일이 일어날까요?</span>
+          <details><summary></summary><p>Spring이 이 클래스를 인식하지 못해 URL 매핑이 등록되지 않습니다. /board/write로 접속하면 404 에러가 납니다.</p></details>
+        </div>
+      </li>
+      <li>
+        <div class="q-wrap">
+          <span><code>return "boardwrite";</code>에서 <code>"boardwrite"</code>는 정확히 무엇을 의미하나요? 파일 경로인가요, 아니면 다른 무언가인가요?</span>
+          <details><summary></summary><p>파일 경로가 아니라 View 이름입니다. Spring의 ViewResolver가 이 이름을 받아 templates/ + boardwrite + .html 로 조합해서 실제 파일을 찾습니다.</p></details>
+        </div>
+      </li>
+      <li>
+        <div class="q-wrap">
+          <span><code>@GetMapping</code>이 아니라 <code>@PostMapping</code>을 썼다면 브라우저 주소창에서 접속했을 때 어떻게 될까요?</span>
+          <details><summary></summary><p>브라우저 주소창 입력은 항상 GET 요청입니다. @PostMapping은 POST 요청만 처리하므로 매핑이 맞지 않아 405 Method Not Allowed 에러가 납니다.</p></details>
+        </div>
+      </li>
+      <li>
+        <div class="q-wrap">
+          <span>지금 <code>boardwrite.html</code>에 <code>&lt;form&gt;</code> 태그가 없습니다. 작성 버튼을 눌러도 데이터가 서버로 전송되지 않는 이유는 무엇일까요?</span>
+          <details><summary></summary><p>HTML에서 서버로 데이터를 전송하려면 &lt;form action="..." method="post"&gt; 태그가 있어야 합니다. &lt;button&gt;은 form 안에 있어야만 제출 동작을 합니다. 지금은 button이 form 밖에 독립적으로 있어서 눌러도 아무 일도 일어나지 않습니다.</p></details>
+        </div>
+      </li>
+    </ol>
+  </div>
+
+  <!-- STEP 11 -->
+  <div class="step" id="step11">
+    <div class="step-label">STEP 11</div>
+    <h2>작은 실습</h2>
+
+    <div class="practice-box">
+      <h3>실습 과제</h3>
+      <p style="color:#93c5fd; margin-bottom:12px"><code>/board/list</code> URL로 접속하면 게시글 목록 페이지(빈 화면이어도 됩니다)가 보이도록 만들어 보세요.</p>
+      <ul>
+        <li><code>BoardController.java</code>에 메서드 하나 추가</li>
+        <li><code>boardlist.html</code> 파일 하나 추가</li>
+        <li>브라우저에서 <code>localhost:8080/board/list</code> 접속해서 확인</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- STEP 12 -->
+  <div class="step" id="step12">
+    <div class="step-label">STEP 12</div>
+    <h2>다음 Commit을 위한 준비</h2>
+
+    <ol class="next-list">
+      <li><strong>POST 요청</strong> — 폼의 데이터를 서버로 보내는 HTTP 방식. <code>&lt;form method="post"&gt;</code>로 사용합니다.</li>
+      <li><strong>@PostMapping</strong> — POST 요청을 처리하는 어노테이션</li>
+      <li><strong>@RequestParam</strong> — 폼에서 넘어온 데이터를 Java 메서드에서 받는 방법</li>
+      <li><strong>&lt;form action="..."&gt;</strong> — 폼 데이터를 어떤 URL로 보낼지 지정하는 HTML 속성</li>
+      <li><strong>DB 저장</strong> — 데이터를 받은 다음 어딘가에 저장해야 합니다. 이때 Repository와 JPA가 등장합니다.</li>
+    </ol>
+  </div>
+
+  <!-- 구분선 -->
+  <div style="border-top: 2px solid #1e293b; margin: 48px 0 40px; padding-top: 32px;">
+    <div style="font-size:11px; font-weight:700; letter-spacing:3px; color:#475569; margin-bottom:8px;">ADDITIONAL Q&A</div>
+    <div style="font-size:20px; font-weight:700; color:#cbd5e1;">수업 후 추가 질문</div>
+  </div>
+
+  <!-- Q1 -->
+  <div class="step">
+    <div class="step-label">Q1</div>
+    <h2>BoardApplication 클래스는 뭐야?</h2>
+
+    <pre><code>@SpringBootApplication
+public class BoardApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(BoardApplication.class, args);
+    }
+}</code></pre>
+
+    <p><strong>Spring Boot 앱의 시작점</strong>입니다. Java 프로그램은 항상 <code>main()</code> 메서드에서 시작됩니다. <code>SpringApplication.run()</code>이 호출되는 순간 Spring이 깨어나면서:</p>
+
+    <ul class="summary-list">
+      <li>내장 Tomcat(웹 서버) 실행</li>
+      <li><code>@Controller</code>, <code>@Service</code> 등이 붙은 클래스들을 스캔해서 Bean으로 등록</li>
+      <li>8080 포트 열고 HTTP 요청 대기</li>
+    </ul>
+
+    <div class="misconception">
+      <code>@SpringBootApplication</code> 하나에 세 가지 역할이 합쳐져 있습니다. 지금은 <strong>"앱 켜는 스위치"</strong>로만 이해하면 됩니다.
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="step">
+    <div class="step-label">Q2</div>
+    <h2>BoardController를 com.study.board 안에 만든 이유?</h2>
+
+    <p><strong><code>BoardApplication.java</code>와 같은 패키지이거나 그 하위여야 하기 때문</strong>입니다.</p>
+    <p><code>@SpringBootApplication</code>은 자신이 위치한 패키지와 그 하위 패키지만 스캔합니다.</p>
+
+    <pre><code>com.study.board             ← BoardApplication 위치
+com.study.board.controller  ← BoardController 위치 (하위 ✅)
+com.other.controller        ← 여기 두면 스캔 안 됨 ❌</code></pre>
+
+    <div class="misconception">
+      <code>com.study.board.controller</code>에 뒀기 때문에 Spring이 자동으로 발견해서 Bean으로 등록한 것입니다. 바깥에 뒀다면 <code>@Controller</code>를 붙여도 Spring이 인식하지 못합니다.
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="step">
+    <div class="step-label">Q3</div>
+    <h2>HTTP 요청이 뭐야?</h2>
+
+    <p>브라우저와 서버가 대화하는 <strong>규칙(프로토콜)</strong>입니다. 브라우저가 서버에 "이거 줘"라고 보내는 메시지가 <strong>HTTP 요청(Request)</strong>, 서버가 "여기 있어"라고 돌려주는 메시지가 <strong>HTTP 응답(Response)</strong>입니다.</p>
+
+    <p>요청에는 방식(Method)이 있습니다:</p>
+
+    <table style="width:100%; border-collapse:collapse; font-size:13px; margin: 12px 0 20px;">
+      <thead>
+        <tr style="border-bottom:1px solid #1e293b;">
+          <th style="text-align:left; padding:8px 12px; color:#64748b; font-weight:600;">방식</th>
+          <th style="text-align:left; padding:8px 12px; color:#64748b; font-weight:600;">언제 쓰나</th>
+          <th style="text-align:left; padding:8px 12px; color:#64748b; font-weight:600;">예시</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid #0f172a;">
+          <td style="padding:8px 12px; color:#7dd3fc; font-family:monospace;">GET</td>
+          <td style="padding:8px 12px; color:#94a3b8;">데이터를 <strong>가져올 때</strong></td>
+          <td style="padding:8px 12px; color:#64748b;">주소창에 URL 입력, 링크 클릭</td>
+        </tr>
+        <tr>
+          <td style="padding:8px 12px; color:#7dd3fc; font-family:monospace;">POST</td>
+          <td style="padding:8px 12px; color:#94a3b8;">데이터를 <strong>보낼 때</strong></td>
+          <td style="padding:8px 12px; color:#64748b;">폼 제출, 회원가입, 게시글 작성</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="misconception">
+      브라우저 주소창에 <code>localhost:8080/board/write</code>를 치면 → <strong>GET 요청</strong>이 날아갑니다.
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="step">
+    <div class="step-label">Q4</div>
+    <h2>왜 templates/ 안에 있어야 Thymeleaf가 찾을 수 있어?</h2>
+
+    <p>Thymeleaf가 그렇게 설정되어 있기 때문입니다. <code>application.properties</code>에 명시하지 않아도 Spring Boot가 기본값으로 정해줍니다:</p>
+
+    <pre><code>prefix  = classpath:/templates/
+suffix  = .html</code></pre>
+
+    <p>즉 <code>"boardwrite"</code>를 반환하면 Thymeleaf가 자동으로 이렇게 조합합니다:</p>
+
+    <div class="flow">
+      <span class="highlight">"boardwrite"</span> 반환<br>
+      <span class="arrow">&nbsp;&nbsp;&nbsp;&nbsp;↓ prefix + 반환값 + suffix</span><br>
+      <span class="highlight">templates/boardwrite.html</span><br>
+      <span class="arrow">&nbsp;&nbsp;&nbsp;&nbsp;↓ classpath = src/main/resources/</span><br>
+      <span class="highlight">src/main/resources/templates/boardwrite.html</span>
+    </div>
+
+    <div class="misconception">
+      원하면 <code>application.properties</code>에서 경로를 바꿀 수 있지만, 관례를 따르는 게 좋습니다.
+    </div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="step">
+    <div class="step-label">Q5</div>
+    <h2>컨트롤러에서 return하면 무조건 그 파일을 찾아? Thymeleaf 때문인가?</h2>
+
+    <p><strong>반은 맞고 반은 틀립니다.</strong></p>
+    <p><code>String</code>을 반환했을 때 View 이름으로 해석하는 것은 <strong>Spring MVC(ViewResolver)</strong>의 역할입니다. Thymeleaf는 그 파일을 실제로 <strong>렌더링</strong>하는 역할입니다.</p>
+
+    <div class="flow">
+      <span class="highlight">return "boardwrite"</span><br>
+      <span class="arrow">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br>
+      Spring MVC (ViewResolver) → <span class="highlight">"templates/boardwrite.html 찾아"</span><br>
+      <span class="arrow">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br>
+      Thymeleaf → <span class="highlight">파일 읽어서 HTML로 변환 후 브라우저에 전달</span>
+    </div>
+
+    <p style="margin-top:16px;"><strong>무조건은 아닙니다.</strong> <code>@ResponseBody</code>를 붙이면 문자열 그 자체를 응답으로 보냅니다:</p>
+
+    <pre><code>@GetMapping("/test")
+@ResponseBody
+public String test() {
+    return "hello";   // 브라우저에 "hello" 텍스트가 그대로 출력됨
+                      // templates/hello.html 을 찾지 않음
+}</code></pre>
+
+    <div class="misconception">
+      <code>@RestController</code>를 쓰면 모든 메서드에 <code>@ResponseBody</code>가 자동 적용됩니다. 나중에 API 만들 때 씁니다.
+    </div>
+  </div>
+
+  <!-- Q6 -->
+  <div class="step">
+    <div class="step-label">Q6</div>
+    <h2>GET이든 POST든 Spring은 무조건 Controller로 보내? 여러 개면? 이름 같은 게 있으면?</h2>
+
+    <p>요청이 오면 <strong>DispatcherServlet이 받아서 URL + Method가 일치하는 메서드를 찾아 실행</strong>합니다.</p>
+    <p>Controller가 여러 개여도 괜찮습니다. Spring이 모든 Controller를 미리 스캔해서 URL 매핑 테이블을 만들어 둡니다:</p>
+
+    <pre><code>GET  /board/write  →  BoardController.boardWriteForm()
+POST /board/write  →  BoardController.boardWriteSave()   // 아직 없음
+GET  /board/list   →  BoardController.boardList()        // 아직 없음</code></pre>
+
+    <div class="why-card">
+      <div class="question">URL + Method 조합이 같은 게 있으면?</div>
+      <div class="answer">앱 실행 시점에 에러가 납니다. 중복 매핑은 허용되지 않습니다.</div>
+    </div>
+
+    <div class="why-card">
+      <div class="question">URL은 같지만 Method가 다른 것은?</div>
+      <div class="answer">괜찮습니다. 같은 URL이지만 GET/POST로 구분해서 쓰는 것이 일반적인 패턴입니다.</div>
+    </div>
+
+    <pre><code>@GetMapping("/board/write")   // GET → 작성 폼 화면 보여주기
+public String boardWriteForm() { ... }
+
+@PostMapping("/board/write")  // POST → 실제 저장 처리
+public String boardWriteSave() { ... }</code></pre>
+  </div>
+
+  <!-- Q_A_B -->
+  <div class="step">
+    <div class="step-label">Q8</div>
+    <h2>컨트롤러 A, B가 있을 때 — 중복 매핑 기준이 뭐야?</h2>
+
+    <p>기준은 <strong>클래스가 아니라 URL + Method 조합</strong>입니다.</p>
+
+    <pre><code>A 컨트롤러
+  @GetMapping("/test")   → GET /test
+
+B 컨트롤러
+  @PostMapping("/test")  → POST /test  ✅ (Method 달라서 괜찮음)
+  @GetMapping("/test")   → GET /test   ❌ (A에 이미 있음 → 앱 실행 시 에러)</code></pre>
+
+    <div class="why-card">
+      <div class="question">왜 에러가 나는가?</div>
+      <div class="answer">Spring이 내부적으로 만드는 매핑 테이블에서 <code>GET /test</code>가 중복되면 어느 걸 실행해야 할지 결정할 수 없습니다. 그래서 앱 자체가 뜨지 않습니다. 메서드 이름이 같든 다르든 상관없고, <strong>URL + Method</strong>가 겹치는지만 봅니다.</div>
+    </div>
+  </div>
+
+  <!-- Q_일반클래스 -->
+  <div class="step">
+    <div class="step-label">Q9</div>
+    <h2>어노테이션을 안 붙이면 "일반 클래스"라는 게 뭐야?</h2>
+
+    <p>Java에서 클래스는 그냥 <strong>설계도</strong>입니다. 어노테이션이 없으면 Spring은 이 클래스의 존재를 모릅니다.</p>
+
+    <pre><code>// 어노테이션 없음
+public class BoardController {
+    public String boardWriteForm() {
+        return "boardwrite";
+    }
+}
+
+// 사용하려면 개발자가 직접 해야 함
+BoardController controller = new BoardController();
+controller.boardWriteForm();</code></pre>
+
+    <table style="width:100%; border-collapse:collapse; font-size:13px; margin: 16px 0;">
+      <thead>
+        <tr style="border-bottom:1px solid #1e293b;">
+          <th style="text-align:left; padding:8px 12px; color:#64748b;"></th>
+          <th style="text-align:left; padding:8px 12px; color:#64748b;">일반 클래스</th>
+          <th style="text-align:left; padding:8px 12px; color:#64748b;">@Controller 붙인 클래스</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid #0f172a;">
+          <td style="padding:8px 12px; color:#64748b;">객체 생성</td>
+          <td style="padding:8px 12px; color:#94a3b8;">개발자가 <code>new</code>로 직접</td>
+          <td style="padding:8px 12px; color:#4ade80;">Spring이 자동으로</td>
+        </tr>
+        <tr style="border-bottom:1px solid #0f172a;">
+          <td style="padding:8px 12px; color:#64748b;">URL 연결</td>
+          <td style="padding:8px 12px; color:#94a3b8;">불가능</td>
+          <td style="padding:8px 12px; color:#4ade80;">Spring이 자동으로</td>
+        </tr>
+        <tr>
+          <td style="padding:8px 12px; color:#64748b;">Spring 인식</td>
+          <td style="padding:8px 12px; color:#94a3b8;">모름</td>
+          <td style="padding:8px 12px; color:#4ade80;">Bean으로 등록해서 관리</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="misconception">
+      <code>@Controller</code>, <code>@Service</code>, <code>@Repository</code>의 공통점이 바로 이것입니다. <strong>"이 클래스를 Spring이 관리하는 Bean으로 등록해줘"</strong>라는 신호입니다.
+    </div>
+  </div>
+
+  <!-- Q_dispatcher -->
+  <div class="step">
+    <div class="step-label">Q10</div>
+    <h2>DispatcherServlet과 HandlerMapping이 뭐야?</h2>
+
+    <p><strong>DispatcherServlet</strong>은 Spring의 <strong>교통 정리 담당자</strong>입니다. 모든 HTTP 요청은 무조건 DispatcherServlet을 먼저 통과합니다. 혼자 다 처리하는 게 아니라 요청을 보고 적절한 곳에 위임합니다.</p>
+
+    <div class="flow">
+      브라우저 요청<br>
+      <span class="arrow">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br>
+      <span class="highlight">DispatcherServlet</span> ← 모든 요청의 첫 번째 관문<br>
+      <span class="arrow">&nbsp;&nbsp;&nbsp;&nbsp;↓ "이 URL 누가 처리해?"</span><br>
+      <span class="highlight">HandlerMapping</span> 에게 물어봄<br>
+      <span class="arrow">&nbsp;&nbsp;&nbsp;&nbsp;↓ "처리할 메서드 찾았어"</span><br>
+      해당 Controller 메서드 실행<br>
+      <span class="arrow">&nbsp;&nbsp;&nbsp;&nbsp;↓ "결과 화면 찾아줘"</span><br>
+      <span class="highlight">ViewResolver</span> 에게 위임<br>
+      <span class="arrow">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br>
+      브라우저에 응답
+    </div>
+
+    <p style="margin-top:16px;"><strong>HandlerMapping</strong>은 URL + Method 조합을 보고 어떤 클래스의 어떤 메서드가 처리할지 찾아주는 역할입니다. 앱이 시작될 때 <code>@Controller</code> 클래스들을 스캔해서 매핑 테이블을 미리 만들어 두고, 요청이 들어오면 테이블에서 찾아 DispatcherServlet에게 알려줍니다.</p>
+  </div>
+
+  <!-- Q_no_mapping -->
+  <div class="step">
+    <div class="step-label">Q11</div>
+    <h2>@GetMapping을 안 붙이면 매핑이 안 돼?</h2>
+
+    <p>맞습니다. 매핑 자체가 안 됩니다.</p>
+
+    <pre><code>@Controller
+public class BoardController {
+
+    // @GetMapping 없음
+    public String boardWriteForm() {
+        return "boardwrite";
+    }
+}</code></pre>
+
+    <p>이 메서드는 HandlerMapping 테이블에 등록되지 않습니다. 어떤 URL로 접속해도 이 메서드는 절대 실행되지 않습니다.</p>
+
+    <div class="why-card">
+      <div class="question">@Controller와 @GetMapping의 역할 차이</div>
+      <div class="answer">
+        <code>@Controller</code> → "이 클래스를 Spring이 관리해줘"<br><br>
+        <code>@GetMapping</code> → "이 메서드를 이 URL에 연결해줘"<br><br>
+        <strong>둘 다 있어야</strong> 실제로 요청을 받을 수 있습니다.
+      </div>
+    </div>
+  </div>
+
+  <!-- Q7 (번호 유지) -->
+  <div class="step">
+    <div class="step-label">Q12</div>
+    <h2>Spring은 내부적으로 어떻게 View 파일을 찾아?</h2>
+
+    <div class="flow">
+      1. 요청 들어옴<br>
+      <span class="arrow">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br>
+      2. <span class="highlight">DispatcherServlet</span> 수신<br>
+      <span class="arrow">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br>
+      3. <span class="highlight">HandlerMapping</span> 으로 어떤 Controller 메서드인지 찾음<br>
+      <span class="arrow">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br>
+      4. 해당 메서드 실행 → <span class="highlight">"boardwrite"</span> 반환<br>
+      <span class="arrow">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br>
+      5. <span class="highlight">ViewResolver</span> 목록을 순서대로 조회<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;→ ThymeleafViewResolver: <span class="highlight">"templates/boardwrite.html 있어?"</span><br>
+      <span class="arrow">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br>
+      6. 파일 존재하면 <span class="highlight">Thymeleaf</span>가 HTML 파싱 및 렌더링<br>
+      <span class="arrow">&nbsp;&nbsp;&nbsp;&nbsp;↓</span><br>
+      7. 완성된 HTML을 HTTP 응답으로 브라우저에 전달
+    </div>
+
+    <div class="misconception">
+      ViewResolver는 여러 개가 등록될 수 있고, 우선순위 순서대로 시도합니다. 파일을 찾지 못하면 다음 ViewResolver를 시도하고, 전부 실패하면 500 에러가 납니다.
+    </div>
+
+    <div class="misconception" style="border-color:#4ade80; background:#0a1a0a; color:#86efac;">
+      🟢 DispatcherServlet과 ViewResolver 내부는 <strong>나중에 공부할 내용</strong>입니다. 지금은 위 흐름을 그림으로 기억해두는 것으로 충분합니다.
+    </div>
+  </div>
+
+</div>
+<script>hljs.highlightAll();</script>
+<script>
+  const tocLinks = document.querySelectorAll('.toc a[href^="#"]');
+  const sections = Array.from(tocLinks).map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        tocLinks.forEach(a => a.classList.remove('toc-active'));
+        const active = document.querySelector(`.toc a[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('toc-active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

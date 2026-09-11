@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>게시글 상세 페이지 — Spring 수업</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0f1117;
+    color: #c9d1d9;
+    font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    padding: 40px 20px;
+  }
+  .container { max-width: 860px; margin: 0 auto; }
+
+  .commit-link {
+    display: inline-block;
+    margin-bottom: 32px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 10px 18px;
+    color: #58a6ff;
+    text-decoration: none;
+    font-size: 13px;
+    font-family: monospace;
+  }
+  .commit-link:hover { background: #1f2937; }
+
+  h1 {
+    font-size: 26px;
+    color: #e6edf3;
+    margin-bottom: 8px;
+  }
+  .subtitle { color: #8b949e; margin-bottom: 40px; font-size: 14px; }
+
+  .learn-box {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin-bottom: 40px;
+  }
+  .learn-box h2 { color: #e6edf3; font-size: 16px; margin-bottom: 16px; }
+  .learn-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .learn-card { border-radius: 8px; padding: 16px; }
+  .learn-card h3 { font-size: 13px; margin-bottom: 8px; }
+  .learn-card ul { padding-left: 16px; font-size: 13px; line-height: 1.8; }
+  .red-card  { background: #2d1515; border: 1px solid #7f2020; }
+  .red-card h3 { color: #f85149; }
+  .yellow-card { background: #2d2200; border: 1px solid #7f5d00; }
+  .yellow-card h3 { color: #e3b341; }
+  .green-card { background: #0d2d16; border: 1px solid #1a7f37; }
+  .green-card h3 { color: #3fb950; }
+
+  .step {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 28px 32px;
+    margin-bottom: 28px;
+  }
+  .step-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #58a6ff;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .step h2 {
+    font-size: 18px;
+    color: #e6edf3;
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #21262d;
+  }
+
+  h3 { color: #e6edf3; font-size: 15px; margin: 20px 0 10px; }
+  h4 { color: #8b949e; font-size: 13px; margin: 14px 0 6px; font-weight: 600; }
+  p { margin-bottom: 10px; }
+
+  pre {
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 12px 0;
+  }
+  pre code.hljs {
+    font-family: 'Consolas', 'D2Coding', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    border-radius: 6px;
+    padding: 16px;
+  }
+  p code, li code {
+    background: #21262d;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 12px;
+  }
+
+  .flow-box {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 2.2;
+    color: #c9d1d9;
+  }
+  .flow-box .highlight { color: #58a6ff; font-weight: 700; }
+
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 14px;
+  }
+  .compare-card {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 16px;
+    font-family: monospace;
+    font-size: 13px;
+    line-height: 2;
+  }
+  .compare-card h4 { font-family: 'Segoe UI', sans-serif; margin-bottom: 10px; color: #8b949e; }
+  .compare-card .new { color: #3fb950; }
+
+  .warn {
+    border-left: 4px solid #e3b341;
+    background: #1c1a00;
+    padding: 14px 18px;
+    border-radius: 0 6px 6px 0;
+    margin: 12px 0;
+    font-size: 14px;
+  }
+  .warn strong { color: #e3b341; display: block; margin-bottom: 4px; }
+
+  ul, ol { padding-left: 20px; margin-bottom: 10px; }
+  li { margin-bottom: 4px; }
+
+  .summary-list {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 20px 24px;
+    list-style: none;
+    padding-left: 24px;
+  }
+  .summary-list li {
+    padding: 6px 0;
+    border-bottom: 1px solid #21262d;
+    font-size: 14px;
+  }
+  .summary-list li:last-child { border-bottom: none; }
+  .summary-list li::before { content: "✓ "; color: #3fb950; font-weight: 700; }
+
+  /* 정답 보기 */
+  .question-list details { background: #1e293b; border-radius: 4px; padding: 4px 10px; margin-top: 6px; }
+  .question-list details summary { color: #475569; font-size: 11px; cursor: pointer; user-select: none; list-style: none; }
+  .question-list details summary::-webkit-details-marker { display: none; }
+  .question-list details summary::before { content: "▶ 정답 보기"; }
+  .question-list details[open] summary::before { content: "▼ 정답 보기"; }
+  .question-list details[open] summary { margin-bottom: 4px; color: #64748b; }
+  .question-list details p { color: #cbd5e1; font-size: 13px; margin: 0; }
+
+  .question-list { counter-reset: q; padding-left: 0; list-style: none; }
+  .question-list li {
+    counter-increment: q;
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+  .question-list li::before {
+    content: "Q" counter(q) ". ";
+    color: #58a6ff;
+    font-weight: 700;
+  }
+
+  .practice-box {
+    background: #0d2d16;
+    border: 1px solid #1a7f37;
+    border-radius: 8px;
+    padding: 20px 24px;
+  }
+  .practice-box h3 { color: #3fb950; margin-top: 0; }
+
+  .next-list { padding-left: 0; list-style: none; counter-reset: n; }
+  .next-list li {
+    counter-increment: n;
+    padding: 10px 14px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+  .next-list li::before {
+    content: counter(n) ". ";
+    color: #58a6ff;
+    font-weight: 700;
+  }
+  .next-list li strong { color: #e6edf3; }
+
+  /* 목차 */
+  .toc {
+    position: fixed;
+    top: 40px;
+    right: 24px;
+    width: 164px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 14px 16px;
+    z-index: 100;
+  }
+  .toc-title { font-size: 10px; font-weight: 700; color: #58a6ff; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+  .toc ul { list-style: none; padding: 0; margin: 0; }
+  .toc ul li { margin-bottom: 5px; }
+  .toc ul li a { font-size: 12px; color: #8b949e; text-decoration: none; line-height: 1.4; display: block; }
+  .toc ul li a:hover { color: #c9d1d9; }
+  .toc ul li a.toc-active { color: #58a6ff; }
+  @media (max-width: 1200px) { .toc { display: none; } }
+
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+  th { background: #0d1117; color: #8b949e; padding: 10px 12px; text-align: left; border-bottom: 1px solid #30363d; }
+  td { padding: 10px 12px; border-bottom: 1px solid #21262d; color: #b0bac4; }
+</style>
+</head>
+<body>
+<nav class="toc">
+  <div class="toc-title">목차</div>
+  <ul>
+    <li><a href="#learn">배우는 것</a></li>
+    <li><a href="#step1">1. 한눈에 보기</a></li>
+    <li><a href="#step2">2. 변경 파일</a></li>
+    <li><a href="#step3">3. 핵심 코드</a></li>
+    <li><a href="#step4">4. 왜 이렇게?</a></li>
+    <li><a href="#step5">5. 실행 흐름</a></li>
+    <li><a href="#step6">6. 이전과 비교</a></li>
+    <li><a href="#step7">7. 초보자 착각</a></li>
+    <li><a href="#step8">8. 중요도</a></li>
+    <li><a href="#step9">9. 오늘 배운 것</a></li>
+    <li><a href="#step10">10. 이해도 질문</a></li>
+    <li><a href="#step11">11. 작은 실습</a></li>
+    <li><a href="#step12">12. 다음 준비</a></li>
+  </ul>
+</nav>
+<div class="container">
+
+  <a class="commit-link" href="https://github.com/yzzzwan/springboot_board_practice/commit/8ca6cf83732104c6153aca356a47be2b53d3498b" target="_blank">
+    커밋 보기: 8ca6cf8
+  </a>
+
+  <h1>게시글 상세 페이지</h1>
+  <p class="subtitle">feat: 게시글 상세 페이지 — Spring 수업</p>
+
+  <!-- 배우는 것 -->
+  <div class="learn-box" id="learn">
+    <h2>이번 Commit에서 배우는 것</h2>
+    <div class="learn-row">
+      <div class="learn-card red-card">
+        <h3>🔴 반드시 이해</h3>
+        <ul>
+          <li>URL 파라미터 받기 (?id=1)</li>
+          <li>Model로 데이터 전달</li>
+          <li>findById() — 1개 조회</li>
+        </ul>
+      </div>
+      <div class="learn-card yellow-card">
+        <h3>🟡 개념만 이해</h3>
+        <ul>
+          <li>Optional과 .get()</li>
+          <li>th:href="@{...}" URL 문법</li>
+        </ul>
+      </div>
+      <div class="learn-card green-card">
+        <h3>🟢 나중에 공부</h3>
+        <ul>
+          <li>Optional 예외 처리</li>
+          <li>orElseThrow()</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="step" id="step1">
+    <div class="step-label">Step 1</div>
+    <h2>이번 Commit 한눈에 보기</h2>
+    <p>지금까지 게시글 목록은 볼 수 있었는데, 제목을 클릭해도 아무 데도 이동하지 않았어. 이번 커밋에서 <strong>게시글 상세 페이지</strong>를 만들었어.</p>
+    <p>목록에서 제목을 클릭하면 <code>?id=1</code> 같은 URL로 이동하고, 해당 게시글의 내용을 DB에서 가져와서 화면에 표시하는 흐름이야.</p>
+    <p>이번 commit으로 목록(전체 조회)과 상세(1개 조회)가 연결되어 전형적인 게시판 구조가 완성되었어.</p>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step" id="step2">
+    <div class="step-label">Step 2</div>
+    <h2>무엇이 변경되었는가</h2>
+
+    <table>
+      <thead><tr><th>파일</th><th>변경 내용</th></tr></thead>
+      <tbody>
+        <tr><td>BoardController.java</td><td>boardView() 메서드 추가 — URL 파라미터로 id 받아서 Model에 board 담음</td></tr>
+        <tr><td>BoardService.java</td><td>boardView(id) 메서드 추가 — Repository에서 특정 게시글 1개 조회</td></tr>
+        <tr><td>boardlist.html</td><td>제목 텍스트 → 클릭 가능한 &lt;a&gt; 링크로 변경</td></tr>
+        <tr><td>boardview.html</td><td>상세 페이지 신규 작성</td></tr>
+      </tbody>
+    </table>
+
+    <h3>BoardService.java — boardView() 추가</h3>
+    <pre><code class="language-java">public Board boardView(Integer id){
+    return boardRepository.findById(id).get();
+}</code></pre>
+    <ul>
+      <li><strong>어떤 파일?</strong> 비즈니스 로직 담당 계층</li>
+      <li><strong>왜 추가?</strong> 특정 게시글 1개를 가져오는 로직을 Service에 위치시키기 위해</li>
+      <li><strong>역할:</strong> id를 받아 Repository에서 해당 게시글을 꺼내 반환</li>
+      <li><strong>연결:</strong> <code>findById(id).get()</code>으로 Board 객체 1개 반환</li>
+    </ul>
+
+    <h3>BoardController.java — boardView() 추가</h3>
+    <pre><code class="language-java">@GetMapping("/board/view") // localhost:8080/board/view?id=1
+public String boardView(Model model, Integer id){
+    model.addAttribute("board", boardService.boardView(id));
+    return "boardview";
+}</code></pre>
+    <ul>
+      <li><strong>어떤 파일?</strong> HTTP 요청을 받아 처리하는 계층</li>
+      <li><strong>왜 추가?</strong> <code>/board/view?id=1</code> GET 요청을 처리하기 위해</li>
+      <li><strong>역할:</strong> URL 파라미터 id를 받아 Service에서 board를 조회 후 Model에 담아 HTML로 전달</li>
+    </ul>
+
+    <h3>boardlist.html — 제목에 링크 추가</h3>
+    <pre><code class="language-html">&lt;!-- 이전 --&gt;
+&lt;td th:text="${board.title}"&gt;&lt;/td&gt;
+
+&lt;!-- 현재 --&gt;
+&lt;td&gt;
+    &lt;a th:text="${board.title}" th:href="@{/board/view(id=${board.id})}"&gt;&lt;/a&gt;
+&lt;/td&gt;</code></pre>
+    <ul>
+      <li><strong>역할:</strong> 게시글마다 id가 다른 URL을 자동 생성해 상세 페이지로 이동 가능하게 함</li>
+    </ul>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step" id="step3">
+    <div class="step-label">Step 3</div>
+    <h2>핵심 코드 설명</h2>
+
+    <h3>Integer id 파라미터 — URL 파라미터 자동 주입</h3>
+    <pre><code class="language-java">public String boardView(Model model, Integer id){</code></pre>
+    <p>URL에 <code>?id=1</code>이라고 붙으면, Spring이 알아서 메서드 파라미터 <code>Integer id</code>에 <code>1</code>을 넣어줘. URL 파라미터는 원래 전부 문자열로 넘어오는데, <code>Integer id</code>라고 선언하면 Spring이 문자열 → 정수 변환까지 자동으로 해줘.</p>
+    <pre><code class="language-java">// Spring 없이 직접 파싱하면 이렇게 해야 함 (서블릿 방식)
+String idStr = request.getParameter("id"); // "1" (문자열)
+Integer id = Integer.parseInt(idStr);       // 문자열 → 정수 변환</code></pre>
+    <p>Spring이 이 과정을 대신 해주기 때문에 그냥 <code>Integer id</code>만 선언하면 돼.</p>
+
+    <h4>파라미터 순서는 상관없다</h4>
+    <p>Spring은 파라미터를 <strong>이름과 타입</strong>으로 주입하기 때문에 순서가 달라도 동작해.</p>
+    <pre><code class="language-java">// 둘 다 동작
+public String boardView(Model model, Integer id){ ... }
+public String boardView(Integer id, Model model){ ... }
+
+// Spring이 판단하는 방식
+// Integer id  → "URL에 ?id= 파라미터 있네, 여기 넣자"
+// Model model → "Model 타입이네, Spring이 만들어서 여기 넣자"</code></pre>
+
+    <h4>쿼리 파라미터 vs Path Variable</h4>
+    <pre><code class="language-java">// 쿼리 파라미터 방식 — 현재 프로젝트
+// URL: /board/view?id=3
+@GetMapping("/board/view")
+public String boardView(Integer id){ }
+
+// Path Variable 방식
+// URL: /board/view/3
+@GetMapping("/board/view/{id}")
+public String boardView(@PathVariable Integer id){ }</code></pre>
+    <p><code>/board/view?id=3</code>은 쿼리 파라미터, <code>/board/view/3</code>은 경로 변수야. <code>/board/view/id=3</code> 이런 형식은 없어 — 저렇게 쓰면 <code>id=3</code>이라는 이름의 경로로 인식돼서 의도한 대로 동작하지 않아.</p>
+
+    <h3>Repository 메서드별 반환 타입 비교</h3>
+    <table>
+      <thead><tr><th>메서드</th><th>반환 타입</th><th>이유</th></tr></thead>
+      <tbody>
+        <tr><td>save(board)</td><td>Board</td><td>항상 저장됨. 실패 가능성 없음</td></tr>
+        <tr><td>findAll()</td><td>List&lt;Board&gt;</td><td>항상 존재 (게시글 없으면 빈 리스트)</td></tr>
+        <tr><td>findById(id)</td><td>Optional&lt;Board&gt;</td><td>해당 id가 DB에 없을 수 있음</td></tr>
+        <tr><td>deleteById(id)</td><td>void</td><td>삭제 후 남는 게 없음</td></tr>
+      </tbody>
+    </table>
+
+    <h3>findById(id).get() — Optional 이해</h3>
+    <pre><code class="language-java">return boardRepository.findById(id).get();</code></pre>
+    <p><code>Optional</code>은 Java에서 제공하는 <strong>클래스(타입)</strong>야. "값을 담을 수도 있고, 비어있을 수도 있는 상자"야. <code>null</code>이 아니라 "비어있다는 상태를 명시적으로 표현하는 객체"야.</p>
+    <pre><code class="language-java">Optional&lt;Board&gt; result = boardRepository.findById(999); // 없는 id
+
+result == null         // false — null이 아님
+result.isPresent()     // false — 비어있음
+result.isEmpty()       // true  — 비어있음
+result.get()           // 💥 NoSuchElementException 발생!</code></pre>
+    <p>값이 없을 때 <code>.get()</code>을 호출하면 에러가 발생해. 이건 <strong>일부러 에러를 내는 게 아니라, 실수로 발생하는 나쁜 에러</strong>야. 올바른 방법은 값이 있는지 먼저 확인하거나 <code>orElseThrow()</code>를 쓰는 거야.</p>
+    <pre><code class="language-java">// ❌ 지금 코드 — 값 없으면 에러 터짐 (학습용으로만 OK)
+return boardRepository.findById(id).get();
+
+// ✅ 올바른 방법 — 없으면 명시적으로 예외 던지기
+return boardRepository.findById(id)
+    .orElseThrow(() -> new RuntimeException("게시글이 없습니다"));</code></pre>
+
+    <!-- Optional SVG -->
+    <svg viewBox="0 0 700 160" style="width:100%;display:block;margin:18px 0;" xmlns="http://www.w3.org/2000/svg">
+      <rect width="700" height="160" fill="#0d1117" rx="8"/>
+      <rect x="20" y="55" width="160" height="50" rx="6" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="100" y="76" text-anchor="middle" fill="#93c5fd" font-size="12" font-family="Consolas,monospace">findById(1)</text>
+      <text x="100" y="94" text-anchor="middle" fill="#60a5fa" font-size="11" font-family="sans-serif">JPA 실행</text>
+      <line x1="180" y1="80" x2="236" y2="80" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="242,80 232,75 232,85" fill="#4b5563"/>
+      <rect x="242" y="40" width="200" height="80" rx="6" fill="#1c2a1c" stroke="#3fb950" stroke-width="1.5"/>
+      <text x="342" y="62" text-anchor="middle" fill="#6ee7b7" font-size="11" font-family="Consolas,monospace">Optional&lt;Board&gt;</text>
+      <rect x="262" y="70" width="160" height="36" rx="4" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+      <text x="342" y="91" text-anchor="middle" fill="#f0f6fc" font-size="12" font-family="Consolas,monospace">Board{ id=1, title=... }</text>
+      <line x1="442" y1="80" x2="496" y2="80" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="502,80 492,75 492,85" fill="#4b5563"/>
+      <rect x="502" y="55" width="160" height="50" rx="6" fill="#2d1f3d" stroke="#a78bfa" stroke-width="1.5"/>
+      <text x="582" y="76" text-anchor="middle" fill="#c4b5fd" font-size="12" font-family="Consolas,monospace">.get()</text>
+      <text x="582" y="94" text-anchor="middle" fill="#a78bfa" font-size="11" font-family="sans-serif">Board 객체 반환</text>
+      <text x="100" y="130" text-anchor="middle" fill="#4b5563" font-size="11" font-family="sans-serif">DB 조회</text>
+      <text x="342" y="140" text-anchor="middle" fill="#4b5563" font-size="11" font-family="sans-serif">껍데기 (있을수도/없을수도)</text>
+      <text x="582" y="130" text-anchor="middle" fill="#4b5563" font-size="11" font-family="sans-serif">실제 객체 꺼내기</text>
+    </svg>
+
+    <h4>save()는 id를 새로 만들어서 반환한다</h4>
+    <pre><code class="language-java">Board board = new Board();
+board.setTitle("제목");
+
+System.out.println(board.getId()); // null — 아직 id 없음
+
+Board saved = boardRepository.save(board);
+
+System.out.println(saved.getId()); // 1 — DB가 id를 만들어서 채워줌
+System.out.println(board.getId()); // 1 — 원본 객체에도 반영됨</code></pre>
+    <p>저장 전 Board는 id가 없어. DB에 저장될 때 AUTO_INCREMENT로 id가 자동 생성되고, <code>save()</code>는 <strong>id가 채워진 Board를 반환</strong>해. 지금 프로젝트에서는 저장 후 id를 쓸 일이 없어서 반환값을 무시하고 있어.</p>
+
+    <h3>th:href="@{...}" — Thymeleaf URL 파라미터</h3>
+    <pre><code class="language-html">&lt;a th:text="${board.title}" th:href="@{/board/view(id=${board.id})}"&gt;&lt;/a&gt;</code></pre>
+    <p><code>@{경로(파라미터=값)}</code> 방식을 쓰면 Thymeleaf가 <code>?</code>와 <code>&amp;</code>를 자동으로 붙여줘. URL 인코딩(한글, 특수문자 → <code>%EC%...</code>)도 자동 처리해줘서 더 안전해.</p>
+    <pre><code class="language-html">&lt;!-- 파라미터 여러 개 — 쉼표로 이어쓰면 됨 --&gt;
+th:href="@{/board/view(id=${board.id}, page=${page}, sort=${sort})}"
+&lt;!-- 결과: /board/view?id=1&amp;page=2&amp;sort=desc --&gt;
+
+&lt;!-- 직접 쓰는 방식 — 동작은 하지만 인코딩 처리 없음 --&gt;
+th:href="@{/board/view?id=${board.id}}"</code></pre>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step" id="step4">
+    <div class="step-label">Step 4</div>
+    <h2>왜 이렇게 작성했는가?</h2>
+
+    <h3>왜 URL에 id를 담는가?</h3>
+    <p>어떤 게시글을 보여줄지 서버에 알려줘야 하기 때문이야. <code>?id=1</code>이 없으면 서버는 "몇 번 게시글을 달라는 거지?"를 알 수 없어.</p>
+
+    <h3>왜 findAll()이 아니라 findById()인가?</h3>
+    <pre><code class="language-java">// findAll() → 전체 조회 (목록 페이지용)
+List&lt;Board&gt; list = boardRepository.findAll();
+
+// findById(id) → 1개 조회 (상세 페이지용)
+Optional&lt;Board&gt; board = boardRepository.findById(id);</code></pre>
+    <p>상세 페이지에서 전체를 다 가져오면 낭비야. id로 딱 1개만 정확히 가져오는 게 맞아.</p>
+
+    <h3>왜 Service를 거치는가?</h3>
+    <p>Controller는 HTTP 요청/응답만 담당하고, 데이터를 가져오는 로직은 Service에 위임하는 구조를 유지하는 거야. 나중에 비즈니스 로직이 복잡해질 때 Controller가 지저분해지지 않아.</p>
+
+    <h3>에러는 어디서 처리하는가?</h3>
+    <p>역할에 따라 나눠서 처리해.</p>
+    <pre><code class="language-java">// Service — 예외를 던지는 역할
+public Board boardView(Integer id){
+    return boardRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("게시글이 없습니다"));
+}
+
+// Controller — 그냥 통과 (예외를 위로 올려보냄)
+public String boardView(Model model, Integer id){
+    model.addAttribute("board", boardService.boardView(id));
+    return "boardview";
+}
+
+// @ControllerAdvice — 실제 처리 (별도 클래스)
+@ControllerAdvice
+public class GlobalExceptionHandler {
+    @ExceptionHandler(RuntimeException.class)
+    public String handle(RuntimeException e, Model model){
+        model.addAttribute("message", e.getMessage());
+        return "error"; // error.html 보여줌
+    }
+}</code></pre>
+    <p>예외 처리는 <code>@ControllerAdvice</code> 전역 핸들러 클래스에서 하는 게 일반적이야. Controller마다 따로 짜지 않고 한 곳에서 모든 예외를 관리할 수 있어. 지금 단계에서 몰라도 되는 내용이고, 수정/삭제 기능 붙이고 나서 배우면 딱 맞는 타이밍이야.</p>
+  </div>
+
+  <!-- STEP 5 -->
+  <div class="step" id="step5">
+    <div class="step-label">Step 5</div>
+    <h2>실행 흐름</h2>
+    <svg viewBox="0 0 780 680" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:680px;display:block;margin:0 auto;">
+
+      <!-- 1. 브라우저 -->
+      <rect x="240" y="10" width="300" height="50" rx="8" fill="#1f2937" stroke="#6b7280" stroke-width="1.5"/>
+      <text x="390" y="30" text-anchor="middle" fill="#9ca3af" font-size="12" font-family="sans-serif">브라우저</text>
+      <text x="390" y="50" text-anchor="middle" fill="#c9d1d9" font-size="13" font-family="Consolas,monospace">GET /board/view?id=1</text>
+      <line x1="390" y1="62" x2="390" y2="84" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="390,90 384,80 396,80" fill="#4b5563"/>
+
+      <!-- 2. Controller -->
+      <rect x="200" y="90" width="380" height="60" rx="8" fill="#1e2d40" stroke="#3b82f6" stroke-width="2"/>
+      <text x="390" y="112" text-anchor="middle" fill="#93c5fd" font-size="12" font-family="sans-serif" font-weight="bold">BoardController</text>
+      <text x="390" y="134" text-anchor="middle" fill="#c9d1d9" font-size="12" font-family="Consolas,monospace">boardView(model, id=1)</text>
+      <line x1="390" y1="152" x2="390" y2="174" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="390,180 384,170 396,170" fill="#4b5563"/>
+
+      <!-- 3. Service -->
+      <rect x="200" y="180" width="380" height="60" rx="8" fill="#1a2e1a" stroke="#3fb950" stroke-width="2"/>
+      <text x="390" y="202" text-anchor="middle" fill="#3fb950" font-size="12" font-family="sans-serif" font-weight="bold">BoardService</text>
+      <text x="390" y="224" text-anchor="middle" fill="#c9d1d9" font-size="12" font-family="Consolas,monospace">boardView(1)</text>
+      <line x1="390" y1="242" x2="390" y2="264" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="390,270 384,260 396,260" fill="#4b5563"/>
+
+      <!-- 4. Repository -->
+      <rect x="200" y="270" width="380" height="60" rx="8" fill="#2a1f30" stroke="#a78bfa" stroke-width="2"/>
+      <text x="390" y="292" text-anchor="middle" fill="#c4b5fd" font-size="12" font-family="sans-serif" font-weight="bold">BoardRepository</text>
+      <text x="390" y="314" text-anchor="middle" fill="#c9d1d9" font-size="12" font-family="Consolas,monospace">findById(1).get()</text>
+      <line x1="390" y1="332" x2="390" y2="354" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="390,360 384,350 396,350" fill="#4b5563"/>
+
+      <!-- 5. DB -->
+      <rect x="200" y="360" width="380" height="60" rx="8" fill="#2d1f10" stroke="#f59e0b" stroke-width="2"/>
+      <text x="390" y="382" text-anchor="middle" fill="#fbbf24" font-size="12" font-family="sans-serif" font-weight="bold">Database</text>
+      <text x="390" y="404" text-anchor="middle" fill="#c9d1d9" font-size="12" font-family="Consolas,monospace">SELECT * FROM board WHERE id=1</text>
+
+      <!-- DB → Repository 반환 (오른쪽 경로) -->
+      <line x1="582" y1="390" x2="635" y2="390" stroke="#4b5563" stroke-width="1.5"/>
+      <line x1="635" y1="390" x2="635" y2="300" stroke="#4b5563" stroke-width="1.5"/>
+      <line x1="635" y1="300" x2="588" y2="300" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="582,300 592,295 592,305" fill="#4b5563"/>
+      <text x="660" y="350" text-anchor="middle" fill="#6b7280" font-size="10" font-family="sans-serif" transform="rotate(90,660,350)">Board 반환</text>
+
+      <!-- Repository → Service 반환 (왼쪽 경로) -->
+      <line x1="198" y1="300" x2="145" y2="300" stroke="#4b5563" stroke-width="1.5"/>
+      <line x1="145" y1="300" x2="145" y2="210" stroke="#4b5563" stroke-width="1.5"/>
+      <line x1="145" y1="210" x2="192" y2="210" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="198,210 188,205 188,215" fill="#4b5563"/>
+      <text x="120" y="258" text-anchor="middle" fill="#6b7280" font-size="10" font-family="sans-serif" transform="rotate(-90,120,258)">Board 반환</text>
+
+      <!-- Service → Controller 반환 (왼쪽 경로) -->
+      <line x1="145" y1="210" x2="145" y2="120" stroke="#4b5563" stroke-width="1.5"/>
+      <line x1="145" y1="120" x2="192" y2="120" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="198,120 188,115 188,125" fill="#4b5563"/>
+      <text x="120" y="165" text-anchor="middle" fill="#6b7280" font-size="10" font-family="sans-serif" transform="rotate(-90,120,165)">Board 반환</text>
+
+      <!-- Controller → Thymeleaf (model 경유, 오른쪽 점선) -->
+      <line x1="580" y1="120" x2="635" y2="120" stroke="#4b5563" stroke-width="1.5"/>
+      <line x1="635" y1="120" x2="635" y2="456" stroke="#4b5563" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <line x1="635" y1="456" x2="588" y2="456" stroke="#4b5563" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <polygon points="582,456 592,451 592,461" fill="#4b5563"/>
+      <text x="700" y="300" text-anchor="middle" fill="#3fb950" font-size="10" font-family="sans-serif" transform="rotate(90,700,300)">model.addAttribute("board",...)</text>
+
+      <!-- 7. Thymeleaf -->
+      <rect x="200" y="450" width="380" height="60" rx="8" fill="#1f1030" stroke="#ec4899" stroke-width="2"/>
+      <text x="390" y="472" text-anchor="middle" fill="#f9a8d4" font-size="12" font-family="sans-serif" font-weight="bold">boardview.html (Thymeleaf)</text>
+      <text x="390" y="494" text-anchor="middle" fill="#c9d1d9" font-size="12" font-family="Consolas,monospace">${board.title}, ${board.content} 출력</text>
+      <line x1="390" y1="512" x2="390" y2="534" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="390,540 384,530 396,530" fill="#4b5563"/>
+
+      <!-- 8. 브라우저 응답 -->
+      <rect x="240" y="540" width="300" height="50" rx="8" fill="#1f2937" stroke="#6b7280" stroke-width="1.5"/>
+      <text x="390" y="560" text-anchor="middle" fill="#9ca3af" font-size="12" font-family="sans-serif">브라우저</text>
+      <text x="390" y="580" text-anchor="middle" fill="#c9d1d9" font-size="13" font-family="Consolas,monospace">게시글 상세 화면 표시</text>
+
+      <!-- 레이어 레이블 -->
+      <text x="20" y="126" fill="#3b82f6" font-size="10" font-family="sans-serif" font-weight="bold">Web</text>
+      <text x="20" y="216" fill="#3fb950" font-size="10" font-family="sans-serif" font-weight="bold">Service</text>
+      <text x="20" y="306" fill="#a78bfa" font-size="10" font-family="sans-serif" font-weight="bold">Data</text>
+      <text x="20" y="396" fill="#fbbf24" font-size="10" font-family="sans-serif" font-weight="bold">DB</text>
+      <text x="20" y="486" fill="#ec4899" font-size="10" font-family="sans-serif" font-weight="bold">View</text>
+    </svg>
+  </div>
+
+  <!-- STEP 6 -->
+  <div class="step" id="step6">
+    <div class="step-label">Step 6</div>
+    <h2>이전 Commit과 비교</h2>
+    <div class="compare-grid">
+      <div class="compare-card">
+        <h4>이전 Commit — 목록 조회만</h4>
+        GET /board/list<br>
+        &nbsp;&nbsp;Controller<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+        &nbsp;&nbsp;Service.boardList()<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+        &nbsp;&nbsp;Repository.findAll()<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+        &nbsp;&nbsp;제목: 텍스트만 표시
+      </div>
+      <div class="compare-card">
+        <h4>현재 Commit — 상세 조회 추가</h4>
+        GET /board/list (기존 동일)<br>
+        &nbsp;&nbsp;제목 클릭 가능<br><br>
+        <span class="new">GET /board/view?id=1 ← 새로 추가<br>
+        &nbsp;&nbsp;Controller<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+        &nbsp;&nbsp;Service.boardView(id)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+        &nbsp;&nbsp;Repository.findById(id)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+        &nbsp;&nbsp;boardview.html 출력</span>
+      </div>
+    </div>
+    <p style="margin-top:16px;">이번 커밋으로 목록과 상세 페이지가 <strong>연결</strong>되었어. 목록은 여러 개를 보여주고, 상세는 1개를 깊게 보여주는 전형적인 게시판 패턴이야.</p>
+  </div>
+
+  <!-- STEP 7 -->
+  <div class="step" id="step7">
+    <div class="step-label">Step 7</div>
+    <h2>초보자가 하기 쉬운 착각</h2>
+
+    <div class="warn">
+      <strong>Integer id 이름은 URL 파라미터 이름과 같아야 한다</strong>
+      URL의 <code>?id=</code>와 메서드 파라미터 <code>Integer id</code>의 이름이 같아야 Spring이 자동으로 연결해줘. 이름이 다르면 <code>@RequestParam("id") Integer myId</code>처럼 명시해줘야 해.
+    </div>
+
+    <div class="warn">
+      <strong>.get()이 항상 안전한 건 아니다</strong>
+      <code>findById()</code>가 결과를 못 찾으면 <code>Optional</code>이 비어있어. 이때 <code>.get()</code>을 호출하면 <code>NoSuchElementException</code>이 발생해. 실무에서는 <code>.orElseThrow()</code>를 사용해 적절한 에러 처리를 해줘야 해.
+    </div>
+
+    <div class="warn">
+      <strong>findById()와 findAll()의 반환 타입이 다르다</strong>
+      <code>findAll()</code>은 <code>List&lt;Board&gt;</code>를 반환하고, <code>findById()</code>는 <code>Optional&lt;Board&gt;</code>를 반환해. 타입이 다르기 때문에 처리 방법도 달라야 해.
+    </div>
+
+    <div class="warn">
+      <strong>URL에 ?가 붙는다고 GET인 게 아니다</strong>
+      <code>?</code>는 URL에 데이터를 붙이는 문법일 뿐이야. GET인지 POST인지는 <code>@GetMapping</code> / <code>@PostMapping</code>으로 결정돼. POST도 URL에 <code>?</code>를 붙일 수는 있지만, 보통 Body에 담는 게 목적이라 잘 안 써.
+    </div>
+
+    <div class="warn">
+      <strong>@GetMapping에 ? 뒤 파라미터는 쓰지 않는다</strong>
+      <code>@GetMapping("/board/view")</code>에는 경로만 써. <code>?id=1</code> 같은 파라미터는 메서드 파라미터(<code>Integer id</code>)로 받는 거야. Path Variable은 경로의 일부라서 <code>@GetMapping("/board/view/{id}")</code>처럼 명시해야 해.
+    </div>
+
+    <div class="warn">
+      <strong>같은 URL이어도 GET/POST 다르면 다른 메서드가 실행된다</strong>
+      <pre><code class="language-java">@GetMapping("/board/write")   // 주소창 입력 → 폼 화면 반환
+public String boardWriteForm(){ return "boardwrite"; }
+
+@PostMapping("/board/write")  // 폼 제출 → 저장 처리
+public String boardWrite(Board board){ ... }</code></pre>
+      URL은 같지만 전송 방식이 다르면 Spring이 각각 다른 메서드를 실행해. 이미 프로젝트에서 <code>/board/writepro</code>가 POST 방식으로 동작하고 있어.
+    </div>
+  </div>
+
+  <!-- STEP 8 -->
+  <div class="step" id="step8">
+    <div class="step-label">Step 8</div>
+    <h2>중요도 구분</h2>
+    <div class="learn-row">
+      <div class="learn-card red-card">
+        <h3>🔴 반드시 이해</h3>
+        <ul>
+          <li>URL 파라미터(?id=1)를 메서드 파라미터로 받는 방법</li>
+          <li>model.addAttribute()로 HTML에 데이터 전달하는 구조</li>
+          <li>findById(id)로 특정 데이터 1개를 조회하는 방법</li>
+        </ul>
+      </div>
+      <div class="learn-card yellow-card">
+        <h3>🟡 개념만 이해</h3>
+        <ul>
+          <li>Optional — 값이 있을 수도 없을 수도 있는 컨테이너</li>
+          <li>th:href="@{...}" — Thymeleaf URL 파라미터 문법</li>
+        </ul>
+      </div>
+      <div class="learn-card green-card">
+        <h3>🟢 나중에 공부</h3>
+        <ul>
+          <li>Optional.orElseThrow() — 값 없을 때 예외 처리</li>
+          <li>@RequestParam으로 명시적 파라미터 바인딩</li>
+          <li>@PathVariable — /board/view/1 스타일 URL</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 9 -->
+  <div class="step" id="step9">
+    <div class="step-label">Step 9</div>
+    <h2>오늘 배운 것</h2>
+    <ul class="summary-list">
+      <li>@GetMapping 메서드에서 URL 파라미터를 메서드 파라미터로 그냥 받을 수 있다 (Integer id). Spring이 문자열 → 타입 변환까지 자동으로 해준다.</li>
+      <li>메서드 파라미터 순서는 상관없다. Spring이 이름과 타입으로 주입하기 때문이다.</li>
+      <li>model.addAttribute("키", 값)으로 Controller에서 HTML로 데이터를 전달한다.</li>
+      <li>Optional은 Java 클래스로, 값이 있을 수도 없을 수도 있는 상자다. null과 다르다.</li>
+      <li>findById()는 Optional을 반환하고 .get()으로 실제 객체를 꺼낸다. 값이 없으면 에러 발생.</li>
+      <li>save(), findAll(), findById(), deleteById()는 각각 반환 타입이 다르다. findById()만 Optional이다.</li>
+      <li>save()는 DB가 생성한 id가 채워진 Board 객체를 반환한다.</li>
+      <li>에러 처리는 Service에서 던지고 @ControllerAdvice 전역 핸들러에서 잡는 구조가 일반적이다.</li>
+      <li>GET/POST는 URL의 ?가 아니라 @GetMapping/@PostMapping으로 결정된다. 같은 URL도 전송 방식이 다르면 다른 메서드가 실행된다.</li>
+      <li>Thymeleaf에서 th:href="@{경로(파라미터=값)}" 문법으로 URL을 동적으로 만든다. URL 인코딩도 자동 처리된다.</li>
+    </ul>
+  </div>
+
+  <!-- STEP 10 -->
+  <div class="step" id="step10">
+    <div class="step-label">Step 10</div>
+    <h2>이해도 확인 질문</h2>
+    <ol class="question-list">
+      <li>
+        <span>/board/view?id=3 요청이 오면 Integer id에 어떤 값이 들어오는가?</span>
+        <details><summary></summary><p>3이 들어온다. Spring이 URL 파라미터 이름과 메서드 파라미터 이름이 같으면 자동으로 값을 넣어준다.</p></details>
+      </li>
+      <li>
+        <span>model.addAttribute("board", board)에서 첫 번째 인자 "board"의 역할은?</span>
+        <details><summary></summary><p>HTML에서 데이터를 꺼낼 때 사용하는 이름(키)이다. HTML에서 ${board.title}처럼 이 이름으로 접근한다.</p></details>
+      </li>
+      <li>
+        <span>findAll()과 findById()의 차이는?</span>
+        <details><summary></summary><p>findAll()은 테이블의 모든 행을 List로 가져오고, findById()는 PK로 딱 1개의 행을 Optional로 가져온다. JPA가 자동으로 SQL을 만들어 실행한다.</p></details>
+      </li>
+      <li>
+        <span>findById(id).get()에서 .get()을 반드시 써야 하는 이유는?</span>
+        <details><summary></summary><p>findById()의 반환 타입이 Optional&lt;Board&gt;이기 때문이다. Optional은 껍데기이고 실제 Board 객체를 꺼내려면 .get()을 호출해야 한다.</p></details>
+      </li>
+      <li>
+        <span>boardlist.html에서 th:href="@{/board/view(id=${board.id})}"가 만들어내는 실제 URL은?</span>
+        <details><summary></summary><p>board.id가 1이면 /board/view?id=1, 2이면 /board/view?id=2 가 된다. th:each 루프를 돌면서 각 게시글마다 다른 id로 URL이 생성된다.</p></details>
+      </li>
+    </ol>
+  </div>
+
+  <!-- STEP 11 -->
+  <div class="step" id="step11">
+    <div class="step-label">Step 11</div>
+    <h2>작은 실습</h2>
+    <div class="practice-box">
+      <h3>boardview.html에 게시글 번호도 표시하기</h3>
+      <p>현재 boardview.html에는 제목과 내용만 있어. 상단에 <code>게시글 번호: 1</code> 같은 형태로 id도 보이도록 추가해봐.</p>
+      <p><strong>힌트:</strong> Board 엔티티에 <code>id</code> 필드가 있고, HTML에서는 <code>${board.id}</code>로 접근할 수 있어.</p>
+    </div>
+  </div>
+
+  <!-- STEP 12 -->
+  <div class="step" id="step12">
+    <div class="step-label">Step 12</div>
+    <h2>다음 Commit을 위한 준비</h2>
+    <ul class="next-list">
+      <li><strong>게시글 수정</strong> — 상세 페이지에서 수정 버튼을 누르면 수정 폼이 열리고, 저장하면 DB가 업데이트되는 흐름</li>
+      <li><strong>게시글 삭제</strong> — 특정 id의 게시글을 DB에서 삭제하는 deleteById() 메서드</li>
+      <li><strong>JPA의 save()</strong> — id가 없으면 insert, 있으면 update로 동작 (수정 기능의 핵심)</li>
+      <li><strong>@PathVariable</strong> — ?id=1 대신 /board/view/1 같은 URL 스타일로 파라미터를 받는 방법</li>
+      <li><strong>예외 처리</strong> — 존재하지 않는 id로 접근했을 때 에러 페이지를 보여주는 방법</li>
+    </ul>
+  </div>
+
+</div>
+<script>hljs.highlightAll();</script>
+<script>
+  const tocLinks = document.querySelectorAll('.toc a[href^="#"]');
+  const sections = Array.from(tocLinks).map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        tocLinks.forEach(a => a.classList.remove('toc-active'));
+        const active = document.querySelector(`.toc a[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('toc-active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
