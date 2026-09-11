@@ -266,9 +266,29 @@ Repository
 3. Spring에서 Bean이란 무엇인가?
 4. 이 요청이 들어왔을 때 어떤 순서로 코드가 실행되는가?
 
-**정답은 바로 알려주지 않는다.**
+**HTML 학습자료에는 각 질문 바로 아래에 정답을 함께 표시한다.**
 
-내가 답하면 답변을 평가하고 부족한 부분을 다시 설명한다.
+정답은 `<details>` 태그로 표시한다. 클릭하면 펼쳐지는 방식이다.
+
+```css
+/* 정답 보기 */
+.question-list details { background: #1e293b; border-radius: 4px; padding: 4px 10px; margin-top: 6px; }
+.question-list details summary { color: #475569; font-size: 11px; cursor: pointer; user-select: none; list-style: none; }
+.question-list details summary::-webkit-details-marker { display: none; }
+.question-list details summary::before { content: "▶ 정답 보기"; }
+.question-list details[open] summary::before { content: "▼ 정답 보기"; }
+.question-list details[open] summary { margin-bottom: 4px; color: #64748b; }
+.question-list details p { color: #cbd5e1; font-size: 13px; margin: 0; }
+```
+
+```html
+<li>
+  <span>질문 내용</span>
+  <details><summary></summary><p>정답 내용</p></details>
+</li>
+```
+
+대화 중 사용자가 직접 답변하면 답변을 평가하고 부족한 부분을 추가 설명한다.
 
 ---
 
@@ -455,12 +475,76 @@ claude 자료/게시글 목록 조회 기능 추가.html
   - 표시 형식 예: `커밋 보기: f299b44` (짧은 hash 표시, 클릭 시 이동)
 - 다크 테마 배경 (`#0f1117`)
 - 각 STEP을 섹션으로 구분
-- 코드 블록은 monospace 폰트로 가독성 있게 표시
+- **코드 블록은 highlight.js로 문법 하이라이팅 적용**
+  - `<head>`에 CDN 추가:
+    ```html
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+    ```
+  - `</body>` 직전에 `<script>hljs.highlightAll();</script>` 추가
+  - Java 코드: `<code class="language-java">`
+  - HTML/Thymeleaf 코드: `<code class="language-html">`
+  - 단순 텍스트(흐름 예시 등): 클래스 없이 그대로
+  - `pre code.hljs` CSS로 폰트·패딩 통일 (`font-family: 'Consolas', 'D2Coding', monospace; font-size: 13px; line-height: 1.6;`)
 - 중요도 구분 (🔴🟡🟢) 은 색상 카드로 표현
 - 실행 흐름은 다이어그램 형태로 표현
 - 이전/현재 Commit 비교는 나란히(grid) 배치
 - 초보자 착각 항목은 경고 스타일(노란 좌측 border)로 표현
 - 모바일보다 데스크탑 가독성 우선 (max-width: 860px)
+- **초보자가 텍스트만으로 이해하기 어렵다고 판단되는 개념은 인라인 SVG 다이어그램으로 시각화**
+  - 대상: 데이터 흐름(Controller→Model→View), 반복 처리(th:each), 실행 흐름, 계층 구조 등
+  - 인라인 SVG 사용 (외부 이미지 없이 HTML 파일 단독으로 동작)
+  - 다크 테마 색상 팔레트 유지: 배경 `#0d1117`, Controller `#3b82f6`, Service `#3fb950`, Repository/View `#a78bfa`, DB `#f59e0b`
+  - SVG는 `viewBox` + `width:100%`로 반응형 처리. 좌우로 긴 다이어그램은 `max-width`를 860px 이상으로 넓혀도 된다 (예: `style="width:100%;max-width:1100px;"`)
+  - 실행 흐름은 플로우차트 SVG로 표현 (텍스트 나열 대신)
+  - 개념 비교(before/after, Java vs Thymeleaf 등)는 SVG로 나란히 표현
+  - 내용이 단순하거나 텍스트로 충분히 전달되는 경우 SVG 생략 가능
+
+## SVG 작성 규칙 (깨짐 방지)
+
+인라인 SVG를 작성할 때 반드시 지켜야 하는 규칙이다.
+
+### 규칙 1: 화살표는 반드시 `<polygon>`으로 직접 그린다 — `marker-end` 사용 금지
+
+`marker-end="url(#...)"` 방식은 인라인 SVG에서 브라우저마다 렌더링이 불안정하여 화살표가 사라지는 문제가 발생한다.
+화살표는 **반드시** `<polygon>`으로 직접 그린다. `<defs>`, `<marker>` 태그는 사용하지 않는다.
+
+```html
+<!-- ✅ 올바른 방법 - polygon으로 화살표 직접 그리기 -->
+
+<!-- 아래 방향 화살표 (라인 끝 y=84, 화살촉 끝 y=90) -->
+<line x1="390" y1="62" x2="390" y2="84" stroke="#4b5563" stroke-width="1.5"/>
+<polygon points="390,90 384,80 396,80" fill="#4b5563"/>
+
+<!-- 오른쪽 방향 화살표 (라인 끝 x=196, 화살촉 끝 x=202) -->
+<line x1="145" y1="120" x2="196" y2="120" stroke="#4b5563" stroke-width="1.5"/>
+<polygon points="202,120 192,115 192,125" fill="#4b5563"/>
+
+<!-- 왼쪽 방향 화살표 (라인 끝 x=588, 화살촉 끝 x=582) -->
+<line x1="635" y1="300" x2="588" y2="300" stroke="#4b5563" stroke-width="1.5"/>
+<polygon points="582,300 592,295 592,305" fill="#4b5563"/>
+
+<!-- ❌ 금지 - marker-end 방식은 절대 사용하지 않는다 -->
+<!-- <defs><marker id="arr">...</marker></defs>           -->
+<!-- <line marker-end="url(#arr)" />                      -->
+```
+
+polygon 화살촉 작성 공식:
+- **아래 방향**: `points="cx,tip cx-6,tip-10 cx+6,tip-10"` (tip = 화살촉 끝 y좌표)
+- **오른쪽 방향**: `points="tip,cy tip-10,cy-5 tip-10,cy+5"` (tip = 화살촉 끝 x좌표)
+- **왼쪽 방향**: `points="tip,cy tip+10,cy-5 tip+10,cy+5"` (tip = 화살촉 끝 x좌표)
+- **위 방향**: `points="cx,tip cx-6,tip+10 cx+6,tip+10"` (tip = 화살촉 끝 y좌표)
+
+### 규칙 2: SVG 작성 후 반드시 점검
+
+SVG를 작성한 후 반드시 확인:
+
+- [ ] 화살표를 `<polygon>`으로 그렸는가? (`marker-end` 사용하지 않았는가?)
+- [ ] `<defs>`, `<marker>` 태그가 없는가?
+- [ ] `viewBox` 범위 안에 모든 도형이 들어오는가? (범위 밖 도형은 잘림)
+- [ ] 좌우로 긴 SVG는 `max-width`를 충분히 넓혀서 내용이 잘리지 않는가?
 
 ## 저장 시점
 
