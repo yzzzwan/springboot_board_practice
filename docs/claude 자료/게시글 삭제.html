@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>게시글 삭제 — Spring 수업</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0f1117;
+    color: #c9d1d9;
+    font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    padding: 40px 20px;
+  }
+  .container { max-width: 860px; margin: 0 auto; }
+
+  .commit-link {
+    display: inline-block;
+    margin-bottom: 32px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 10px 18px;
+    color: #58a6ff;
+    text-decoration: none;
+    font-size: 13px;
+    font-family: monospace;
+  }
+  .commit-link:hover { background: #1f2937; }
+
+  h1 {
+    font-size: 26px;
+    color: #e6edf3;
+    margin-bottom: 8px;
+  }
+  .subtitle { color: #8b949e; margin-bottom: 40px; font-size: 14px; }
+
+  .learn-box {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin-bottom: 40px;
+  }
+  .learn-box h2 { color: #e6edf3; font-size: 16px; margin-bottom: 16px; }
+  .learn-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .learn-card { border-radius: 8px; padding: 16px; }
+  .learn-card h3 { font-size: 13px; margin-bottom: 8px; }
+  .learn-card ul { padding-left: 16px; font-size: 13px; line-height: 1.8; }
+  .red-card  { background: #2d1515; border: 1px solid #7f2020; }
+  .red-card h3 { color: #f85149; }
+  .yellow-card { background: #2d2200; border: 1px solid #7f5d00; }
+  .yellow-card h3 { color: #e3b341; }
+  .green-card { background: #0d2d16; border: 1px solid #1a7f37; }
+  .green-card h3 { color: #3fb950; }
+
+  .step {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 28px 32px;
+    margin-bottom: 28px;
+  }
+  .step-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #58a6ff;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .step h2 {
+    font-size: 18px;
+    color: #e6edf3;
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #21262d;
+  }
+
+  h3 { color: #e6edf3; font-size: 15px; margin: 20px 0 10px; }
+  h4 { color: #8b949e; font-size: 13px; margin: 14px 0 6px; font-weight: 600; }
+  p { margin-bottom: 10px; }
+
+  pre {
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 12px 0;
+  }
+  pre code.hljs {
+    font-family: 'Consolas', 'D2Coding', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    border-radius: 6px;
+    padding: 16px;
+  }
+  p code, li code {
+    background: #21262d;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 12px;
+  }
+
+  .flow-box {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 2.2;
+    color: #c9d1d9;
+  }
+  .flow-box .highlight { color: #58a6ff; font-weight: 700; }
+
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 14px;
+  }
+  .compare-card {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 16px;
+    font-family: monospace;
+    font-size: 13px;
+    line-height: 2;
+  }
+  .compare-card h4 { font-family: 'Segoe UI', sans-serif; margin-bottom: 10px; color: #8b949e; }
+  .compare-card .new { color: #3fb950; }
+
+  .warn {
+    border-left: 4px solid #e3b341;
+    background: #1c1a00;
+    padding: 14px 18px;
+    border-radius: 0 6px 6px 0;
+    margin: 12px 0;
+    font-size: 14px;
+  }
+  .warn strong { color: #e3b341; display: block; margin-bottom: 4px; }
+
+  ul, ol { padding-left: 20px; margin-bottom: 10px; }
+  li { margin-bottom: 4px; }
+
+  .summary-list {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 20px 24px;
+    list-style: none;
+    padding-left: 24px;
+  }
+  .summary-list li {
+    padding: 6px 0;
+    border-bottom: 1px solid #21262d;
+    font-size: 14px;
+  }
+  .summary-list li:last-child { border-bottom: none; }
+  .summary-list li::before { content: "✓ "; color: #3fb950; font-weight: 700; }
+
+  /* 정답 보기 */
+  .question-list details { background: #1e293b; border-radius: 4px; padding: 4px 10px; margin-top: 6px; }
+  .question-list details summary { color: #475569; font-size: 11px; cursor: pointer; user-select: none; list-style: none; }
+  .question-list details summary::-webkit-details-marker { display: none; }
+  .question-list details summary::before { content: "▶ 정답 보기"; }
+  .question-list details[open] summary::before { content: "▼ 정답 보기"; }
+  .question-list details[open] summary { margin-bottom: 4px; color: #64748b; }
+  .question-list details p { color: #cbd5e1; font-size: 13px; margin: 0; }
+
+  .question-list { counter-reset: q; padding-left: 0; list-style: none; }
+  .question-list li {
+    counter-increment: q;
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+  .question-list li::before {
+    content: "Q" counter(q) ". ";
+    color: #58a6ff;
+    font-weight: 700;
+  }
+
+  .practice-box {
+    background: #0d2d16;
+    border: 1px solid #1a7f37;
+    border-radius: 8px;
+    padding: 20px 24px;
+  }
+  .practice-box h3 { color: #3fb950; margin-top: 0; }
+
+  .next-list { padding-left: 0; list-style: none; counter-reset: n; }
+  .next-list li {
+    counter-increment: n;
+    padding: 10px 14px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+  .next-list li::before {
+    content: counter(n) ". ";
+    color: #58a6ff;
+    font-weight: 700;
+  }
+  .next-list li strong { color: #e6edf3; }
+
+  /* 목차 */
+  .toc {
+    position: fixed;
+    top: 40px;
+    right: 24px;
+    width: 164px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 14px 16px;
+    z-index: 100;
+  }
+  .toc-title { font-size: 10px; font-weight: 700; color: #58a6ff; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+  .toc ul { list-style: none; padding: 0; margin: 0; }
+  .toc ul li { margin-bottom: 5px; }
+  .toc ul li a { font-size: 12px; color: #8b949e; text-decoration: none; line-height: 1.4; display: block; }
+  .toc ul li a:hover { color: #c9d1d9; }
+  .toc ul li a.toc-active { color: #58a6ff; }
+  @media (max-width: 1200px) { .toc { display: none; } }
+
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+  th { background: #0d1117; color: #8b949e; padding: 10px 12px; text-align: left; border-bottom: 1px solid #30363d; }
+  td { padding: 10px 12px; border-bottom: 1px solid #21262d; color: #b0bac4; }
+</style>
+</head>
+<body>
+<nav class="toc">
+  <div class="toc-title">목차</div>
+  <ul>
+    <li><a href="#learn">배우는 것</a></li>
+    <li><a href="#step1">1. 한눈에 보기</a></li>
+    <li><a href="#step2">2. 변경 파일</a></li>
+    <li><a href="#step3">3. 핵심 코드</a></li>
+    <li><a href="#step4">4. 왜 이렇게?</a></li>
+    <li><a href="#step5">5. 실행 흐름</a></li>
+    <li><a href="#step6">6. 이전과 비교</a></li>
+    <li><a href="#step7">7. 초보자 착각</a></li>
+    <li><a href="#step8">8. 중요도</a></li>
+    <li><a href="#step9">9. 오늘 배운 것</a></li>
+    <li><a href="#step10">10. 이해도 질문</a></li>
+    <li><a href="#step11">11. 작은 실습</a></li>
+    <li><a href="#step12">12. 다음 준비</a></li>
+  </ul>
+</nav>
+<div class="container">
+
+  <a class="commit-link" href="https://github.com/yzzzwan/springboot_board_practice/commit/145354e3555afe20cd0f90ef0630580ecadd18d6" target="_blank">
+    커밋 보기: 145354e
+  </a>
+
+  <h1>게시글 삭제</h1>
+  <p class="subtitle">feat: 게시글 삭제 — Spring 수업</p>
+
+  <!-- 배우는 것 -->
+  <div class="learn-box" id="learn">
+    <h2>이번 Commit에서 배우는 것</h2>
+    <div class="learn-row">
+      <div class="learn-card red-card">
+        <h3>🔴 반드시 이해</h3>
+        <ul>
+          <li>deleteById() — JPA 삭제</li>
+          <li>redirect: — 새 GET 요청으로 이동</li>
+          <li>th:href 파라미터 전달</li>
+        </ul>
+      </div>
+      <div class="learn-card yellow-card">
+        <h3>🟡 개념만 이해</h3>
+        <ul>
+          <li>PRG 패턴</li>
+          <li>@GetMapping으로 삭제하는 한계</li>
+          <li>메서드 이름 컨벤션</li>
+        </ul>
+      </div>
+      <div class="learn-card green-card">
+        <h3>🟢 나중에 공부</h3>
+        <ul>
+          <li>@DeleteMapping + JS fetch</li>
+          <li>없는 id 예외 처리</li>
+          <li>HiddenHttpMethodFilter</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="step" id="step1">
+    <div class="step-label">Step 1</div>
+    <h2>이번 Commit 한눈에 보기</h2>
+    <p>이번 커밋에서 <strong>게시글 삭제 기능</strong>을 완성했어. 상세 페이지에 삭제 버튼을 추가하고, 버튼 클릭 시 id를 URL로 전달해서 DB에서 해당 게시글을 삭제하는 흐름이야.</p>
+    <p>삭제 후에는 바로 목록 페이지로 이동해. 이때 단순히 뷰 이름을 반환하지 않고 <code>redirect:</code>를 사용해서 새 HTTP 요청으로 목록을 다시 불러오는 게 핵심이야.</p>
+    <p>추가로 기존 <code>write()</code> 메서드 이름을 <code>boardWrite()</code>로 정리하면서 네이밍 컨벤션도 맞췄어.</p>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step" id="step2">
+    <div class="step-label">Step 2</div>
+    <h2>무엇이 변경되었는가</h2>
+
+    <table>
+      <thead><tr><th>파일</th><th>변경 내용</th></tr></thead>
+      <tbody>
+        <tr><td>BoardService.java</td><td>boardDelete(Integer id) 추가, write() → boardWrite() 이름 변경</td></tr>
+        <tr><td>BoardController.java</td><td>@GetMapping("/board/delete") 추가, redirect: 반환</td></tr>
+        <tr><td>boardview.html</td><td>삭제 버튼 UI 추가, th:href로 id 파라미터 전달</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step" id="step3">
+    <div class="step-label">Step 3</div>
+    <h2>핵심 코드 설명</h2>
+
+    <h3>BoardService — boardDelete()</h3>
+    <pre><code class="language-java">public void boardDelete(Integer id){
+    boardRepository.deleteById(id);
+}</code></pre>
+
+    <p><strong>초보자 관점:</strong> "id를 받아서 그 번호의 게시글을 DB에서 지운다"</p>
+    <p><strong>Java 관점:</strong> 반환 타입이 <code>void</code>. 삭제는 결과를 돌려줄 게 없으니까 반환값이 없어.</p>
+    <p><strong>Spring/JPA 관점:</strong> <code>deleteById()</code>는 JpaRepository가 기본으로 제공하는 메서드야. 내가 직접 구현한 게 아님. 내부에서 <code>DELETE FROM board WHERE id = ?</code> SQL이 자동으로 실행돼.</p>
+
+    <h3>BoardController — boardDelete()</h3>
+    <pre><code class="language-java">@GetMapping("/board/delete")
+public String boardDelete(Integer id){
+    boardService.boardDelete(id);
+    return "redirect:/board/list";
+}</code></pre>
+
+    <p>여기서 핵심은 두 가지야.</p>
+    <ul>
+      <li><strong>@GetMapping으로 삭제?</strong> — REST 원칙상 삭제는 HTTP DELETE 메서드를 써야 하는데, 브라우저 <code>&lt;a&gt;</code> 태그는 GET 요청만 보낼 수 있어. 지금은 편의상 GET으로 처리했어. 주석으로 남긴 <code>@DeleteMapping</code>이 바로 그 고민의 흔적이야.</li>
+      <li><strong>redirect:</strong> — 삭제 후 뷰 이름이 아니라 URL 경로로 이동 지시. <code>/board/list</code> Controller를 다시 거쳐서 목록 데이터를 새로 조회해.</li>
+    </ul>
+
+    <h4>@DeleteMapping으로 구현했다면?</h4>
+    <p>브라우저 <code>&lt;a&gt;</code> 태그는 GET만 보낼 수 있어서 두 가지 방법이 필요해.</p>
+
+    <p><strong>방법 1 — HiddenHttpMethodFilter (JS 없이)</strong></p>
+    <p>application.properties에 필터를 활성화하고, <code>&lt;form&gt;</code>에 히든 필드를 넣으면 Spring이 POST를 DELETE로 바꿔서 처리해줘.</p>
+    <pre><code class="language-java">// application.properties
+spring.mvc.hiddenmethod.filter.enabled=true</code></pre>
+    <pre><code class="language-html">&lt;!-- boardview.html: a 태그 대신 form으로 교체 --&gt;
+&lt;form th:action="@{/board/delete/{id}(id=${board.id})}" method="post"&gt;
+  &lt;input type="hidden" name="_method" value="DELETE"&gt;
+  &lt;button type="submit" class="btn-delete"&gt;삭제&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+    <pre><code class="language-java">// Controller
+@DeleteMapping("/board/delete/{id}")
+public String boardDelete(@PathVariable Integer id){
+    boardService.boardDelete(id);
+    return "redirect:/board/list";
+}</code></pre>
+
+    <p><strong>방법 2 — JavaScript fetch</strong></p>
+    <pre><code class="language-html">&lt;button class="btn-delete" onclick="deleteBoard([[${board.id}]])"&gt;삭제&lt;/button&gt;
+
+&lt;script&gt;
+function deleteBoard(id) {
+  fetch('/board/delete/' + id, { method: 'DELETE' })
+    .then(() => location.href = '/board/list');
+}
+&lt;/script&gt;</code></pre>
+
+    <div class="warn">
+      <strong>@DeleteMapping이면 GET으로 URL 직접 접근 시 405 에러가 난다</strong>
+      <code>@DeleteMapping("/board/delete")</code>로 등록된 URL에 브라우저가 <code>GET /board/delete?id=3</code>으로 요청하면 서버가 <strong>405 Method Not Allowed</strong>를 반환해.
+      Spring은 URL뿐만 아니라 <strong>HTTP 메서드까지 함께 매핑</strong>하기 때문이야. 같은 URL이라도 GET/POST/DELETE는 서로 다른 Controller야.
+    </div>
+
+    <h3>boardview.html — Thymeleaf 삭제 링크</h3>
+    <pre><code class="language-html">&lt;button class="btn-delete"&gt;
+  &lt;a th:href="@{/board/delete(id=${board.id})}"&gt;삭제&lt;/a&gt;
+&lt;/button&gt;</code></pre>
+
+    <p><code>@{/board/delete(id=${board.id})}</code>는 Thymeleaf가 <code>/board/delete?id=3</code> 형태의 URL로 변환해줘. 여기서 <code>board.id</code>는 Controller가 Model에 담아서 넘겨준 게시글 객체의 id야.</p>
+
+    <h3>write() → boardWrite() 이름 변경</h3>
+    <pre><code class="language-java">// 이전
+public void write(Board board){ ... }
+
+// 이번
+public void boardWrite(Board board){ ... }</code></pre>
+    <p><code>write()</code>는 무엇을 쓰는지 모호해. <code>boardWrite()</code>처럼 도메인을 이름에 포함하면 나중에 코드를 읽을 때 훨씬 명확해.</p>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step" id="step4">
+    <div class="step-label">Step 4</div>
+    <h2>왜 이렇게 작성했는가?</h2>
+
+    <h3>왜 deleteById()를 Controller에서 직접 쓰지 않고 Service를 거치는가?</h3>
+    <p>지금은 단순 삭제라서 Service가 한 줄짜리처럼 보여. 하지만 나중에 "삭제 전 권한 체크", "첨부 파일도 같이 삭제", "삭제 로그 기록" 같은 비즈니스 로직이 생기면 Controller는 손 안 대고 Service만 수정하면 돼. Controller는 HTTP 요청/응답 처리에만 집중하는 게 역할 분리의 핵심이야.</p>
+
+    <h3>왜 return "redirect:/board/list"인가?</h3>
+
+    <p><code>return "boardlist"</code>와 <code>return "redirect:/board/list"</code>는 완전히 다르게 동작해.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <h4>return "boardlist" ❌</h4>
+        GET /board/delete?id=3<br>
+        &nbsp;&nbsp;↓ 삭제 실행<br>
+        boardlist.html 렌더링<br>
+        <span style="color:#f85149;">← /board/list Controller를<br>&nbsp;&nbsp;&nbsp;&nbsp;거치지 않음</span><br>
+        <span style="color:#f85149;">Model에 list 데이터 없음<br>→ 빈 화면 or 에러</span>
+      </div>
+      <div class="compare-card">
+        <h4>return "redirect:/board/list" ✅</h4>
+        GET /board/delete?id=3<br>
+        &nbsp;&nbsp;↓ 삭제 실행<br>
+        <span class="new">302 응답 → 브라우저에게<br>"이 URL로 다시 요청해"</span><br>
+        <span class="new">GET /board/list (새 요청)</span><br>
+        <span class="new">@GetMapping("board/list") 실행<br>→ list를 Model에 담음</span>
+      </div>
+    </div>
+
+    <div class="warn" style="margin-top:14px;">
+      <strong>PRG 패턴 (Post-Redirect-Get)</strong>
+      삭제는 데이터를 바꾸는 작업이야. 처리 완료 후 <strong>새 GET 요청</strong>으로 목록을 다시 불러와야 해.
+      그렇지 않으면 사용자가 새로고침했을 때 삭제 요청이 재실행될 수 있고, 브라우저가 "이 페이지를 다시 제출하시겠습니까?" 경고를 띄워.
+    </div>
+
+    <h3>왜 @GetMapping으로 삭제를 처리했는가?</h3>
+    <p>HTML <code>&lt;a&gt;</code> 태그와 <code>&lt;form method="get"&gt;</code>은 GET 요청만 보낼 수 있어. 삭제에 HTTP DELETE를 쓰려면 JavaScript(fetch/axios)나 히든 필드 방식이 필요한데, 지금 학습 단계에서는 GET으로 간단하게 처리한 거야.</p>
+  </div>
+
+  <!-- STEP 5 -->
+  <div class="step" id="step5">
+    <div class="step-label">Step 5</div>
+    <h2>실행 흐름</h2>
+
+    <svg viewBox="0 0 560 660" style="width:100%;max-width:560px;display:block;margin:0 auto;">
+      <!-- 사용자 -->
+      <rect x="180" y="10" width="200" height="44" rx="8" fill="#1e293b" stroke="#334155"/>
+      <text x="280" y="37" text-anchor="middle" fill="#94a3b8" font-size="13" font-family="Malgun Gothic, sans-serif">사용자 — 삭제 버튼 클릭</text>
+
+      <!-- 화살표 -->
+      <line x1="280" y1="54" x2="280" y2="74" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="280,80 274,70 286,70" fill="#4b5563"/>
+
+      <!-- GET 요청 -->
+      <rect x="140" y="80" width="280" height="44" rx="8" fill="#1e293b" stroke="#334155"/>
+      <text x="280" y="100" text-anchor="middle" fill="#58a6ff" font-size="12" font-family="Consolas, monospace">GET /board/delete?id=3</text>
+      <text x="280" y="116" text-anchor="middle" fill="#64748b" font-size="11" font-family="Malgun Gothic, sans-serif">브라우저 → 서버 HTTP 요청</text>
+
+      <!-- 화살표 -->
+      <line x1="280" y1="124" x2="280" y2="144" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="280,150 274,140 286,140" fill="#4b5563"/>
+
+      <!-- Controller -->
+      <rect x="140" y="150" width="280" height="54" rx="8" fill="#0d1b3e" stroke="#3b82f6"/>
+      <text x="280" y="172" text-anchor="middle" fill="#3b82f6" font-size="12" font-family="Consolas, monospace">@GetMapping("/board/delete")</text>
+      <text x="280" y="190" text-anchor="middle" fill="#64748b" font-size="11" font-family="Malgun Gothic, sans-serif">boardDelete(id=3) 실행</text>
+
+      <!-- 화살표 -->
+      <line x1="280" y1="204" x2="280" y2="224" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="280,230 274,220 286,220" fill="#4b5563"/>
+
+      <!-- Service -->
+      <rect x="160" y="230" width="240" height="54" rx="8" fill="#0d2d16" stroke="#3fb950"/>
+      <text x="280" y="252" text-anchor="middle" fill="#3fb950" font-size="12" font-family="Consolas, monospace">BoardService</text>
+      <text x="280" y="270" text-anchor="middle" fill="#64748b" font-size="11" font-family="Malgun Gothic, sans-serif">boardDelete(3)</text>
+
+      <!-- 화살표 -->
+      <line x1="280" y1="284" x2="280" y2="304" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="280,310 274,300 286,300" fill="#4b5563"/>
+
+      <!-- Repository -->
+      <rect x="160" y="310" width="240" height="54" rx="8" fill="#1c0d3e" stroke="#a78bfa"/>
+      <text x="280" y="332" text-anchor="middle" fill="#a78bfa" font-size="12" font-family="Consolas, monospace">BoardRepository</text>
+      <text x="280" y="350" text-anchor="middle" fill="#64748b" font-size="11" font-family="Malgun Gothic, sans-serif">deleteById(3)</text>
+
+      <!-- 화살표 -->
+      <line x1="280" y1="364" x2="280" y2="384" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="280,390 274,380 286,380" fill="#4b5563"/>
+
+      <!-- DB -->
+      <rect x="160" y="390" width="240" height="38" rx="8" fill="#2d1f00" stroke="#f59e0b"/>
+      <text x="280" y="413" text-anchor="middle" fill="#f59e0b" font-size="12" font-family="Consolas, monospace">DELETE FROM board WHERE id=3</text>
+
+      <!-- 화살표 -->
+      <line x1="280" y1="428" x2="280" y2="448" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="280,454 274,444 286,444" fill="#4b5563"/>
+
+      <!-- 302 응답 -->
+      <rect x="130" y="454" width="300" height="44" rx="8" fill="#1c1a00" stroke="#e3b341"/>
+      <text x="280" y="472" text-anchor="middle" fill="#e3b341" font-size="12" font-family="Consolas, monospace">서버 → 302 Found</text>
+      <text x="280" y="489" text-anchor="middle" fill="#64748b" font-size="11" font-family="Malgun Gothic, sans-serif">Location: /board/list  (브라우저에게 이동 지시)</text>
+
+      <!-- 화살표 -->
+      <line x1="280" y1="498" x2="280" y2="518" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="280,524 274,514 286,514" fill="#4b5563"/>
+
+      <!-- 새 GET 요청 -->
+      <rect x="130" y="524" width="300" height="44" rx="8" fill="#0d1b3e" stroke="#3b82f6"/>
+      <text x="280" y="542" text-anchor="middle" fill="#3b82f6" font-size="12" font-family="Consolas, monospace">GET /board/list  (브라우저 자동 재요청)</text>
+      <text x="280" y="559" text-anchor="middle" fill="#3fb950" font-size="11" font-family="Malgun Gothic, sans-serif">@GetMapping("board/list") 실행 → 목록 데이터 조회</text>
+    </svg>
+
+    <h3>HTTP 상태 코드 — 자주 만나는 것들</h3>
+    <table>
+      <thead><tr><th>코드</th><th>이름</th><th>언제 나오나</th></tr></thead>
+      <tbody>
+        <tr><td>200</td><td>OK</td><td>정상 응답</td></tr>
+        <tr><td><strong>302</strong></td><td>Found</td><td><code>redirect:</code> 반환 시 — 브라우저에게 다른 URL로 GET 요청하라고 지시</td></tr>
+        <tr><td>400</td><td>Bad Request</td><td>요청 데이터가 잘못됨</td></tr>
+        <tr><td>404</td><td>Not Found</td><td>해당 URL의 Controller가 없음</td></tr>
+        <tr><td><strong>405</strong></td><td>Method Not Allowed</td><td>URL은 맞는데 HTTP 메서드가 틀림 (@DeleteMapping에 GET으로 접근 등)</td></tr>
+        <tr><td>500</td><td>Internal Server Error</td><td>서버 코드에서 예외 발생 (NullPointer, 없는 id 삭제 등)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- STEP 6 -->
+  <div class="step" id="step6">
+    <div class="step-label">Step 6</div>
+    <h2>이전 Commit과 비교</h2>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <h4>이전 Commit — 게시글 상세 페이지</h4>
+        Controller<br>
+        &nbsp;&nbsp;↓ boardView(id)<br>
+        Service<br>
+        &nbsp;&nbsp;↓ findById(id)<br>
+        Repository<br>
+        &nbsp;&nbsp;↓<br>
+        boardview.html 렌더링<br>
+        (삭제 기능 없음)
+      </div>
+      <div class="compare-card">
+        <h4>이번 Commit — 삭제 추가</h4>
+        Controller<br>
+        &nbsp;&nbsp;↓ <span class="new">boardDelete(id)</span><br>
+        Service<br>
+        &nbsp;&nbsp;↓ <span class="new">deleteById(id)</span><br>
+        Repository → DB<br>
+        &nbsp;&nbsp;↓<br>
+        <span class="new">redirect:/board/list</span><br>
+        <span class="new">(새 GET 요청으로 이동)</span>
+      </div>
+    </div>
+
+    <p style="margin-top:16px;">이번 commit으로 게시판의 기본 CRUD 중 Create(작성), Read(목록/상세), <strong>Delete(삭제)</strong> 세 가지가 완성됐어. 이제 남은 건 Update(수정)야.</p>
+  </div>
+
+  <!-- STEP 7 -->
+  <div class="step" id="step7">
+    <div class="step-label">Step 7</div>
+    <h2>초보자가 하기 쉬운 착각</h2>
+
+    <div class="warn">
+      <strong>redirect: 뒤에 템플릿 파일 이름을 쓰면 안 돼</strong>
+      <code>redirect:boardlist</code>가 아니라 <code>redirect:/board/list</code> — URL 경로를 써야 해.
+      템플릿 이름을 쓰면 Controller를 거치지 않아서 모델 데이터가 없는 빈 화면이 뜨거나 에러가 날 수 있어.
+    </div>
+
+    <div class="warn">
+      <strong>@GetMapping으로 삭제하는 건 올바른 REST 방식이 아니야</strong>
+      지금은 브라우저 <code>&lt;a&gt;</code> 태그의 한계로 GET을 쓴 거야. 실제 서비스에서는 HTTP DELETE 메서드로 요청하는 게 맞아.
+      주석으로 남긴 <code>@DeleteMapping</code>이 그 고민의 흔적이야.
+    </div>
+
+    <div class="warn">
+      <strong>deleteById()에 없는 id를 넣으면 예외가 발생해</strong>
+      지금은 예외 처리가 없어서 존재하지 않는 id로 <code>/board/delete?id=999</code>에 접근하면 500 에러가 날 수 있어.
+      나중에 <code>existsById()</code>로 확인하거나 <code>@ExceptionHandler</code>로 처리하게 될 거야.
+    </div>
+
+    <div class="warn">
+      <strong>write() → boardWrite() 이름 변경은 기능 변경이 아니야</strong>
+      메서드 이름만 바꿨을 뿐, 동작은 똑같아. 하지만 Controller에서 호출 이름도 같이 바꿔야 에러가 안 나. 한 곳만 바꾸면 컴파일 에러가 발생해.
+    </div>
+  </div>
+
+  <!-- STEP 8 -->
+  <div class="step" id="step8">
+    <div class="step-label">Step 8</div>
+    <h2>중요도 구분</h2>
+
+    <div class="learn-row">
+      <div class="learn-card red-card">
+        <h3>🔴 반드시 이해</h3>
+        <ul>
+          <li>deleteById() — JPA 기본 삭제</li>
+          <li>return "redirect:/URL"</li>
+          <li>th:href URL 파라미터 전달</li>
+          <li>redirect: 없이 뷰 반환 시 문제점</li>
+        </ul>
+      </div>
+      <div class="learn-card yellow-card">
+        <h3>🟡 개념만 이해</h3>
+        <ul>
+          <li>PRG 패턴</li>
+          <li>@GetMapping으로 삭제하는 한계</li>
+          <li>메서드 이름 컨벤션(boardWrite)</li>
+        </ul>
+      </div>
+      <div class="learn-card green-card">
+        <h3>🟢 나중에 공부</h3>
+        <ul>
+          <li>@DeleteMapping + JS fetch</li>
+          <li>HiddenHttpMethodFilter</li>
+          <li>없는 id 예외 처리</li>
+          <li>EmptyResultDataAccessException</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 9 -->
+  <div class="step" id="step9">
+    <div class="step-label">Step 9</div>
+    <h2>오늘 배운 것</h2>
+
+    <ul class="summary-list">
+      <li><code>boardRepository.deleteById(id)</code> — JPA가 기본 제공하는 삭제 메서드, SQL DELETE를 자동 실행</li>
+      <li><code>return "redirect:/board/list"</code> — 처리 후 새 HTTP GET 요청으로 페이지 이동 (목록 데이터 재조회)</li>
+      <li><code>th:href="@{/path(param=${value})}"</code> — Thymeleaf에서 URL 쿼리 파라미터 전달 방법</li>
+      <li>삭제 후 redirect 없이 뷰 이름 반환하면 목록 데이터가 없어서 화면이 비거나 에러가 남</li>
+      <li>브라우저 <code>&lt;a&gt;</code> 태그는 GET 요청만 보낼 수 있어서 지금은 @GetMapping으로 삭제를 처리했지만, REST 원칙상 DELETE 메서드가 올바름</li>
+      <li>메서드 이름에 도메인을 포함하면 (<code>boardWrite</code>, <code>boardDelete</code>) 코드 가독성이 좋아짐</li>
+    </ul>
+  </div>
+
+  <!-- STEP 10 -->
+  <div class="step" id="step10">
+    <div class="step-label">Step 10</div>
+    <h2>이해도 확인 질문</h2>
+
+    <ul class="question-list">
+      <li>
+        <span>삭제 후 <code>return "boardlist"</code>를 반환하면 어떤 문제가 생기는가?</span>
+        <details><summary></summary><p>/board/list Controller를 거치지 않아서 목록 데이터(model에 담긴 list)가 없어. 화면에 게시글 목록이 나오지 않거나 타임리프 th:each 처리 중 에러가 날 수 있어. redirect: 가 새 GET 요청을 만들어서 Controller → Service → Repository 순서로 데이터를 다시 가져오는 게 핵심이야.</p></details>
+      </li>
+      <li>
+        <span><code>th:href="@{/board/delete(id=${board.id})}"</code>가 실제로 만드는 URL은?</span>
+        <details><summary></summary><p>/board/delete?id=3 형태의 URL이 만들어져. id가 3인 게시글의 상세 페이지라면. Thymeleaf가 @{} 안의 (key=value) 형식을 쿼리 파라미터로 변환해줘.</p></details>
+      </li>
+      <li>
+        <span>지금 방식(@GetMapping으로 삭제)의 단점은?</span>
+        <details><summary></summary><p>REST 원칙상 삭제는 HTTP DELETE 메서드를 써야 해. GET으로 삭제하면 1) 검색 엔진 크롤러가 링크를 타고 게시글을 삭제할 수 있고, 2) 브라우저 히스토리에서 뒤로가기 등으로 재실행될 수 있어. 실제 서비스에서는 JS fetch로 DELETE 요청을 보내거나, Form + HiddenHttpMethodFilter를 써야 해.</p></details>
+      </li>
+      <li>
+        <span>없는 id로 삭제를 시도하면 지금 코드에서 어떤 일이 일어나는가?</span>
+        <details><summary></summary><p>JPA의 deleteById()는 존재하지 않는 id를 받으면 EmptyResultDataAccessException을 발생시켜. 현재 코드에는 예외 처리가 없어서 500 에러 페이지가 뜨게 돼. existsById()로 먼저 확인하거나 @ExceptionHandler로 처리해야 해.</p></details>
+      </li>
+      <li>
+        <span>PRG 패턴이 무엇이고 왜 쓰는가?</span>
+        <details><summary></summary><p>Post-Redirect-Get의 약자야. 데이터를 변경하는 작업(삭제, 등록 등) 후에 바로 뷰를 렌더링하지 않고 redirect로 새 GET 요청을 발생시키는 패턴이야. 이렇게 하면 사용자가 새로고침해도 삭제/등록이 중복 실행되지 않고, 브라우저 "폼 재제출 경고"도 뜨지 않아.</p></details>
+      </li>
+    </ul>
+  </div>
+
+  <!-- STEP 11 -->
+  <div class="step" id="step11">
+    <div class="step-label">Step 11</div>
+    <h2>작은 실습</h2>
+
+    <div class="practice-box">
+      <h3>게시글 수정(Update) 메서드 뼈대 만들기</h3>
+      <p><code>BoardService</code>에 게시글 수정 메서드를 직접 구현해봐.</p>
+      <ul style="margin-top: 10px;">
+        <li>메서드 이름: <code>boardUpdate</code></li>
+        <li>파라미터: <code>Integer id</code>, <code>Board newBoard</code></li>
+        <li><code>boardView(id)</code>로 기존 게시글을 먼저 꺼내야 해</li>
+        <li><code>boardRepository.save()</code>를 사용 — JPA는 이미 id가 있는 엔티티를 save하면 UPDATE SQL이 실행됨</li>
+      </ul>
+      <p style="margin-top: 12px; color: #64748b; font-size: 13px;">힌트: 기존 board 객체의 title, content를 newBoard에서 받은 값으로 바꾼 후 save()하면 돼.</p>
+    </div>
+  </div>
+
+  <!-- STEP 12 -->
+  <div class="step" id="step12">
+    <div class="step-label">Step 12</div>
+    <h2>다음 Commit을 위한 준비</h2>
+
+    <ul class="next-list">
+      <li><strong>게시글 수정 페이지</strong> — 기존 내용을 폼에 미리 채워서 보여주고 저장하는 흐름. boardView()로 데이터를 꺼내서 폼에 바인딩해야 함</li>
+      <li><strong>@PathVariable vs @RequestParam</strong> — URL 파라미터를 받는 두 가지 방식 차이. <code>/board/view/1</code> (PathVariable) vs <code>/board/view?id=1</code> (RequestParam)</li>
+      <li><strong>Optional 안전하게 사용하기</strong> — 지금 쓰는 <code>.get()</code>은 없는 id면 NoSuchElementException이 발생해. <code>.orElseThrow()</code>로 더 안전하게 처리 가능</li>
+      <li><strong>HTTP 메서드 제대로 쓰기</strong> — Form의 hidden 필드 + HiddenHttpMethodFilter로 DELETE 요청 보내는 방법, 또는 JavaScript fetch 활용</li>
+    </ul>
+  </div>
+
+</div>
+
+<script>
+  // 목차 활성화
+  const sections = document.querySelectorAll('[id]');
+  const tocLinks = document.querySelectorAll('.toc a');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        tocLinks.forEach(a => a.classList.remove('toc-active'));
+        const active = document.querySelector(`.toc a[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('toc-active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+<script>hljs.highlightAll();</script>
+</body>
+</html>
