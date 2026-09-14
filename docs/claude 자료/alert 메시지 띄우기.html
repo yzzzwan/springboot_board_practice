@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>alert 메시지 띄우기 — Spring 수업</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0f1117;
+    color: #c9d1d9;
+    font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    padding: 40px 20px;
+  }
+  .container { max-width: 860px; margin: 0 auto; }
+
+  .commit-link {
+    display: inline-block;
+    margin-bottom: 32px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 10px 18px;
+    color: #58a6ff;
+    text-decoration: none;
+    font-size: 13px;
+    font-family: monospace;
+  }
+  .commit-link:hover { background: #1f2937; }
+
+  h1 { font-size: 26px; color: #e6edf3; margin-bottom: 8px; }
+  .subtitle { color: #8b949e; margin-bottom: 40px; font-size: 14px; }
+
+  .learn-box {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin-bottom: 40px;
+  }
+  .learn-box h2 { color: #e6edf3; font-size: 16px; margin-bottom: 16px; }
+  .learn-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .learn-card { border-radius: 8px; padding: 16px; }
+  .learn-card h3 { font-size: 13px; margin-bottom: 8px; }
+  .learn-card ul { padding-left: 16px; font-size: 13px; line-height: 1.8; }
+  .red-card  { background: #2d1515; border: 1px solid #7f2020; }
+  .red-card h3 { color: #f85149; }
+  .yellow-card { background: #2d2200; border: 1px solid #7f5d00; }
+  .yellow-card h3 { color: #e3b341; }
+  .green-card { background: #0d2d16; border: 1px solid #1a7f37; }
+  .green-card h3 { color: #3fb950; }
+
+  .step {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 28px 32px;
+    margin-bottom: 28px;
+  }
+  .step-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #58a6ff;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .step h2 {
+    font-size: 18px;
+    color: #e6edf3;
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #21262d;
+  }
+
+  h3 { color: #e6edf3; font-size: 15px; margin: 20px 0 10px; }
+  h4 { color: #8b949e; font-size: 13px; margin: 14px 0 6px; font-weight: 600; }
+  p { margin-bottom: 10px; }
+
+  pre {
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 12px 0;
+  }
+  pre code.hljs {
+    font-family: 'Consolas', 'D2Coding', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    border-radius: 6px;
+    padding: 16px;
+  }
+  p code, li code {
+    background: #21262d;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 12px;
+  }
+
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 14px;
+  }
+  .compare-card {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 16px;
+    font-family: monospace;
+    font-size: 13px;
+    line-height: 2;
+  }
+  .compare-card h4 { font-family: 'Segoe UI', sans-serif; margin-bottom: 10px; color: #8b949e; }
+  .compare-card .new { color: #3fb950; }
+
+  .warn {
+    border-left: 4px solid #e3b341;
+    background: #1c1a00;
+    padding: 14px 18px;
+    border-radius: 0 6px 6px 0;
+    margin: 12px 0;
+    font-size: 14px;
+  }
+  .warn strong { color: #e3b341; display: block; margin-bottom: 6px; }
+  .warn p { margin-bottom: 4px; }
+
+  .info-box {
+    border-left: 4px solid #58a6ff;
+    background: #0d1b2a;
+    padding: 14px 18px;
+    border-radius: 0 6px 6px 0;
+    margin: 12px 0;
+    font-size: 14px;
+  }
+  .info-box strong { color: #58a6ff; display: block; margin-bottom: 6px; }
+  .info-box p { margin-bottom: 4px; }
+
+  ul, ol { padding-left: 20px; margin-bottom: 10px; }
+  li { margin-bottom: 4px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+  th { background: #21262d; color: #e6edf3; padding: 10px 14px; text-align: left; border: 1px solid #30363d; }
+  td { padding: 10px 14px; border: 1px solid #30363d; color: #c9d1d9; }
+  tr:nth-child(even) td { background: #161b22; }
+
+  .summary-list {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 20px 24px;
+    list-style: none;
+    padding-left: 24px;
+  }
+  .summary-list li {
+    padding: 6px 0;
+    border-bottom: 1px solid #21262d;
+    font-size: 14px;
+  }
+  .summary-list li:last-child { border-bottom: none; }
+  .summary-list li::before { content: "✓ "; color: #3fb950; font-weight: 700; }
+
+  .question-list details { background: #1e293b; border-radius: 4px; padding: 4px 10px; margin-top: 6px; }
+  .question-list details summary { color: #475569; font-size: 11px; cursor: pointer; user-select: none; list-style: none; }
+  .question-list details summary::-webkit-details-marker { display: none; }
+  .question-list details summary::before { content: "▶ 정답 보기"; }
+  .question-list details[open] summary::before { content: "▼ 정답 보기"; }
+  .question-list details[open] summary { margin-bottom: 4px; color: #64748b; }
+  .question-list details p { color: #cbd5e1; font-size: 13px; margin: 0; }
+
+  .question-list { counter-reset: q; padding-left: 0; list-style: none; }
+  .question-list li {
+    counter-increment: q;
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+  .question-list li::before {
+    content: "Q" counter(q) ". ";
+    color: #58a6ff;
+    font-weight: 700;
+  }
+
+  .practice-box {
+    background: #0d2d16;
+    border: 1px solid #1a7f37;
+    border-radius: 8px;
+    padding: 20px 24px;
+  }
+  .practice-box h3 { color: #3fb950; margin-top: 0; }
+
+  .next-list { padding-left: 0; list-style: none; counter-reset: n; }
+  .next-list li {
+    counter-increment: n;
+    padding: 10px 14px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+  .next-list li::before { content: counter(n) ". "; color: #58a6ff; font-weight: 700; }
+  .next-list li strong { color: #e6edf3; }
+
+  .toc {
+    position: fixed;
+    top: 40px;
+    right: 24px;
+    width: 164px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 14px 16px;
+    z-index: 100;
+  }
+  .toc-title { font-size: 10px; font-weight: 700; color: #58a6ff; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+  .toc ul { list-style: none; padding: 0; margin: 0; }
+  .toc ul li { margin-bottom: 5px; }
+  .toc ul li a { font-size: 12px; color: #8b949e; text-decoration: none; line-height: 1.4; display: block; }
+  .toc ul li a:hover { color: #c9d1d9; }
+  .toc ul li a.toc-active { color: #58a6ff; }
+  @media (max-width: 1200px) { .toc { display: none; } }
+</style>
+</head>
+<body>
+
+<nav class="toc">
+  <div class="toc-title">목차</div>
+  <ul>
+    <li><a href="#learn">배우는 것</a></li>
+    <li><a href="#step1">1. 한눈에 보기</a></li>
+    <li><a href="#step2">2. 변경 파일</a></li>
+    <li><a href="#step3">3. 핵심 코드</a></li>
+    <li><a href="#step4">4. 왜 이렇게?</a></li>
+    <li><a href="#step5">5. 실행 흐름</a></li>
+    <li><a href="#step6">6. 이전과 비교</a></li>
+    <li><a href="#step7">7. 초보자 착각</a></li>
+    <li><a href="#step8">8. 중요도</a></li>
+    <li><a href="#step9">9. 오늘 배운 것</a></li>
+    <li><a href="#step10">10. 이해도 질문</a></li>
+    <li><a href="#step11">11. 작은 실습</a></li>
+    <li><a href="#step12">12. 다음 준비</a></li>
+  </ul>
+</nav>
+
+<div class="container">
+
+  <a class="commit-link" href="https://github.com/yzzzwan/springboot_board_practice/commit/de3d8a4e4468f408db9f4eb89675a5e7f409fed6" target="_blank">
+    커밋 보기: de3d8a4
+  </a>
+
+  <h1>alert 메시지 띄우기</h1>
+  <p class="subtitle">feat: alert 메시지 띄우기 — Spring 수업</p>
+
+  <!-- 배우는 것 -->
+  <div class="learn-box" id="learn">
+    <h2>이번 Commit에서 배우는 것</h2>
+    <div class="learn-row">
+      <div class="learn-card red-card">
+        <h3>🔴 반드시 이해</h3>
+        <ul>
+          <li>th:inline="javascript"</li>
+          <li>[[${변수}]] 인라인 표현식</li>
+          <li>location.replace() — 클라이언트 사이드 이동</li>
+          <li>CDATA 블록의 역할</li>
+        </ul>
+      </div>
+      <div class="learn-card yellow-card">
+        <h3>🟡 개념만 이해</h3>
+        <ul>
+          <li>alert() 후 페이지 이동 패턴</li>
+          <li>Spring redirect vs JavaScript replace 차이</li>
+        </ul>
+      </div>
+      <div class="learn-card green-card">
+        <h3>🟢 나중에 공부</h3>
+        <ul>
+          <li>CDATA 내부 동작 원리</li>
+          <li>SweetAlert2 등 커스텀 알림창 라이브러리</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="step" id="step1">
+    <div class="step-label">Step 1</div>
+    <h2>이번 Commit 한눈에 보기</h2>
+    <p>이번 커밋에서는 작성·수정·삭제 완료 후 <strong>알림 메시지를 띄우는 기능</strong>을 추가했습니다.</p>
+    <p>기존에는 작업 완료 후 바로 목록으로 redirect됐는데, 이제는 <code>message.html</code>이 중간에서 alert 창을 띄우고 확인을 누르면 이동합니다.</p>
+    <p><code>BoardController</code>의 세 메서드가 <code>return "redirect:..."</code> 대신 <code>return "message"</code>를 반환하도록 바뀌었고, <code>message.html</code>이 새로 추가되었습니다.</p>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step" id="step2">
+    <div class="step-label">Step 2</div>
+    <h2>무엇이 변경되었는지</h2>
+    <table>
+      <thead><tr><th>파일</th><th>변경</th><th>역할</th></tr></thead>
+      <tbody>
+        <tr><td>message.html</td><td>새로 생성</td><td>alert 띄우고 페이지 이동</td></tr>
+        <tr><td>boardWritePro()</td><td>반환 타입 Board → String, message 반환</td><td>작성 완료 알림</td></tr>
+        <tr><td>boardDelete()</td><td>redirect → message 반환</td><td>삭제 완료 알림</td></tr>
+        <tr><td>boardUpdate()</td><td>redirect → message 반환</td><td>수정 완료 알림</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step" id="step3">
+    <div class="step-label">Step 3</div>
+    <h2>핵심 코드 설명</h2>
+
+    <h3>① message.html — alert 후 이동</h3>
+    <pre><code class="language-html">&lt;script th:inline="javascript"&gt;
+    /*&lt;![CDATA[*/
+
+    var message = [[${message}]];
+    alert(message);
+
+    location.replace([[${searchUrl}]]);
+
+    /*]]&gt;*/
+&lt;/script&gt;</code></pre>
+
+    <h4>th:inline="javascript"</h4>
+    <p>이 속성을 <code>&lt;script&gt;</code> 태그에 붙이면 Thymeleaf가 JavaScript 안에서도 동작합니다.</p>
+    <pre><code class="language-html">&lt;!-- th:inline 없으면 → 문자열 그대로 출력 --&gt;
+var message = [[${message}]];   →  var message = [[${message}]];
+
+&lt;!-- th:inline="javascript" 있으면 → 실제 값으로 치환 --&gt;
+var message = [[${message}]];   →  var message = "글이 삭제되었습니다.";</code></pre>
+
+    <h4>[[${변수}]] — 인라인 표현식</h4>
+    <p>HTML에서는 <code>th:text="${변수}"</code>를 쓰지만, JavaScript 안에서는 <code>[[${변수}]]</code>를 씁니다.</p>
+    <table>
+      <thead><tr><th>위치</th><th>표현식</th><th>예시</th></tr></thead>
+      <tbody>
+        <tr><td>HTML 태그 안</td><td>th:text="${변수}"</td><td>&lt;p th:text="${message}"&gt;&lt;/p&gt;</td></tr>
+        <tr><td>JavaScript 안</td><td>[[${변수}]]</td><td>var message = [[${message}]];</td></tr>
+      </tbody>
+    </table>
+
+    <h4>/*&lt;![CDATA[*/ ... /*]]&gt;*/ — CDATA 블록</h4>
+
+    <p>이 코드에는 <strong>3가지 기술이 섞여</strong> 있습니다.</p>
+    <pre><code class="language-html">th:inline="javascript"    → Thymeleaf
+[[${변수}]]               → Thymeleaf
+/*&lt;![CDATA[*/ ... /*]]&gt;*/  → XML/HTML 규격 + JavaScript 주석 트릭</code></pre>
+
+    <h4>CDATA가 왜 필요한가?</h4>
+    <p>HTML 파서는 <code>&lt;script&gt;</code> 안에서도 <code>&lt;</code>와 <code>&gt;</code>를 태그 기호로 읽으려 합니다.<br>
+    예를 들어 JavaScript에 비교 연산이 있다면:</p>
+    <pre><code class="language-html">if (count &lt; 10) { ... }
+//         ↑
+//   HTML 파서가 이걸 태그 시작으로 오해할 수 있음</code></pre>
+    <p>이런 문제를 막기 위해 CDATA 블록을 씁니다.<br>
+    CDATA 블록 안의 내용은 HTML 파서가 건드리지 않고 그냥 문자로 취급합니다.</p>
+
+    <h4>그런데 왜 /* */ 로 감쌌는가?</h4>
+    <p>순수 CDATA만 쓰면 JavaScript가 오류를 냅니다.</p>
+    <pre><code class="language-html">&lt;script&gt;
+    &lt;![CDATA[         ← JavaScript는 이게 뭔지 모름 → 오류
+        코드
+    ]]&gt;               ← JavaScript는 이게 뭔지 모름 → 오류
+&lt;/script&gt;</code></pre>
+    <p>그래서 JavaScript 주석(<code>/* */</code>)으로 감싸서 JS가 모르는 부분을 <strong>무시</strong>하게 만듭니다.</p>
+    <pre><code class="language-html">/*&lt;![CDATA[*/    ← JS 입장: 주석이라 무시 / HTML 입장: CDATA 블록 시작
+
+    코드          ← JS도 읽음, HTML도 건드리지 않음
+
+/*]]&gt;*/          ← JS 입장: 주석이라 무시 / HTML 입장: CDATA 블록 끝</code></pre>
+
+    <h4>각 줄이 누구 눈에 어떻게 보이는가</h4>
+    <table>
+      <thead><tr><th>코드</th><th>JavaScript 관점</th><th>HTML 파서 관점</th></tr></thead>
+      <tbody>
+        <tr><td><code>/*&lt;![CDATA[*/</code></td><td>주석 — 무시</td><td>CDATA 블록 시작 — 이제부터 안 건드림</td></tr>
+        <tr><td>JS 코드</td><td>정상 실행</td><td>텍스트로만 취급, 파싱 안 함</td></tr>
+        <tr><td><code>/*]]&gt;*/</code></td><td>주석 — 무시</td><td>CDATA 블록 끝</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box">
+      <strong>두 언어를 동시에 속이는 트릭</strong>
+      <p><code>/*&lt;![CDATA[*/</code> → HTML에게 "건드리지 마", JS에게 "주석이야"</p>
+      <p><code>/*]]&gt;*/</code> → HTML에게 "여기까지", JS에게 "주석이야"</p>
+    </div>
+
+    <h4>현대 브라우저에서는 없어도 됩니다</h4>
+    <p>현대 HTML5 브라우저는 <code>&lt;script&gt;</code> 안의 내용을 자동으로 안전하게 처리합니다.<br>
+    실제로 CDATA 없이도 잘 동작합니다.</p>
+    <pre><code class="language-html">&lt;!-- 현대 브라우저에서는 이렇게만 써도 문제없음 --&gt;
+&lt;script th:inline="javascript"&gt;
+    var message = [[${message}]];
+    alert(message);
+    location.replace([[${searchUrl}]]);
+&lt;/script&gt;</code></pre>
+    <p>단, XML 기반 XHTML 문서이거나 구형 브라우저 호환이 필요한 경우엔 반드시 써야 합니다.<br>
+    Thymeleaf 공식 문서에서도 권장하는 패턴이라 관례적으로 씁니다.</p>
+
+    <h4>location.replace() — redirect와 같은 역할, 다른 주체</h4>
+    <div class="info-box">
+      <strong>location.replace()는 redirect와 같은 결과지만 누가 처리하느냐가 다릅니다.</strong>
+      <p>Spring의 <code>redirect:</code>는 <strong>서버</strong>가 브라우저에게 "다른 URL로 가라"는 HTTP 302 응답을 보냅니다.</p>
+      <p><code>location.replace()</code>는 <strong>브라우저(JavaScript)</strong>가 직접 해당 URL로 이동합니다. 서버와 왔다갔다 없이 클라이언트 혼자 처리합니다.</p>
+    </div>
+
+    <svg viewBox="0 0 780 200" style="width:100%;max-width:780px;display:block;margin:16px auto;">
+      <!-- Spring redirect -->
+      <rect x="20" y="10" width="340" height="176" rx="8" fill="#161b22" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="36" y="34" font-family="Segoe UI,sans-serif" font-size="13" font-weight="700" fill="#93c5fd">Spring redirect:</text>
+      <text x="36" y="60" font-family="Consolas,monospace" font-size="12" fill="#c9d1d9">브라우저 → 서버 요청</text>
+      <text x="36" y="82" font-family="Consolas,monospace" font-size="12" fill="#3b82f6">서버: "302, /board/list로 가"</text>
+      <text x="36" y="104" font-family="Consolas,monospace" font-size="12" fill="#c9d1d9">브라우저 → /board/list 이동</text>
+      <text x="36" y="144" font-family="Segoe UI,sans-serif" font-size="12" fill="#8b949e">alert 끼워 넣을 수 없음</text>
+
+      <!-- location.replace() -->
+      <rect x="420" y="10" width="340" height="176" rx="8" fill="#161b22" stroke="#3fb950" stroke-width="1.5"/>
+      <text x="436" y="34" font-family="Segoe UI,sans-serif" font-size="13" font-weight="700" fill="#3fb950">location.replace():</text>
+      <text x="436" y="60" font-family="Consolas,monospace" font-size="12" fill="#c9d1d9">alert("삭제되었습니다.")</text>
+      <text x="436" y="82" font-family="Consolas,monospace" font-size="12" fill="#c9d1d9">← 사용자가 확인 클릭</text>
+      <text x="436" y="104" font-family="Consolas,monospace" font-size="12" fill="#3fb950">브라우저 스스로 이동</text>
+      <text x="436" y="144" font-family="Segoe UI,sans-serif" font-size="12" fill="#8b949e">서버 왕복 없이 alert 후 이동 가능</text>
+    </svg>
+
+    <h4>alert() 순서</h4>
+    <pre><code class="language-html">alert(message);              // 1. 팝업 먼저
+location.replace(searchUrl); // 2. 확인 누르면 이동</code></pre>
+    <p><code>alert()</code>은 <strong>동기적</strong>으로 실행됩니다.<br>
+    확인 버튼을 누를 때까지 다음 코드로 넘어가지 않습니다.<br>
+    그래서 사용자가 확인을 누른 뒤에 <code>location.replace()</code>가 실행됩니다.</p>
+
+    <h3>② 컨트롤러 — Model에 데이터 담아 message로 보내기</h3>
+    <pre><code class="language-java">@GetMapping("/board/delete")
+public String boardDelete(Integer id, Model model){
+    boardService.boardDelete(id);
+
+    model.addAttribute("message", "글이 삭제되었습니다.");
+    model.addAttribute("searchUrl", "/board/list");
+
+    return "message";
+}</code></pre>
+    <p><code>message</code>와 <code>searchUrl</code>을 Model에 담아서 <code>message.html</code>로 전달합니다.<br>
+    <code>message.html</code>에서 <code>[[${message}]]</code>, <code>[[${searchUrl}]]</code>가 각각 값을 받아 사용합니다.</p>
+
+    <div class="info-box">
+      <strong>searchUrl에 "redirect:/board/list"를 넣으면 안 되는 이유</strong>
+      <p><code>redirect:</code>는 Spring 컨트롤러의 <code>return</code> 값에 쓰는 전용 문법입니다.</p>
+      <p><code>location.replace()</code>에 <code>"redirect:/board/list"</code>가 들어가면 브라우저는 <code>redirect:/board/list</code>라는 URL로 이동하려다 404 오류가 납니다.</p>
+      <p><code>location.replace()</code>에는 <strong>순수 URL</strong>만 넣어야 합니다.</p>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step" id="step4">
+    <div class="step-label">Step 4</div>
+    <h2>왜 이렇게 작성했는가?</h2>
+
+    <h3>왜 redirect 대신 message.html을 거치는가?</h3>
+    <div class="compare-grid">
+      <div class="compare-card">
+        <h4>기존 방식</h4>
+        삭제<br>
+        → 서버 redirect<br>
+        → 목록<br><br>
+        <span style="color:#f85149;">알림 없음</span>
+      </div>
+      <div class="compare-card">
+        <h4>현재 방식</h4>
+        삭제<br>
+        <span class="new">→ message.html</span><br>
+        <span class="new">→ alert 팝업</span><br>
+        <span class="new">→ 확인 클릭</span><br>
+        <span class="new">→ 목록 이동</span>
+      </div>
+    </div>
+    <p style="margin-top:14px;">Spring의 <code>return "redirect:..."</code>는 서버가 즉시 다른 URL로 보내버립니다.<br>
+    그 사이에 alert를 끼워 넣을 수 없습니다.<br>
+    <code>message.html</code>을 중간에 두면 JavaScript로 alert를 먼저 처리한 뒤 이동할 수 있습니다.</p>
+
+    <h3>왜 location.replace()를 쓰는가?</h3>
+    <p><code>location.replace()</code>는 현재 페이지를 <strong>히스토리에서 대체</strong>합니다.<br>
+    뒤로가기를 눌러도 <code>message.html</code>로 돌아오지 않습니다.</p>
+    <table>
+      <thead><tr><th></th><th>location.href</th><th>location.replace()</th></tr></thead>
+      <tbody>
+        <tr><td>히스토리</td><td>기록에 남음</td><td>현재 페이지 대체</td></tr>
+        <tr><td>뒤로가기</td><td>message.html로 돌아옴</td><td>그 이전 페이지로 이동</td></tr>
+        <tr><td>사용자 경험</td><td>어색함</td><td>자연스러움 ✅</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- STEP 5 -->
+  <div class="step" id="step5">
+    <div class="step-label">Step 5</div>
+    <h2>실행 흐름</h2>
+
+    <svg viewBox="0 0 700 430" style="width:100%;max-width:700px;display:block;margin:16px auto;">
+      <!-- 삭제 버튼 클릭 -->
+      <rect x="210" y="10" width="280" height="34" rx="6" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+      <text x="260" y="32" font-family="Segoe UI,sans-serif" font-size="13" fill="#c9d1d9">사용자: 삭제 버튼 클릭</text>
+      <line x1="350" y1="46" x2="350" y2="64" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="350,70 344,60 356,60" fill="#4b5563"/>
+      <!-- Controller -->
+      <rect x="190" y="72" width="320" height="56" rx="6" fill="#1a3a5c" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="265" y="94" font-family="Segoe UI,sans-serif" font-size="13" fill="#93c5fd">BoardController.boardDelete()</text>
+      <text x="205" y="112" font-family="Consolas,monospace" font-size="11" fill="#58a6ff">boardService.boardDelete(3) → DB 삭제</text>
+      <line x1="350" y1="130" x2="350" y2="148" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="350,154 344,144 356,144" fill="#4b5563"/>
+      <!-- Model -->
+      <rect x="210" y="156" width="280" height="56" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+      <text x="240" y="178" font-family="Consolas,monospace" font-size="11" fill="#c9d1d9">model: "글이 삭제되었습니다."</text>
+      <text x="240" y="196" font-family="Consolas,monospace" font-size="11" fill="#c9d1d9">model: searchUrl = "/board/list"</text>
+      <line x1="350" y1="214" x2="350" y2="232" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="350,238 344,228 356,228" fill="#4b5563"/>
+      <!-- message.html -->
+      <rect x="210" y="240" width="280" height="56" rx="6" fill="#1a2a1a" stroke="#3fb950" stroke-width="1.5"/>
+      <text x="275" y="262" font-family="Segoe UI,sans-serif" font-size="13" fill="#86efac">message.html 렌더링</text>
+      <text x="220" y="280" font-family="Consolas,monospace" font-size="11" fill="#3fb950">alert("글이 삭제되었습니다.") 팝업</text>
+      <line x1="350" y1="298" x2="350" y2="316" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="350,322 344,312 356,312" fill="#4b5563"/>
+      <!-- 확인 클릭 -->
+      <rect x="240" y="324" width="220" height="34" rx="6" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+      <text x="285" y="346" font-family="Segoe UI,sans-serif" font-size="13" fill="#c9d1d9">사용자: 확인 클릭</text>
+      <line x1="350" y1="360" x2="350" y2="378" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="350,384 344,374 356,374" fill="#4b5563"/>
+      <!-- 목록 -->
+      <rect x="210" y="386" width="280" height="34" rx="6" fill="#1a2a1a" stroke="#3fb950" stroke-width="1.5"/>
+      <text x="235" y="408" font-family="Segoe UI,sans-serif" font-size="13" fill="#86efac">location.replace("/board/list") → 목록</text>
+    </svg>
+  </div>
+
+  <!-- STEP 6 -->
+  <div class="step" id="step6">
+    <div class="step-label">Step 6</div>
+    <h2>이전 Commit과 비교</h2>
+    <div class="compare-grid">
+      <div class="compare-card">
+        <h4>이전 Commit (게시글 수정)</h4>
+        작성 완료 → 목록 (알림 없음)<br>
+        삭제 완료 → 목록 (알림 없음)<br>
+        수정 완료 → 목록 (알림 없음)<br><br>
+        <span style="color:#f85149;">boardWritePro 반환 타입 Board (오류)</span>
+      </div>
+      <div class="compare-card">
+        <h4>현재 Commit (alert 메시지)</h4>
+        <span class="new">작성 → alert("글 작성이 완료되었습니다.") → 목록</span><br>
+        <span class="new">삭제 → alert("글이 삭제되었습니다.") → 목록</span><br>
+        <span class="new">수정 → alert("글이 수정되었습니다.") → 목록</span><br><br>
+        <span class="new">boardWritePro 반환 타입 String 수정 ✅</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 7 -->
+  <div class="step" id="step7">
+    <div class="step-label">Step 7</div>
+    <h2>초보자가 하기 쉬운 착각</h2>
+
+    <div class="warn">
+      <strong>th:inline="javascript"를 빠뜨리면 [[${변수}]]가 그대로 출력됩니다.</strong>
+      <p>alert 창에 "글이 삭제되었습니다." 대신 <code>[[${message}]]</code>라는 문자열이 그대로 뜬다면 <code>th:inline="javascript"</code>가 없는 것입니다.</p>
+    </div>
+
+    <div class="warn">
+      <strong>searchUrl에 "redirect:/board/list"를 넣으면 안 됩니다.</strong>
+      <p><code>redirect:</code>는 Spring 컨트롤러의 return 값에 쓰는 문법입니다.</p>
+      <p>JavaScript의 <code>location.replace()</code>는 이 문법을 모르므로 <code>redirect:/board/list</code>라는 URL로 그대로 이동하려다 404 오류가 납니다.</p>
+    </div>
+
+    <div class="warn">
+      <strong>alert()이 비동기라고 생각하기 쉽습니다.</strong>
+      <p><code>alert()</code>은 동기적으로 실행됩니다.</p>
+      <p>확인 버튼을 누를 때까지 <code>location.replace()</code>는 실행되지 않습니다.</p>
+    </div>
+  </div>
+
+  <!-- STEP 8 -->
+  <div class="step" id="step8">
+    <div class="step-label">Step 8</div>
+    <h2>중요도 구분</h2>
+    <div class="learn-row">
+      <div class="learn-card red-card">
+        <h3>🔴 반드시 이해</h3>
+        <ul>
+          <li>th:inline="javascript" 없으면 [[${변수}]] 동작 안 함</li>
+          <li>searchUrl은 순수 URL 값 (redirect: 불가)</li>
+          <li>alert()은 동기적 — 확인 전까지 다음 코드 멈춤</li>
+          <li>location.replace()는 redirect와 같은 결과, 다른 주체</li>
+        </ul>
+      </div>
+      <div class="learn-card yellow-card">
+        <h3>🟡 개념만 이해</h3>
+        <ul>
+          <li>CDATA 블록 — HTML 파서로부터 JS 보호</li>
+          <li>location.replace() vs location.href 히스토리 차이</li>
+        </ul>
+      </div>
+      <div class="learn-card green-card">
+        <h3>🟢 나중에 공부</h3>
+        <ul>
+          <li>location.replace() vs location.assign() 차이</li>
+          <li>SweetAlert2 등 커스텀 알림창으로 교체하는 방법</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 9 -->
+  <div class="step" id="step9">
+    <div class="step-label">Step 9</div>
+    <h2>오늘 배운 것</h2>
+    <ul class="summary-list">
+      <li>th:inline="javascript"를 쓰면 JavaScript 안에서 Thymeleaf 표현식을 사용할 수 있다</li>
+      <li>JavaScript 안에서는 th:text 대신 [[${변수}]] 형태로 값을 출력한다</li>
+      <li>CDATA 블록은 HTML 파서가 JS 코드를 건드리지 못하게 보호한다</li>
+      <li>alert()은 동기적으로 실행되어 확인 전까지 다음 코드가 멈춘다</li>
+      <li>location.replace()는 redirect와 같은 결과지만 브라우저가 처리하며 히스토리를 남기지 않는다</li>
+      <li>searchUrl에는 순수 URL을 넣어야 한다 — redirect: 문법은 Spring 전용이다</li>
+    </ul>
+  </div>
+
+  <!-- STEP 10 -->
+  <div class="step" id="step10">
+    <div class="step-label">Step 10</div>
+    <h2>이해도 확인 질문</h2>
+    <ol class="question-list">
+      <li>
+        <span>th:inline="javascript"를 script 태그에 붙이지 않으면 어떻게 되는가?</span>
+        <details><summary></summary><p>[[${message}]]가 Thymeleaf에 의해 처리되지 않고 문자열 그대로 출력됩니다. alert 창에 "글이 삭제되었습니다." 대신 [[${message}]]가 뜹니다.</p></details>
+      </li>
+      <li>
+        <span>model.addAttribute("searchUrl", "redirect:/board/list")로 하면 어떻게 되는가?</span>
+        <details><summary></summary><p>JavaScript가 location.replace("redirect:/board/list")를 실행합니다. 브라우저는 redirect:/board/list라는 URL로 이동하려 하지만 존재하지 않는 경로라 404 오류가 납니다. redirect:는 Spring 컨트롤러 전용 문법입니다.</p></details>
+      </li>
+      <li>
+        <span>alert() 이후 location.replace()가 실행되는 시점은?</span>
+        <details><summary></summary><p>사용자가 alert 창의 확인 버튼을 누른 직후입니다. alert()은 동기적으로 실행되어 확인을 누를 때까지 다음 코드 실행을 멈춥니다.</p></details>
+      </li>
+      <li>
+        <span>location.replace()와 location.href의 차이는?</span>
+        <details><summary></summary><p>location.href는 이동 기록을 히스토리에 남겨 뒤로가기를 누르면 message.html로 돌아옵니다. location.replace()는 현재 페이지를 히스토리에서 대체해 뒤로가기를 눌러도 message.html로 돌아오지 않습니다.</p></details>
+      </li>
+      <li>
+        <span>CDATA 블록의 역할은?</span>
+        <details><summary></summary><p>JavaScript 코드 안에 &lt;, &gt; 같은 특수문자가 있을 때 HTML 파서가 태그로 오해하지 않도록 보호합니다. /* */로 감싼 건 JavaScript가 &lt;![CDATA[를 주석으로 처리해 JS 오류가 나지 않게 하기 위함입니다.</p></details>
+      </li>
+    </ol>
+  </div>
+
+  <!-- STEP 11 -->
+  <div class="step" id="step11">
+    <div class="step-label">Step 11</div>
+    <h2>작은 실습</h2>
+    <div class="practice-box">
+      <h3>생각해보기 — 삭제 전 확인창 띄우기</h3>
+      <p>현재는 삭제 버튼을 누르면 바로 삭제됩니다.<br>
+      "정말 삭제하시겠습니까?" 확인 창을 먼저 띄우고, 취소하면 삭제하지 않으려면 어떻게 해야 할까요?</p>
+      <p style="margin-top:10px; color:#8b949e; font-size:13px;">힌트: JavaScript의 <code>confirm()</code>을 사용하면 됩니다.<br>
+      <code>confirm()</code>은 확인/취소 두 버튼이 있고 <code>true</code>/<code>false</code>를 반환합니다.<br>
+      <code>boardview.html</code>의 삭제 버튼에 <code>onclick</code>으로 적용해보세요.</p>
+    </div>
+  </div>
+
+  <!-- STEP 12 -->
+  <div class="step" id="step12">
+    <div class="step-label">Step 12</div>
+    <h2>다음 Commit을 위한 준비</h2>
+    <ul class="next-list">
+      <li><strong>페이징(Paging)</strong> — 게시글이 많아지면 목록을 여러 페이지로 나눠야 합니다. Spring Data JPA의 <code>Pageable</code>과 <code>Page&lt;T&gt;</code>를 미리 찾아보세요.</li>
+      <li><strong>@RequestParam</strong> — 페이지 번호를 쿼리 파라미터로 받는 방식에 쓰입니다.</li>
+      <li><strong>Thymeleaf 조건문</strong> — <code>th:if</code>, <code>th:unless</code>로 조건에 따라 다른 내용을 보여주는 방법을 알아두세요.</li>
+    </ul>
+  </div>
+
+</div>
+
+<script>hljs.highlightAll();</script>
+<script>
+  const sections = document.querySelectorAll('[id]');
+  const links = document.querySelectorAll('.toc a');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('toc-active'));
+        const active = document.querySelector(`.toc a[href="#${e.target.id}"]`);
+        if (active) active.classList.add('toc-active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
