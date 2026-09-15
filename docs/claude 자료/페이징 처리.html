@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>페이징 처리 — Spring 수업</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0f1117;
+    color: #c9d1d9;
+    font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    padding: 40px 20px;
+  }
+  .container { max-width: 860px; margin: 0 auto; }
+
+  .commit-link {
+    display: inline-block;
+    margin-bottom: 10px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 10px 18px;
+    color: #58a6ff;
+    text-decoration: none;
+    font-size: 13px;
+    font-family: monospace;
+    margin-right: 10px;
+  }
+  .commit-link:hover { background: #1f2937; }
+  .commit-links { margin-bottom: 32px; }
+
+  h1 {
+    font-size: 26px;
+    color: #e6edf3;
+    margin-bottom: 8px;
+  }
+  .subtitle { color: #8b949e; margin-bottom: 40px; font-size: 14px; }
+
+  .learn-box {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin-bottom: 40px;
+  }
+  .learn-box h2 { color: #e6edf3; font-size: 16px; margin-bottom: 16px; }
+  .learn-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .learn-card { border-radius: 8px; padding: 16px; }
+  .learn-card h3 { font-size: 13px; margin-bottom: 8px; }
+  .learn-card ul { padding-left: 16px; font-size: 13px; line-height: 1.8; }
+  .red-card  { background: #2d1515; border: 1px solid #7f2020; }
+  .red-card h3 { color: #f85149; }
+  .yellow-card { background: #2d2200; border: 1px solid #7f5d00; }
+  .yellow-card h3 { color: #e3b341; }
+  .green-card { background: #0d2d16; border: 1px solid #1a7f37; }
+  .green-card h3 { color: #3fb950; }
+
+  .step {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 28px 32px;
+    margin-bottom: 28px;
+  }
+  .step-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #58a6ff;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .step h2 {
+    font-size: 18px;
+    color: #e6edf3;
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #21262d;
+  }
+
+  h3 { color: #e6edf3; font-size: 15px; margin: 20px 0 10px; }
+  h4 { color: #8b949e; font-size: 13px; margin: 14px 0 6px; font-weight: 600; }
+  p { margin-bottom: 10px; }
+
+  pre {
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 12px 0;
+  }
+  pre code.hljs {
+    font-family: 'Consolas', 'D2Coding', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    border-radius: 6px;
+    padding: 16px;
+  }
+  p code, li code {
+    background: #21262d;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 12px;
+  }
+
+  .flow-box {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 2.2;
+    color: #c9d1d9;
+  }
+  .flow-box .highlight { color: #58a6ff; font-weight: 700; }
+
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 14px;
+  }
+  .compare-card {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 16px;
+    font-family: monospace;
+    font-size: 13px;
+    line-height: 2;
+  }
+  .compare-card h4 { font-family: 'Segoe UI', sans-serif; margin-bottom: 10px; color: #8b949e; }
+  .compare-card .new { color: #3fb950; }
+
+  .warn {
+    border-left: 4px solid #e3b341;
+    background: #1c1a00;
+    padding: 14px 18px;
+    border-radius: 0 6px 6px 0;
+    margin: 12px 0;
+    font-size: 14px;
+  }
+  .warn strong { color: #e3b341; display: block; margin-bottom: 4px; }
+
+  ul, ol { padding-left: 20px; margin-bottom: 10px; }
+  li { margin-bottom: 4px; }
+
+  .summary-list {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 20px 24px;
+    list-style: none;
+    padding-left: 24px;
+  }
+  .summary-list li {
+    padding: 6px 0;
+    border-bottom: 1px solid #21262d;
+    font-size: 14px;
+  }
+  .summary-list li:last-child { border-bottom: none; }
+  .summary-list li::before { content: "✓ "; color: #3fb950; font-weight: 700; }
+
+  /* 정답 보기 */
+  .question-list details { background: #1e293b; border-radius: 4px; padding: 4px 10px; margin-top: 6px; }
+  .question-list details summary { color: #475569; font-size: 11px; cursor: pointer; user-select: none; list-style: none; }
+  .question-list details summary::-webkit-details-marker { display: none; }
+  .question-list details summary::before { content: "▶ 정답 보기"; }
+  .question-list details[open] summary::before { content: "▼ 정답 보기"; }
+  .question-list details[open] summary { margin-bottom: 4px; color: #64748b; }
+  .question-list details p { color: #cbd5e1; font-size: 13px; margin: 0; }
+
+  .question-list { counter-reset: q; padding-left: 0; list-style: none; }
+  .question-list li {
+    counter-increment: q;
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+  .question-list li::before {
+    content: "Q" counter(q) ". ";
+    color: #58a6ff;
+    font-weight: 700;
+  }
+
+  .practice-box {
+    background: #0d2d16;
+    border: 1px solid #1a7f37;
+    border-radius: 8px;
+    padding: 20px 24px;
+  }
+  .practice-box h3 { color: #3fb950; margin-top: 0; }
+
+  .next-list { padding-left: 0; list-style: none; counter-reset: n; }
+  .next-list li {
+    counter-increment: n;
+    padding: 10px 14px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+  .next-list li::before {
+    content: counter(n) ". ";
+    color: #58a6ff;
+    font-weight: 700;
+  }
+  .next-list li strong { color: #e6edf3; }
+
+  .commit-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-family: monospace;
+    background: #1f2937;
+    border: 1px solid #30363d;
+    border-radius: 4px;
+    padding: 2px 8px;
+    color: #8b949e;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  .commit-badge.c1 { border-color: #3b82f6; color: #93c5fd; }
+  .commit-badge.c2 { border-color: #3fb950; color: #6ee7b7; }
+
+  /* 목차 */
+  .toc {
+    position: fixed;
+    top: 40px;
+    right: 24px;
+    width: 164px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 14px 16px;
+    z-index: 100;
+  }
+  .toc-title { font-size: 10px; font-weight: 700; color: #58a6ff; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+  .toc ul { list-style: none; padding: 0; margin: 0; }
+  .toc ul li { margin-bottom: 5px; }
+  .toc ul li a { font-size: 12px; color: #8b949e; text-decoration: none; line-height: 1.4; display: block; }
+  .toc ul li a:hover { color: #c9d1d9; }
+  .toc ul li a.toc-active { color: #58a6ff; }
+  @media (max-width: 1200px) { .toc { display: none; } }
+</style>
+</head>
+<body>
+<nav class="toc">
+  <div class="toc-title">목차</div>
+  <ul>
+    <li><a href="#learn">배우는 것</a></li>
+    <li><a href="#step1">1. 한눈에 보기</a></li>
+    <li><a href="#step2">2. 변경 파일</a></li>
+    <li><a href="#step3">3. 핵심 코드</a></li>
+    <li><a href="#step4">4. 왜 이렇게?</a></li>
+    <li><a href="#step5">5. 실행 흐름</a></li>
+    <li><a href="#step6">6. 이전과 비교</a></li>
+    <li><a href="#step7">7. 초보자 착각</a></li>
+    <li><a href="#step8">8. 중요도</a></li>
+    <li><a href="#step9">9. 오늘 배운 것</a></li>
+    <li><a href="#step10">10. 이해도 질문</a></li>
+    <li><a href="#step11">11. 작은 실습</a></li>
+    <li><a href="#step12">12. 다음 준비</a></li>
+  </ul>
+</nav>
+<div class="container">
+
+  <div class="commit-links">
+    <a class="commit-link" href="https://github.com/yzzzwan/springboot_board_practice/commit/e7777f11b67f15831359bddca9cb2f380fd32fce" target="_blank">
+      커밋 1 보기: e7777f1 — 페이징 처리 1
+    </a>
+    <a class="commit-link" href="https://github.com/yzzzwan/springboot_board_practice/commit/81521c6180656e1705935ca79f50bb46c09eca57" target="_blank">
+      커밋 2 보기: 81521c6 — 페이징 처리 2
+    </a>
+  </div>
+
+  <h1>페이징 처리</h1>
+  <p class="subtitle">feat: 페이징 처리 1 + 2 — Spring 수업</p>
+
+  <!-- 배우는 것 -->
+  <div class="learn-box" id="learn">
+    <h2>이번 Commit에서 배우는 것</h2>
+    <div class="learn-row">
+      <div class="learn-card red-card">
+        <h3>🔴 반드시 이해</h3>
+        <ul>
+          <li>Pageable 인터페이스</li>
+          <li>@PageableDefault 설정</li>
+          <li>Page&lt;T&gt;와 List&lt;T&gt;의 차이</li>
+          <li>nowPage / startPage / endPage 계산 로직</li>
+          <li>Thymeleaf #numbers.sequence()</li>
+        </ul>
+      </div>
+      <div class="learn-card yellow-card">
+        <h3>🟡 개념만 이해</h3>
+        <ul>
+          <li>Spring Data JPA의 페이징 자동 처리</li>
+          <li>0-based 페이지 인덱스</li>
+          <li>th:block 태그 역할</li>
+        </ul>
+      </div>
+      <div class="learn-card green-card">
+        <h3>🟢 나중에 공부</h3>
+        <ul>
+          <li>Slice vs Page 차이</li>
+          <li>커서 기반 페이징</li>
+          <li>DB LIMIT/OFFSET 내부 동작</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="step" id="step1">
+    <div class="step-label">Step 1</div>
+    <h2>이번 Commit 한눈에 보기</h2>
+    <p>이번 두 커밋에서는 게시글 목록 페이지에 <strong>페이징 기능</strong>을 추가했습니다.<br>
+    게시글이 수백 개라도 한 페이지에 10개씩만 보여주고, 아래에 1 2 3 ... 페이지 번호 버튼이 나타나게 만드는 기능입니다.</p>
+    <p><strong>커밋 1 (e7777f1)</strong>: <code>List&lt;Board&gt;</code>를 <code>Page&lt;Board&gt;</code>로 바꾸고, Controller에 <code>Pageable</code> 파라미터를 추가했습니다.<br>
+    <strong>커밋 2 (81521c6)</strong>: 현재 페이지, 시작 페이지, 끝 페이지를 계산해 Model에 담고, HTML에 페이지 번호 버튼을 렌더링했습니다.</p>
+    <p>Spring Data JPA가 페이징 처리를 거의 자동으로 해줍니다. 개발자가 직접 SQL에 <code>LIMIT</code>, <code>OFFSET</code>을 쓰지 않아도 됩니다.</p>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step" id="step2">
+    <div class="step-label">Step 2</div>
+    <h2>무엇이 변경되었는가</h2>
+
+    <h3>BoardService.java <span class="commit-badge c1">커밋 1</span></h3>
+    <pre><code class="language-java">// 이전
+public List&lt;Board&gt; boardList(){
+    return boardRepository.findAll();
+}
+
+// 현재
+public Page&lt;Board&gt; boardList(Pageable pageable){
+    return boardRepository.findAll(pageable);
+}</code></pre>
+    <ul>
+      <li><strong>왜 변경?</strong> 전체 목록 대신 한 페이지 분량의 게시글만 가져오기 위해</li>
+      <li><strong>역할:</strong> <code>Pageable</code> 조건(몇 페이지, 몇 개씩, 정렬)을 Repository에 그대로 전달</li>
+      <li><strong>반환 타입 변화:</strong> <code>List</code> → <code>Page</code> — Page는 게시글 목록뿐 아니라 전체 페이지 수, 현재 페이지 번호 등 메타정보도 포함</li>
+    </ul>
+
+    <h3>BoardController.java — Pageable 파라미터 추가 <span class="commit-badge c1">커밋 1</span></h3>
+    <pre><code class="language-java">@GetMapping("board/list")
+public String boardlist(Model model,
+                        @PageableDefault(page=0, size=10, sort="id", direction = Sort.Direction.DESC) Pageable pageable){
+    model.addAttribute("list", boardService.boardList(pageable));
+    return "boardlist";
+}</code></pre>
+    <ul>
+      <li><strong>왜 추가?</strong> Spring이 HTTP 요청의 쿼리 파라미터를 <code>Pageable</code> 객체로 자동 변환해 넘겨줌</li>
+      <li><strong><code>@PageableDefault</code>:</strong> URL에 페이지 정보가 없을 때 사용할 기본값 설정</li>
+    </ul>
+
+    <h3>BoardController.java — 페이지 범위 계산 추가 <span class="commit-badge c2">커밋 2</span></h3>
+    <pre><code class="language-java">Page&lt;Board&gt; list = boardService.boardList(pageable);
+
+int nowPage = list.getPageable().getPageNumber() + 1;
+int startPage = Math.max(nowPage - 4, 1);
+int endPage = Math.min(nowPage + 5, list.getTotalPages());
+
+model.addAttribute("list", list);
+model.addAttribute("nowPage", nowPage);
+model.addAttribute("startPage", startPage);
+model.addAttribute("endPage", endPage);</code></pre>
+    <ul>
+      <li><strong>왜 추가?</strong> HTML에서 "1 2 3 4 5" 같은 페이지 버튼을 만들려면 어디서 어디까지 버튼을 그려야 하는지 알아야 함</li>
+      <li>계산한 3개의 값을 Model에 담아 Thymeleaf에 전달</li>
+    </ul>
+
+    <h3>boardlist.html — 페이지 버튼 추가 <span class="commit-badge c2">커밋 2</span></h3>
+    <pre><code class="language-html">&lt;th:block th:each="page: ${#numbers.sequence(startPage, endPage)}"&gt;
+    &lt;a th:if="${page != nowPage}" th:href="@{/board/list(page=${page-1})}" th:text="${page}"&gt;&lt;/a&gt;
+    &lt;strong th:if="${page == nowPage}" th:text="${page}" style="color:red"&gt;&lt;/strong&gt;
+&lt;/th:block&gt;</code></pre>
+    <ul>
+      <li><strong>왜 추가?</strong> 사용자가 클릭해서 다른 페이지로 이동할 수 있는 버튼을 화면에 표시하기 위해</li>
+      <li>현재 페이지는 <code>&lt;strong&gt;</code>으로 빨간색 강조, 나머지는 링크(<code>&lt;a&gt;</code>)로 표시</li>
+    </ul>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step" id="step3">
+    <div class="step-label">Step 3</div>
+    <h2>핵심 코드 설명</h2>
+
+    <h3>Pageable과 @PageableDefault</h3>
+    <pre><code class="language-java">@PageableDefault(page=0, size=10, sort="id", direction = Sort.Direction.DESC) Pageable pageable</code></pre>
+
+    <h4>초보자 관점</h4>
+    <p>"몇 페이지를, 몇 개씩, 어떤 순서로 가져올지"를 담은 설정 객체라고 생각하면 됩니다.<br>
+    마치 도서관에서 "최신 책 기준으로 10권씩, 지금은 1번째 묶음 주세요"라고 요청하는 것과 같습니다.</p>
+
+    <h4>Spring 관점</h4>
+    <p>브라우저에서 <code>/board/list?page=2</code>로 요청하면, Spring이 URL의 <code>page=2</code>를 읽어서 자동으로 <code>Pageable</code> 객체를 만들어 메서드에 넣어줍니다.<br>
+    URL에 <code>page</code> 파라미터가 없으면 <code>@PageableDefault</code>에 설정한 기본값(page=0)을 사용합니다.</p>
+
+    <pre><code class="language-java">@PageableDefault(
+    page = 0,          // 기본 페이지: 0번째 (첫 페이지, 0-based)
+    size = 10,         // 한 페이지에 게시글 10개
+    sort = "id",       // id 컬럼 기준 정렬
+    direction = Sort.Direction.DESC  // 내림차순 (최신 글이 위)
+)</code></pre>
+
+    <h3>Page&lt;T&gt;와 List&lt;T&gt;의 차이</h3>
+
+    <!-- Page vs List SVG 다이어그램 -->
+    <svg viewBox="0 0 820 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;margin:16px 0;">
+      <!-- List 박스 -->
+      <rect x="10" y="20" width="350" height="230" rx="8" fill="#1f2937" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="185" y="46" text-anchor="middle" fill="#93c5fd" font-size="13" font-family="sans-serif" font-weight="bold">List&lt;Board&gt; — 이전</text>
+
+      <rect x="28" y="58" width="314" height="28" rx="4" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+      <text x="40" y="77" fill="#c9d1d9" font-size="12" font-family="monospace">Board { id, title, content ... }</text>
+      <rect x="28" y="92" width="314" height="28" rx="4" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+      <text x="40" y="111" fill="#c9d1d9" font-size="12" font-family="monospace">Board { id, title, content ... }</text>
+      <rect x="28" y="126" width="314" height="28" rx="4" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+      <text x="40" y="145" fill="#c9d1d9" font-size="12" font-family="monospace">Board { id, title, content ... }</text>
+      <text x="185" y="182" text-anchor="middle" fill="#6b7280" font-size="11" font-family="sans-serif">... (DB의 모든 게시글, 정렬 없음)</text>
+      <text x="185" y="204" text-anchor="middle" fill="#f85149" font-size="12" font-family="sans-serif">게시글 데이터만 있음</text>
+      <text x="185" y="240" text-anchor="middle" fill="#6b7280" font-size="10" font-family="sans-serif">전체 페이지 수를 알 방법 없음</text>
+
+      <!-- Page 박스 -->
+      <rect x="400" y="20" width="410" height="230" rx="8" fill="#1f2937" stroke="#3fb950" stroke-width="1.5"/>
+      <text x="605" y="46" text-anchor="middle" fill="#3fb950" font-size="13" font-family="sans-serif" font-weight="bold">Page&lt;Board&gt; — 현재</text>
+
+      <text x="418" y="66" fill="#8b949e" font-size="11" font-family="sans-serif">content (게시글 목록, 10개)</text>
+      <rect x="418" y="72" width="374" height="28" rx="4" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+      <text x="430" y="91" fill="#c9d1d9" font-size="12" font-family="monospace">Board { id, title, content ... } × 10</text>
+
+      <text x="418" y="118" fill="#3fb950" font-size="11" font-family="sans-serif">메타데이터 (페이징 정보)</text>
+      <rect x="418" y="124" width="176" height="26" rx="4" fill="#1a2e1a" stroke="#3fb950" stroke-width="1"/>
+      <text x="430" y="141" fill="#6ee7b7" font-size="11" font-family="monospace">getTotalPages() → 5</text>
+      <rect x="602" y="124" width="190" height="26" rx="4" fill="#1a2e1a" stroke="#3fb950" stroke-width="1"/>
+      <text x="614" y="141" fill="#6ee7b7" font-size="11" font-family="monospace">getTotalElements() → 47</text>
+
+      <rect x="418" y="156" width="176" height="26" rx="4" fill="#1a2e1a" stroke="#3fb950" stroke-width="1"/>
+      <text x="430" y="173" fill="#6ee7b7" font-size="11" font-family="monospace">getNumber() → 0</text>
+      <rect x="602" y="156" width="190" height="26" rx="4" fill="#1a2e1a" stroke="#3fb950" stroke-width="1"/>
+      <text x="614" y="173" fill="#6ee7b7" font-size="11" font-family="monospace">isLast() → true/false</text>
+
+      <rect x="418" y="188" width="176" height="26" rx="4" fill="#1a2e1a" stroke="#3fb950" stroke-width="1"/>
+      <text x="430" y="205" fill="#6ee7b7" font-size="11" font-family="monospace">hasNext() → true/false</text>
+      <rect x="602" y="188" width="190" height="26" rx="4" fill="#1a2e1a" stroke="#3fb950" stroke-width="1"/>
+      <text x="614" y="205" fill="#6ee7b7" font-size="11" font-family="monospace">getSize() → 10</text>
+
+      <text x="605" y="240" text-anchor="middle" fill="#3fb950" font-size="12" font-family="sans-serif">게시글 + 페이징 메타정보 포함</text>
+    </svg>
+
+    <p><strong>List와 Page 모두 Board 객체 안에 담긴 id, title, content 등 데이터는 완전히 동일합니다.</strong><br>
+    정렬 순서가 다르게 보이는 이유는 <code>@PageableDefault</code>에 <code>sort=id DESC</code>를 설정했기 때문입니다.<br>
+    구조의 차이는 단 하나입니다. <strong>List는 데이터만 / Page는 데이터 + 메타정보.</strong></p>
+
+    <p><code>Page</code>는 단순 리스트가 아닙니다.<br>
+    게시글 목록뿐 아니라 <strong>"전체 몇 페이지인지", "지금 몇 번째 페이지인지", "마지막 페이지인지"</strong> 같은 정보를 함께 가지고 있습니다.<br>
+    페이지 버튼을 만들려면 이 메타정보가 꼭 필요하기 때문에 <code>List</code>에서 <code>Page</code>로 바꾼 것입니다.</p>
+
+    <h4>Page도 순회(반복)가 가능한 이유</h4>
+    <p>Thymeleaf에서 <code>th:each="board: ${list}"</code>로 <code>Page</code>를 바로 순회할 수 있습니다.<br>
+    <code>Page</code>가 <code>Iterable</code> 인터페이스를 구현하기 때문입니다.<br>
+    내부적으로는 <code>getContent()</code>를 호출해 <code>List&lt;Board&gt;</code>를 꺼낸 뒤 반복합니다.</p>
+
+    <pre><code class="language-java">// Page 인터페이스 계층 구조
+Page&lt;T&gt;
+ └── Slice&lt;T&gt;
+      └── Iterable&lt;T&gt;   ← th:each로 바로 순회 가능한 이유
+
+// Page 안에서 게시글 목록만 꺼내고 싶다면
+List&lt;Board&gt; boardList = list.getContent();</code></pre>
+
+    <h3>Page가 인터페이스인데 누가 구현하나?</h3>
+    <p><code>Page</code>는 인터페이스이므로 <code>getTotalPages()</code> 같은 메서드를 직접 구현해야 할 것 같지만, 그럴 필요가 없습니다.<br>
+    <strong>Spring Data JPA가 런타임에 자동으로 구현체를 만들어 줍니다.</strong></p>
+
+    <pre><code class="language-java">// 개발자가 선언한 것 (인터페이스)
+Page&lt;Board&gt;
+BoardRepository extends JpaRepository&lt;Board, Integer&gt;
+
+// Spring이 앱 시작 시 자동으로 만드는 것 (구현체)
+Page      →  PageImpl&lt;Board&gt;        (getTotalPages 등 모두 구현됨)
+Repository →  SimpleJpaRepository   (save, findAll 등 모두 구현됨)</code></pre>
+
+    <p><code>BoardRepository</code>에 아무것도 선언하지 않아도 <code>save()</code>, <code>findAll()</code>, <code>findById()</code>, <code>deleteById()</code>가 동작하는 이유도 같습니다.<br>
+    Spring이 <code>JpaRepository</code>를 상속한 인터페이스를 발견하면, 앱 시작 시 <code>SimpleJpaRepository</code> 기반의 구현체를 자동 생성해 주입합니다.<br>
+    이를 <strong>Spring Data JPA Repository 추상화</strong>라고 합니다.</p>
+
+    <h3>findAll()에 Pageable 말고 다른 인자도 들어갈 수 있나?</h3>
+    <p><code>JpaRepository</code>가 기본으로 제공하는 <code>findAll</code> 변형은 세 가지입니다.</p>
+
+    <pre><code class="language-java">findAll()                  // 전체, 정렬 없음   → List&lt;Board&gt;
+findAll(Sort sort)         // 전체, 정렬만      → List&lt;Board&gt;
+findAll(Pageable pageable) // 전체, 페이징+정렬 → Page&lt;Board&gt;</code></pre>
+
+    <p>세 가지 모두 <strong>WHERE 조건이 없습니다.</strong> 전부 가져오되 방식만 다릅니다.<br>
+    <strong>"조건(WHERE) + 페이징"</strong>을 같이 하려면 Repository에 메서드를 직접 선언해야 합니다.</p>
+
+    <pre><code class="language-java">// BoardRepository에 선언 추가 — 메서드 이름으로 쿼리 자동 생성
+Page&lt;Board&gt; findByTitleContaining(String keyword, Pageable pageable);
+// → SELECT * FROM board WHERE title LIKE '%keyword%' LIMIT 10 OFFSET 0</code></pre>
+
+    <p>이것이 다음 커밋에서 배울 <strong>검색 + 페이징 연동</strong>입니다.<br>
+    <code>Pageable</code>은 "어떻게 잘라서 가져올지"만 담당하고, "무엇을 가져올지(WHERE)"는 메서드 이름이나 <code>@Query</code>가 담당합니다.</p>
+
+    <h3>nowPage / startPage / endPage 계산</h3>
+    <pre><code class="language-java">int nowPage = list.getPageable().getPageNumber() + 1;
+int startPage = Math.max(nowPage - 4, 1);
+int endPage = Math.min(nowPage + 5, list.getTotalPages());</code></pre>
+
+    <h4>왜 +1을 하나?</h4>
+    <p>Spring의 페이지 번호는 <strong>0부터 시작</strong>합니다 (0-based index).<br>
+    하지만 사용자에게 보여줄 때는 1부터 시작해야 자연스럽습니다.<br>
+    그래서 <code>getPageNumber()</code>가 반환한 0-based 번호에 +1을 해서 화면용 번호로 변환합니다.</p>
+
+    <!-- 0-based 인덱스 시각화 -->
+    <svg viewBox="0 0 760 140" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;margin:12px 0;">
+      <text x="10" y="22" fill="#8b949e" font-size="12" font-family="sans-serif">Spring 내부 (0-based)</text>
+      <rect x="10" y="32" width="80" height="36" rx="4" fill="#2d1515" stroke="#f85149" stroke-width="1.5"/>
+      <text x="50" y="55" text-anchor="middle" fill="#f85149" font-size="14" font-family="monospace" font-weight="bold">page=0</text>
+      <rect x="98" y="32" width="80" height="36" rx="4" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+      <text x="138" y="55" text-anchor="middle" fill="#c9d1d9" font-size="14" font-family="monospace">page=1</text>
+      <rect x="186" y="32" width="80" height="36" rx="4" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+      <text x="226" y="55" text-anchor="middle" fill="#c9d1d9" font-size="14" font-family="monospace">page=2</text>
+      <rect x="274" y="32" width="80" height="36" rx="4" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+      <text x="314" y="55" text-anchor="middle" fill="#c9d1d9" font-size="14" font-family="monospace">page=3</text>
+      <text x="380" y="55" fill="#6b7280" font-size="18" font-family="monospace">...</text>
+
+      <text x="450" y="22" fill="#8b949e" font-size="12" font-family="sans-serif">화면 표시 (+1)</text>
+      <rect x="450" y="32" width="60" height="36" rx="4" fill="#1a2e1a" stroke="#3fb950" stroke-width="1.5"/>
+      <text x="480" y="55" text-anchor="middle" fill="#3fb950" font-size="14" font-family="monospace" font-weight="bold">1</text>
+      <rect x="518" y="32" width="60" height="36" rx="4" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+      <text x="548" y="55" text-anchor="middle" fill="#c9d1d9" font-size="14" font-family="monospace">2</text>
+      <rect x="586" y="32" width="60" height="36" rx="4" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+      <text x="616" y="55" text-anchor="middle" fill="#c9d1d9" font-size="14" font-family="monospace">3</text>
+      <rect x="654" y="32" width="60" height="36" rx="4" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+      <text x="684" y="55" text-anchor="middle" fill="#c9d1d9" font-size="14" font-family="monospace">4</text>
+
+      <text x="380" y="100" text-anchor="middle" fill="#6b7280" font-size="11" font-family="sans-serif">getPageNumber() 반환값 + 1 = 사용자가 보는 페이지 번호</text>
+    </svg>
+
+    <h4>startPage와 endPage</h4>
+    <p>현재 페이지가 7이면, 3~12 범위의 버튼을 표시하는 것이 자연스럽습니다 (앞으로 4개, 뒤로 5개).<br>
+    하지만 1페이지 근처에서는 startPage가 0이나 -1이 될 수 있고, 마지막 페이지 근처에서는 endPage가 총 페이지 수를 넘을 수 있습니다.</p>
+    <p><code>Math.max(nowPage - 4, 1)</code> → startPage가 최소 1 이하로 내려가지 않도록<br>
+    <code>Math.min(nowPage + 5, list.getTotalPages())</code> → endPage가 총 페이지 수를 넘지 않도록</p>
+
+    <!-- startPage/endPage 시각화 -->
+    <svg viewBox="0 0 760 190" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;margin:12px 0;">
+      <!-- 예시: nowPage = 7, 총 페이지 = 10 -->
+      <text x="10" y="20" fill="#8b949e" font-size="12" font-family="sans-serif">예시: nowPage=7, 총 페이지=10</text>
+      <text x="10" y="40" fill="#6b7280" font-size="11" font-family="sans-serif">startPage = max(7-4, 1) = max(3, 1) = 3</text>
+      <text x="10" y="57" fill="#6b7280" font-size="11" font-family="sans-serif">endPage = min(7+5, 10) = min(12, 10) = 10</text>
+
+      <rect x="10" y="70" width="44" height="36" rx="4" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+      <text x="32" y="93" text-anchor="middle" fill="#6b7280" font-size="13" font-family="monospace">1</text>
+      <rect x="62" y="70" width="44" height="36" rx="4" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+      <text x="84" y="93" text-anchor="middle" fill="#6b7280" font-size="13" font-family="monospace">2</text>
+
+      <rect x="114" y="70" width="44" height="36" rx="4" fill="#1a2e1a" stroke="#3fb950" stroke-width="1.5"/>
+      <text x="136" y="87" text-anchor="middle" fill="#3fb950" font-size="10" font-family="sans-serif">start</text>
+      <text x="136" y="101" text-anchor="middle" fill="#3fb950" font-size="13" font-family="monospace">3</text>
+
+      <rect x="166" y="70" width="44" height="36" rx="4" fill="#0d1117" stroke="#3fb950" stroke-width="1"/>
+      <text x="188" y="93" text-anchor="middle" fill="#c9d1d9" font-size="13" font-family="monospace">4</text>
+      <rect x="218" y="70" width="44" height="36" rx="4" fill="#0d1117" stroke="#3fb950" stroke-width="1"/>
+      <text x="240" y="93" text-anchor="middle" fill="#c9d1d9" font-size="13" font-family="monospace">5</text>
+      <rect x="270" y="70" width="44" height="36" rx="4" fill="#0d1117" stroke="#3fb950" stroke-width="1"/>
+      <text x="292" y="93" text-anchor="middle" fill="#c9d1d9" font-size="13" font-family="monospace">6</text>
+
+      <rect x="322" y="70" width="44" height="36" rx="4" fill="#2d1515" stroke="#f85149" stroke-width="2"/>
+      <text x="344" y="87" text-anchor="middle" fill="#f85149" font-size="10" font-family="sans-serif">now</text>
+      <text x="344" y="101" text-anchor="middle" fill="#f85149" font-size="13" font-family="monospace" font-weight="bold">7</text>
+
+      <rect x="374" y="70" width="44" height="36" rx="4" fill="#0d1117" stroke="#3fb950" stroke-width="1"/>
+      <text x="396" y="93" text-anchor="middle" fill="#c9d1d9" font-size="13" font-family="monospace">8</text>
+      <rect x="426" y="70" width="44" height="36" rx="4" fill="#0d1117" stroke="#3fb950" stroke-width="1"/>
+      <text x="448" y="93" text-anchor="middle" fill="#c9d1d9" font-size="13" font-family="monospace">9</text>
+
+      <rect x="478" y="70" width="44" height="36" rx="4" fill="#1a2e1a" stroke="#3fb950" stroke-width="1.5"/>
+      <text x="500" y="87" text-anchor="middle" fill="#3fb950" font-size="10" font-family="sans-serif">end</text>
+      <text x="500" y="101" text-anchor="middle" fill="#3fb950" font-size="13" font-family="monospace">10</text>
+
+      <text x="380" y="148" text-anchor="middle" fill="#6b7280" font-size="11" font-family="sans-serif">버튼은 3~10만 그린다. 1, 2는 범위 밖이라 생략됨.</text>
+    </svg>
+
+    <h3>#numbers.sequence()와 th:block</h3>
+    <pre><code class="language-html">&lt;th:block th:each="page: ${#numbers.sequence(startPage, endPage)}"&gt;</code></pre>
+
+    <h4>#numbers.sequence(start, end)</h4>
+    <p>Thymeleaf가 제공하는 유틸리티 함수입니다.<br>
+    <code>#numbers.sequence(3, 7)</code>이면 <code>[3, 4, 5, 6, 7]</code> 숫자 배열을 만들어줍니다.<br>
+    <code>th:each</code>와 함께 쓰면 startPage부터 endPage까지 반복하며 버튼을 생성합니다.</p>
+
+    <h4>th:block</h4>
+    <p>Thymeleaf 전용 태그입니다. <code>&lt;div&gt;</code>나 <code>&lt;span&gt;</code>과 달리 <strong>실제 HTML에는 아무 흔적도 남기지 않습니다.</strong><br>
+    페이지 버튼들 사이에 불필요한 래퍼 태그 없이 반복 처리만 하고 싶을 때 사용합니다.</p>
+
+    <div class="compare-grid" style="margin-top:12px;">
+      <div class="compare-card">
+        <h4>th:block 사용 시 — 출력 HTML</h4>
+        <span style="color:#3fb950;">&lt;a href="?page=2"&gt;3&lt;/a&gt;<br>
+        &lt;a href="?page=3"&gt;4&lt;/a&gt;<br>
+        &lt;strong&gt;5&lt;/strong&gt;<br>
+        &lt;a href="?page=5"&gt;6&lt;/a&gt;</span>
+      </div>
+      <div class="compare-card">
+        <h4>div 사용 시 — 불필요한 태그 포함</h4>
+        &lt;div&gt;&lt;a href="?page=2"&gt;3&lt;/a&gt;&lt;/div&gt;<br>
+        &lt;div&gt;&lt;a href="?page=3"&gt;4&lt;/a&gt;&lt;/div&gt;<br>
+        &lt;div&gt;&lt;strong&gt;5&lt;/strong&gt;&lt;/div&gt;<br>
+        &lt;div&gt;&lt;a href="?page=5"&gt;6&lt;/a&gt;&lt;/div&gt;
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step" id="step4">
+    <div class="step-label">Step 4</div>
+    <h2>왜 이렇게 작성했는가?</h2>
+
+    <h3>왜 List에서 Page로 바꿨나?</h3>
+    <p>게시글 목록에 페이징 버튼을 만들려면 <strong>"총 몇 페이지인지"</strong>를 알아야 합니다.<br>
+    <code>List</code>에는 데이터만 있고 "전체 페이지 수"를 구할 방법이 없습니다.<br>
+    <code>Page</code>는 <code>list.getTotalPages()</code>, <code>list.getPageable().getPageNumber()</code> 같은 메서드를 제공하기 때문에 페이지 버튼 계산이 가능합니다.</p>
+
+    <h3>왜 @PageableDefault를 사용하나?</h3>
+    <p>사용자가 처음 <code>/board/list</code>로 접속할 때는 URL에 <code>?page=0</code> 같은 정보가 없습니다.<br>
+    이때 <code>@PageableDefault</code>에 설정한 기본값이 적용됩니다.<br>
+    "기본적으로 첫 번째 페이지(0)에서 10개씩, id 내림차순으로 보여줘"라는 설정입니다.</p>
+
+    <h3>왜 페이지 계산 로직을 View가 아닌 Controller에 두나?</h3>
+    <p>페이지 범위 계산(<code>Math.max</code>, <code>Math.min</code>)은 데이터 처리 로직입니다.<br>
+    Thymeleaf(View)는 화면 표시에만 집중해야 하고, 계산은 Controller나 Service가 담당하는 것이 올바른 역할 분리입니다.<br>
+    계산 결과를 Model에 담아서 View에 넘기면, View는 그냥 숫자를 받아서 반복만 하면 됩니다.</p>
+
+    <h3>왜 페이지 링크 URL은 page-1을 전달하나?</h3>
+    <pre><code class="language-html">th:href="@{/board/list(page=${page-1})}"</code></pre>
+    <p>화면에 보이는 페이지 번호는 1-based (1, 2, 3...)이지만, Spring은 0-based (0, 1, 2...)를 기대합니다.<br>
+    "3번 페이지" 버튼을 클릭하면 <code>?page=2</code>로 요청해야 Spring이 올바르게 3번째 페이지를 꺼내옵니다.</p>
+
+    <h3>100개 중 10개를 걸러서 보여주는 건가? 아니면 처음부터 10개만 가져오나?</h3>
+    <p><strong>처음부터 10개만 가져옵니다.</strong> 100개를 로드한 뒤 나머지를 버리는 게 아닙니다.<br>
+    <code>findAll(pageable)</code>을 호출하면 JPA가 SQL을 <strong>두 번</strong> 실행합니다.</p>
+
+    <pre><code class="language-java">// 쿼리 1: 해당 페이지 데이터만 (page=2, size=10 기준)
+SELECT * FROM board ORDER BY id DESC LIMIT 10 OFFSET 20
+
+// 쿼리 2: 전체 개수 — getTotalPages() 계산에 필요
+SELECT COUNT(*) FROM board</code></pre>
+
+    <p>DB에서 실제로 10개만 전송하므로 게시글이 100만 개여도 조회 성능은 동일합니다.<br>
+    <code>OFFSET = 페이지 번호 × size</code> 공식으로 몇 번째 행부터 가져올지를 결정합니다.</p>
+
+    <div class="compare-grid" style="margin-top:12px;">
+      <div class="compare-card">
+        <h4>page=0 (첫 페이지)</h4>
+        SELECT * FROM board<br>
+        ORDER BY id DESC<br>
+        <span class="new">LIMIT 10 OFFSET 0</span>
+      </div>
+      <div class="compare-card">
+        <h4>page=2 (3번째 페이지)</h4>
+        SELECT * FROM board<br>
+        ORDER BY id DESC<br>
+        <span class="new">LIMIT 10 OFFSET 20</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 5 -->
+  <div class="step" id="step5">
+    <div class="step-label">Step 5</div>
+    <h2>실행 흐름</h2>
+    <p style="margin-bottom:16px;">사용자가 3번 페이지 버튼을 클릭했을 때의 흐름입니다.</p>
+
+    <svg viewBox="0 0 780 760" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:700px;display:block;margin:0 auto;">
+
+      <!-- 1. 브라우저 요청 -->
+      <rect x="190" y="10" width="390" height="55" rx="8" fill="#1f2937" stroke="#6b7280" stroke-width="1.5"/>
+      <text x="385" y="33" text-anchor="middle" fill="#9ca3af" font-size="12" font-family="sans-serif">브라우저</text>
+      <text x="385" y="54" text-anchor="middle" fill="#c9d1d9" font-size="13" font-family="monospace">GET /board/list?page=2</text>
+      <line x1="385" y1="67" x2="385" y2="87" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="385,93 379,83 391,83" fill="#4b5563"/>
+
+      <!-- 2. Spring이 Pageable 생성 -->
+      <rect x="140" y="93" width="490" height="65" rx="8" fill="#2d2200" stroke="#e3b341" stroke-width="1.5"/>
+      <text x="385" y="114" text-anchor="middle" fill="#e3b341" font-size="12" font-family="sans-serif" font-weight="bold">Spring (자동)</text>
+      <text x="385" y="133" text-anchor="middle" fill="#c9d1d9" font-size="12" font-family="monospace">page=2 → Pageable 객체 생성</text>
+      <text x="385" y="150" text-anchor="middle" fill="#9ca3af" font-size="11" font-family="sans-serif">{ page:2, size:10, sort:id DESC }</text>
+      <line x1="385" y1="160" x2="385" y2="180" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="385,186 379,176 391,176" fill="#4b5563"/>
+
+      <!-- 3. Controller -->
+      <rect x="190" y="186" width="390" height="65" rx="8" fill="#1e2d40" stroke="#3b82f6" stroke-width="2"/>
+      <text x="385" y="207" text-anchor="middle" fill="#93c5fd" font-size="12" font-family="sans-serif" font-weight="bold">BoardController.boardlist()</text>
+      <text x="385" y="228" text-anchor="middle" fill="#c9d1d9" font-size="12" font-family="monospace">boardService.boardList(pageable) 호출</text>
+      <text x="385" y="244" text-anchor="middle" fill="#9ca3af" font-size="11" font-family="sans-serif">nowPage / startPage / endPage 계산</text>
+      <line x1="385" y1="253" x2="385" y2="273" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="385,279 379,269 391,269" fill="#4b5563"/>
+
+      <!-- 4. Service -->
+      <rect x="190" y="279" width="390" height="55" rx="8" fill="#1a2e1a" stroke="#3fb950" stroke-width="2"/>
+      <text x="385" y="300" text-anchor="middle" fill="#3fb950" font-size="12" font-family="sans-serif" font-weight="bold">BoardService.boardList(pageable)</text>
+      <text x="385" y="322" text-anchor="middle" fill="#c9d1d9" font-size="12" font-family="monospace">boardRepository.findAll(pageable) 호출</text>
+      <line x1="385" y1="336" x2="385" y2="356" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="385,362 379,352 391,352" fill="#4b5563"/>
+
+      <!-- 5. Repository -->
+      <rect x="190" y="362" width="390" height="55" rx="8" fill="#2a1f30" stroke="#a78bfa" stroke-width="2"/>
+      <text x="385" y="383" text-anchor="middle" fill="#c4b5fd" font-size="12" font-family="sans-serif" font-weight="bold">BoardRepository.findAll(pageable)</text>
+      <text x="385" y="405" text-anchor="middle" fill="#c9d1d9" font-size="12" font-family="monospace">JPA가 SQL 자동 생성</text>
+      <line x1="385" y1="419" x2="385" y2="439" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="385,445 379,435 391,435" fill="#4b5563"/>
+
+      <!-- 6. DB -->
+      <rect x="190" y="445" width="390" height="60" rx="8" fill="#2d1f10" stroke="#f59e0b" stroke-width="2"/>
+      <text x="385" y="466" text-anchor="middle" fill="#fbbf24" font-size="12" font-family="sans-serif" font-weight="bold">Database</text>
+      <text x="385" y="488" text-anchor="middle" fill="#c9d1d9" font-size="12" font-family="monospace">SELECT ... LIMIT 10 OFFSET 20</text>
+
+      <!-- DB → Repository 반환 오른쪽 -->
+      <line x1="582" y1="475" x2="640" y2="475" stroke="#4b5563" stroke-width="1.5"/>
+      <line x1="640" y1="475" x2="640" y2="390" stroke="#4b5563" stroke-width="1.5"/>
+      <line x1="640" y1="390" x2="588" y2="390" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="582,390 592,385 592,395" fill="#4b5563"/>
+      <text x="670" y="440" text-anchor="middle" fill="#6b7280" font-size="10" font-family="sans-serif" transform="rotate(90,670,440)">Page&lt;Board&gt; 반환</text>
+
+      <!-- Repository → Service 반환 왼쪽 -->
+      <line x1="188" y1="390" x2="130" y2="390" stroke="#4b5563" stroke-width="1.5"/>
+      <line x1="130" y1="390" x2="130" y2="307" stroke="#4b5563" stroke-width="1.5"/>
+      <line x1="130" y1="307" x2="183" y2="307" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="189,307 179,302 179,312" fill="#4b5563"/>
+      <text x="100" y="353" text-anchor="middle" fill="#6b7280" font-size="10" font-family="sans-serif" transform="rotate(-90,100,353)">Page&lt;Board&gt; 반환</text>
+
+      <!-- Service → Controller 반환 왼쪽 -->
+      <line x1="130" y1="307" x2="130" y2="220" stroke="#4b5563" stroke-width="1.5"/>
+      <line x1="130" y1="220" x2="183" y2="220" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="189,220 179,215 179,225" fill="#4b5563"/>
+      <text x="100" y="267" text-anchor="middle" fill="#6b7280" font-size="10" font-family="sans-serif" transform="rotate(-90,100,267)">Page&lt;Board&gt; 반환</text>
+
+      <!-- Controller → View (model) 오른쪽 점선 -->
+      <line x1="582" y1="220" x2="640" y2="220" stroke="#4b5563" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <line x1="640" y1="220" x2="640" y2="575" stroke="#4b5563" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <line x1="640" y1="575" x2="588" y2="575" stroke="#4b5563" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <polygon points="582,575 592,570 592,580" fill="#4b5563"/>
+      <text x="710" y="400" text-anchor="middle" fill="#3fb950" font-size="10" font-family="sans-serif" transform="rotate(90,710,400)">model에 list/nowPage/startPage/endPage 담기</text>
+
+      <!-- 7. View -->
+      <rect x="190" y="558" width="390" height="65" rx="8" fill="#1f1030" stroke="#ec4899" stroke-width="2"/>
+      <text x="385" y="579" text-anchor="middle" fill="#f9a8d4" font-size="12" font-family="sans-serif" font-weight="bold">boardlist.html (Thymeleaf)</text>
+      <text x="385" y="599" text-anchor="middle" fill="#c9d1d9" font-size="12" font-family="monospace">th:each로 게시글 목록 출력</text>
+      <text x="385" y="616" text-anchor="middle" fill="#c9d1d9" font-size="12" font-family="monospace">#numbers.sequence()로 페이지 버튼 생성</text>
+      <line x1="385" y1="625" x2="385" y2="645" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="385,651 379,641 391,641" fill="#4b5563"/>
+
+      <!-- 8. 브라우저 응답 -->
+      <rect x="230" y="651" width="310" height="55" rx="8" fill="#1f2937" stroke="#6b7280" stroke-width="1.5"/>
+      <text x="385" y="672" text-anchor="middle" fill="#9ca3af" font-size="12" font-family="sans-serif">브라우저</text>
+      <text x="385" y="694" text-anchor="middle" fill="#c9d1d9" font-size="13" font-family="monospace">3페이지 게시글 + 페이지 버튼 표시</text>
+
+      <!-- 레이어 레이블 -->
+      <text x="16" y="230" fill="#3b82f6" font-size="10" font-family="sans-serif" font-weight="bold">Web</text>
+      <text x="16" y="315" fill="#3fb950" font-size="10" font-family="sans-serif" font-weight="bold">Service</text>
+      <text x="16" y="400" fill="#a78bfa" font-size="10" font-family="sans-serif" font-weight="bold">Data</text>
+      <text x="16" y="488" fill="#fbbf24" font-size="10" font-family="sans-serif" font-weight="bold">DB</text>
+      <text x="16" y="595" fill="#ec4899" font-size="10" font-family="sans-serif" font-weight="bold">View</text>
+    </svg>
+  </div>
+
+  <!-- STEP 6 -->
+  <div class="step" id="step6">
+    <div class="step-label">Step 6</div>
+    <h2>이전 Commit과 비교</h2>
+    <div class="compare-grid">
+      <div class="compare-card">
+        <h4>이전 — 전체 목록 조회</h4>
+        GET /board/list<br>
+        &nbsp;&nbsp;↓<br>
+        <span style="color:#6b7280;">boardList()</span><br>
+        &nbsp;&nbsp;↓<br>
+        <span style="color:#6b7280;">findAll()</span><br>
+        &nbsp;&nbsp;↓<br>
+        <span style="color:#6b7280;">List&lt;Board&gt; (전체)</span><br>
+        &nbsp;&nbsp;↓<br>
+        <span style="color:#6b7280;">Model에 list만 담음</span><br>
+        &nbsp;&nbsp;↓<br>
+        <span style="color:#6b7280;">HTML: 게시글만 나열</span>
+      </div>
+      <div class="compare-card">
+        <h4>현재 — 페이징 조회</h4>
+        GET /board/list?page=2<br>
+        &nbsp;&nbsp;↓<br>
+        <span class="new">boardList(pageable)</span><br>
+        &nbsp;&nbsp;↓<br>
+        <span class="new">findAll(pageable)</span><br>
+        &nbsp;&nbsp;↓<br>
+        <span class="new">Page&lt;Board&gt; (10개 + 메타정보)</span><br>
+        &nbsp;&nbsp;↓<br>
+        <span class="new">nowPage/startPage/endPage 계산</span><br>
+        &nbsp;&nbsp;↓<br>
+        <span class="new">HTML: 게시글 + 페이지 버튼</span>
+      </div>
+    </div>
+    <p style="margin-top:16px;">코드 변경량은 적지만 사용자 경험이 크게 달라집니다.<br>
+    게시글이 1000개 있어도 한 페이지에 10개만 로드하므로 성능도 크게 개선됩니다.</p>
+  </div>
+
+  <!-- STEP 7 -->
+  <div class="step" id="step7">
+    <div class="step-label">Step 7</div>
+    <h2>초보자가 하기 쉬운 착각</h2>
+
+    <div class="warn">
+      <strong>Page가 List를 상속한 것 아닌가?</strong>
+      <p><code>Page</code>는 <code>List</code>를 상속하지 않습니다.<br>
+      <code>Page</code>는 Spring Data에서 제공하는 별도의 인터페이스입니다.<br>
+      <code>page.getContent()</code>를 호출하면 <code>List&lt;Board&gt;</code>를 꺼낼 수 있습니다.<br>
+      Thymeleaf에서 <code>th:each="board: ${list}"</code>로 <code>Page</code>를 직접 순회할 수 있는 이유는 <code>Page</code>가 <code>Iterable</code>을 구현하기 때문입니다.</p>
+    </div>
+
+    <div class="warn">
+      <strong>nowPage에 +1을 빼먹으면?</strong>
+      <p>화면에 페이지 번호가 1 대신 0, 2 대신 1로 표시됩니다.<br>
+      더 심각하게는 <code>startPage</code> 계산에서 <code>Math.max(0 - 4, 1) = 1</code>이 되어 첫 페이지에서는 우연히 맞지만, 2번째 페이지에서는 startPage가 잘못 계산됩니다.<br>
+      <code>+1</code>은 반드시 필요합니다.</p>
+    </div>
+
+    <div class="warn">
+      <strong>#numbers.sequence()에서 # 을 빼면?</strong>
+      <p><code>${numbers.sequence(...)}</code>처럼 <code>#</code>을 빼면, Thymeleaf는 모델에서 <code>numbers</code>라는 이름의 변수를 찾습니다.<br>
+      그런 변수가 없으므로 <code>null</code>이 되어 페이지 버튼이 아무것도 렌더링되지 않습니다.<br>
+      Thymeleaf 유틸리티 객체(<code>#numbers</code>, <code>#strings</code>, <code>#lists</code> 등)는 반드시 <code>#</code>를 붙여야 합니다.</p>
+    </div>
+
+    <div class="warn">
+      <strong>페이지 링크 URL에서 page-1이 헷갈린다</strong>
+      <p>화면 버튼: 1, 2, 3, 4, 5 (1-based)<br>
+      Spring이 받는 값: 0, 1, 2, 3, 4 (0-based)</p>
+      <p>"3" 버튼을 클릭하면 <code>?page=2</code>를 전송해야 합니다. 그래서 <code>page=${page-1}</code>입니다.<br>
+      화면 번호 − 1 = Spring이 기대하는 번호라고 기억하면 됩니다.</p>
+    </div>
+
+    <div class="warn">
+      <strong>사용자가 URL에 ?page=9999를 직접 입력해서 조작하면?</strong>
+      <p>가능합니다. Spring은 존재하지 않는 페이지 번호를 요청받으면 <strong>예외 없이 빈 Page를 반환</strong>합니다.<br>
+      게시글 0개짜리 빈 화면이 보일 뿐, 오류는 나지 않습니다.</p>
+      <p>막고 싶다면 Controller에서 직접 검증하면 됩니다.</p>
+      <pre style="margin:8px 0 0;"><code class="language-java">Page&lt;Board&gt; list = boardService.boardList(pageable);
+if (pageable.getPageNumber() >= list.getTotalPages()) {
+    return "redirect:/board/list"; // 첫 페이지로 리다이렉트
+}</code></pre>
+      <p style="margin-top:8px;">단, 이 게시판처럼 <strong>공개된 목록 조회</strong>는 굳이 막지 않아도 됩니다.<br>
+      막는 게 중요한 경우는 <strong>인증이 필요한 데이터</strong>에 page 파라미터로 접근할 수 있을 때입니다.</p>
+    </div>
+  </div>
+
+  <!-- STEP 8 -->
+  <div class="step" id="step8">
+    <div class="step-label">Step 8</div>
+    <h2>중요도 구분</h2>
+    <div class="learn-row">
+      <div class="learn-card red-card">
+        <h3>🔴 반드시 이해</h3>
+        <ul>
+          <li>Pageable로 페이징 조건 전달</li>
+          <li>Page&lt;T&gt;가 메타정보 포함</li>
+          <li>0-based 인덱스와 +1 변환</li>
+          <li>Math.max/min으로 페이지 범위 보정</li>
+          <li>#numbers.sequence() 사용법</li>
+        </ul>
+      </div>
+      <div class="learn-card yellow-card">
+        <h3>🟡 개념만 이해</h3>
+        <ul>
+          <li>Spring이 URL 파라미터를 Pageable로 자동 변환</li>
+          <li>@PageableDefault 기본값 설정</li>
+          <li>th:block은 HTML에 흔적이 없음</li>
+        </ul>
+      </div>
+      <div class="learn-card green-card">
+        <h3>🟢 나중에 공부</h3>
+        <ul>
+          <li>Slice vs Page 성능 차이</li>
+          <li>DB LIMIT/OFFSET SQL</li>
+          <li>커서 기반 페이징 (대용량)</li>
+          <li>PageableHandlerMethodArgumentResolver</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 9 -->
+  <div class="step" id="step9">
+    <div class="step-label">Step 9</div>
+    <h2>오늘 배운 것</h2>
+    <ul class="summary-list">
+      <li>Pageable은 "몇 페이지, 몇 개씩, 어떤 정렬"을 담은 객체로, Spring이 URL 파라미터를 읽어 자동 생성한다.</li>
+      <li>@PageableDefault로 URL에 파라미터가 없을 때 사용할 기본값을 설정할 수 있다.</li>
+      <li>Page&lt;T&gt;는 List&lt;T&gt;에 총 페이지 수, 현재 페이지 번호 등 페이징 메타정보가 추가된 타입이다.</li>
+      <li>Spring의 페이지 번호는 0-based이므로, 화면에 표시할 때는 +1을 해야 한다.</li>
+      <li>Math.max/min으로 startPage/endPage가 1 이하나 총 페이지 수 초과로 벗어나는 것을 막는다.</li>
+      <li>Thymeleaf의 #numbers.sequence(start, end)는 숫자 범위 배열을 만들어 페이지 버튼 반복에 활용한다.</li>
+      <li>th:block은 Thymeleaf 제어 전용 태그로 실제 HTML에는 아무 태그도 남기지 않는다.</li>
+    </ul>
+  </div>
+
+  <!-- STEP 10 -->
+  <div class="step" id="step10">
+    <div class="step-label">Step 10</div>
+    <h2>이해도 확인 질문</h2>
+    <ol class="question-list">
+      <li>
+        <span>Page&lt;Board&gt;와 List&lt;Board&gt;의 차이는 무엇인가요?</span>
+        <details><summary></summary><p>List는 데이터만 담습니다. Page는 데이터(게시글 목록) 외에도 총 페이지 수, 현재 페이지 번호, 전체 데이터 개수 등의 메타정보를 함께 포함합니다. 페이지 버튼을 만들려면 이 메타정보가 필요하기 때문에 List 대신 Page를 사용합니다.</p></details>
+      </li>
+      <li>
+        <span>nowPage = list.getPageable().getPageNumber() + 1에서 왜 +1을 하나요?</span>
+        <details><summary></summary><p>Spring Data JPA의 페이지 번호는 0부터 시작합니다(0-based). 첫 번째 페이지가 0, 두 번째가 1입니다. 하지만 사용자에게는 1번 페이지, 2번 페이지로 보여줘야 하므로 +1을 해서 1-based 번호로 변환합니다.</p></details>
+      </li>
+      <li>
+        <span>startPage에 Math.max, endPage에 Math.min을 사용하는 이유는?</span>
+        <details><summary></summary><p>현재 페이지가 2일 때 startPage = 2-4 = -2가 되어 음수가 될 수 있습니다. Math.max(-2, 1)로 최소값을 1로 보정합니다. 반대로 마지막 근처 페이지에서는 endPage가 총 페이지 수를 초과할 수 있습니다. Math.min으로 초과하지 않도록 제한합니다.</p></details>
+      </li>
+      <li>
+        <span>#numbers.sequence(startPage, endPage)에서 #을 빼면 어떻게 되나요?</span>
+        <details><summary></summary><p>Thymeleaf는 #numbers를 내장 유틸리티 객체로 인식합니다. #을 빼면 모델에서 numbers라는 변수를 찾는데, 그런 변수가 없으므로 null이 됩니다. 결과적으로 페이지 버튼이 아무것도 렌더링되지 않습니다.</p></details>
+      </li>
+      <li>
+        <span>페이지 링크 URL이 th:href="@{/board/list(page=${page-1})}"인 이유는?</span>
+        <details><summary></summary><p>화면에 표시되는 페이지 번호는 1-based(1, 2, 3...)이지만, Spring Controller가 받는 page 파라미터는 0-based(0, 1, 2...)여야 합니다. "3" 버튼을 클릭할 때 ?page=2를 전송해야 Spring이 3번째 페이지를 조회합니다. 그래서 화면 번호에서 1을 빼서 전송합니다.</p></details>
+      </li>
+    </ol>
+  </div>
+
+  <!-- STEP 11 -->
+  <div class="step" id="step11">
+    <div class="step-label">Step 11</div>
+    <h2>작은 실습</h2>
+    <div class="practice-box">
+      <h3>실습: 페이지당 게시글 수를 5개로 바꿔보기</h3>
+      <p>현재 한 페이지에 10개의 게시글이 나옵니다.<br>
+      이것을 5개씩 보이도록 변경해보세요.</p>
+      <p><strong>수정할 코드:</strong></p>
+      <pre><code class="language-java">@PageableDefault(page=0, size=10, sort="id", direction = Sort.Direction.DESC) Pageable pageable</code></pre>
+      <p><strong>힌트:</strong><br>
+      <code>size=10</code>을 <code>size=5</code>로 바꾸면 됩니다.<br>
+      변경 후 게시글 11개 이상 있을 때 /board/list에 접속해서 페이지 버튼이 더 많이 생기는지 확인해보세요.</p>
+      <p style="margin-top:12px;"><strong>추가 도전:</strong><br>
+      페이지 버튼 범위를 현재 "앞 4개, 뒤 5개"에서 "앞 2개, 뒤 2개"로 줄여보세요.<br>
+      <code>nowPage - 4</code>와 <code>nowPage + 5</code> 값을 바꾸면 됩니다.</p>
+    </div>
+  </div>
+
+  <!-- STEP 12 -->
+  <div class="step" id="step12">
+    <div class="step-label">Step 12</div>
+    <h2>다음 Commit을 위한 준비</h2>
+    <ul class="next-list">
+      <li><strong>검색 기능과 페이징 연동</strong> — 검색어로 필터링된 결과에도 페이징이 동작해야 함. <code>findByTitleContaining(keyword, pageable)</code> 같은 Spring Data JPA 메서드 파생 쿼리를 배울 가능성이 높음</li>
+      <li><strong>검색 파라미터 유지</strong> — 페이지 버튼 클릭 시 검색어를 URL에 같이 유지하려면 <code>@{/board/list(page=${page-1}, searchKeyword=${searchKeyword})}</code> 형태가 필요</li>
+      <li><strong>Spring Data JPA 메서드 이름 규칙</strong> — <code>findBy컬럼명Containing()</code>, <code>findBy컬럼명</code> 등 메서드 이름만으로 쿼리를 자동 생성하는 방식</li>
+      <li><strong>Thymeleaf 변수 유지</strong> — 검색어를 input에 미리 채워 두려면 <code>th:value="${searchKeyword}"</code> 같은 패턴 필요</li>
+    </ul>
+  </div>
+
+</div>
+<script>hljs.highlightAll();</script>
+<script>
+  const tocLinks = document.querySelectorAll('.toc a[href^="#"]');
+  const sections = Array.from(tocLinks).map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        tocLinks.forEach(a => a.classList.remove('toc-active'));
+        const active = document.querySelector(`.toc a[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('toc-active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
