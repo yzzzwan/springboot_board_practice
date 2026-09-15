@@ -148,6 +148,65 @@ Spring 관점
 
 등을 현재 프로젝트의 코드와 연결해서 설명한다.
 
+**각 소제목 바로 아래에 해당 코드를 먼저 보여준다.**
+
+소제목만 보면 어느 파일의 어느 부분을 말하는지 알 수 없다.
+반드시 다음 순서로 작성한다.
+
+```
+소제목 (왜 ~인가?)
+↓
+파일탭 레이블 (파일명만 표시)
+↓
+해당 코드 블록
+↓
+이유 설명
+```
+
+파일탭은 `<p class="file-tab">파일명.java</p>`로 작성한다.
+"이 줄을 말합니다", "이 부분을 말합니다" 같은 문구는 사용하지 않는다.
+파일명만 간결하게 보여주는 것으로 충분하다.
+
+예시:
+
+```html
+<h3>왜 null 체크로 분기하는가?</h3>
+<p class="file-tab">BoardController.java</p>
+<pre><code class="language-java">
+if (searchKeyword == null) {
+    list = boardService.boardList(pageable);
+} else {
+    list = boardService.boardSearchList(searchKeyword, pageable);
+}
+</code></pre>
+<p>이유 설명...</p>
+```
+
+CSS 클래스 `.file-tab`은 기준 HTML 파일에 정의되어 있으며 재사용한다.
+
+---
+
+## 파일탭 규칙 — 모든 코드 블록에 적용
+
+STEP 4뿐 아니라 **HTML 전체의 모든 `<pre><code>` 블록** 바로 위에 파일탭을 붙인다.
+
+```html
+<p class="file-tab">파일명</p>
+<pre><code class="language-java">...</code></pre>
+```
+
+파일탭 레이블 기준:
+
+| 상황 | 파일탭 레이블 |
+|---|---|
+| Java 소스 코드 | `BoardController.java`, `BoardService.java` 등 실제 파일명 |
+| HTML/Thymeleaf 코드 | `boardlist.html`, `boardwrite.html` 등 실제 파일명 |
+| JPA가 자동 생성한 SQL | `실행되는 SQL` |
+| HTTP 요청 URL 예시 | `HTTP 요청` |
+| 비교용 대안 코드 | `파일명 — 대안 방식` 또는 `파일명 — @Query 방식` |
+
+코드가 어느 파일에도 속하지 않는 순수 개념 예시(의사코드)는 파일탭을 생략한다.
+
 ---
 
 ### STEP 5. 실행 흐름

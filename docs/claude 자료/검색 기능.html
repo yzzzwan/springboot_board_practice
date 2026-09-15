@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>검색 기능 — Spring 수업</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0f1117;
+    color: #c9d1d9;
+    font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    padding: 40px 20px;
+  }
+  .container { max-width: 860px; margin: 0 auto; }
+
+  .commit-link {
+    display: inline-block;
+    margin-bottom: 10px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 10px 18px;
+    color: #58a6ff;
+    text-decoration: none;
+    font-size: 13px;
+    font-family: monospace;
+  }
+  .commit-link:hover { background: #1f2937; }
+  .commit-links { margin-bottom: 32px; display: flex; flex-direction: column; gap: 6px; }
+
+  h1 {
+    font-size: 26px;
+    color: #e6edf3;
+    margin-bottom: 8px;
+  }
+  .subtitle { color: #8b949e; margin-bottom: 40px; font-size: 14px; }
+
+  .learn-box {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin-bottom: 40px;
+  }
+  .learn-box h2 { color: #e6edf3; font-size: 16px; margin-bottom: 16px; }
+  .learn-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .learn-card { border-radius: 8px; padding: 16px; }
+  .learn-card h3 { font-size: 13px; margin-bottom: 8px; }
+  .learn-card ul { padding-left: 16px; font-size: 13px; line-height: 1.8; }
+  .red-card  { background: #2d1515; border: 1px solid #7f2020; }
+  .red-card h3 { color: #f85149; }
+  .yellow-card { background: #2d2200; border: 1px solid #7f5d00; }
+  .yellow-card h3 { color: #e3b341; }
+  .green-card { background: #0d2d16; border: 1px solid #1a7f37; }
+  .green-card h3 { color: #3fb950; }
+
+  .step {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 28px 32px;
+    margin-bottom: 28px;
+  }
+  .step-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #58a6ff;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .step h2 {
+    font-size: 18px;
+    color: #e6edf3;
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #21262d;
+  }
+
+  h3 { color: #e6edf3; font-size: 15px; margin: 20px 0 10px; }
+  h4 { color: #8b949e; font-size: 13px; margin: 14px 0 6px; font-weight: 600; }
+  p { margin-bottom: 10px; }
+
+  pre {
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 12px 0;
+  }
+  pre code.hljs {
+    font-family: 'Consolas', 'D2Coding', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    border-radius: 6px;
+    padding: 16px;
+  }
+  p code, li code {
+    background: #21262d;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 12px;
+  }
+
+  .flow-box {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 2.2;
+    color: #c9d1d9;
+  }
+  .flow-box .highlight { color: #58a6ff; font-weight: 700; }
+
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 14px;
+  }
+  .compare-card {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 16px;
+    font-family: monospace;
+    font-size: 13px;
+    line-height: 2;
+  }
+  .compare-card h4 { font-family: 'Segoe UI', sans-serif; margin-bottom: 10px; color: #8b949e; }
+  .compare-card .new { color: #3fb950; }
+
+  .warn {
+    border-left: 4px solid #e3b341;
+    background: #1c1a00;
+    padding: 14px 18px;
+    border-radius: 0 6px 6px 0;
+    margin: 12px 0;
+    font-size: 14px;
+  }
+  .warn strong { color: #e3b341; display: block; margin-bottom: 4px; }
+
+  ul, ol { padding-left: 20px; margin-bottom: 10px; }
+  li { margin-bottom: 4px; }
+
+  .summary-list {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 20px 24px;
+    list-style: none;
+    padding-left: 24px;
+  }
+  .summary-list li {
+    padding: 6px 0;
+    border-bottom: 1px solid #21262d;
+    font-size: 14px;
+  }
+  .summary-list li:last-child { border-bottom: none; }
+  .summary-list li::before { content: "✓ "; color: #3fb950; font-weight: 700; }
+
+  /* 정답 보기 */
+  .question-list details { background: #1e293b; border-radius: 4px; padding: 4px 10px; margin-top: 6px; }
+  .question-list details summary { color: #475569; font-size: 11px; cursor: pointer; user-select: none; list-style: none; }
+  .question-list details summary::-webkit-details-marker { display: none; }
+  .question-list details summary::before { content: "▶ 정답 보기"; }
+  .question-list details[open] summary::before { content: "▼ 정답 보기"; }
+  .question-list details[open] summary { margin-bottom: 4px; color: #64748b; }
+  .question-list details p { color: #cbd5e1; font-size: 13px; margin: 0; }
+
+  .question-list { counter-reset: q; padding-left: 0; list-style: none; }
+  .question-list li {
+    counter-increment: q;
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+  .question-list li::before {
+    content: "Q" counter(q) ". ";
+    color: #58a6ff;
+    font-weight: 700;
+  }
+
+  .file-tab {
+    display: inline-block;
+    background: #21262d;
+    border: 1px solid #30363d;
+    border-bottom: none;
+    border-radius: 6px 6px 0 0;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-family: 'Consolas', 'D2Coding', monospace;
+    color: #8b949e;
+    margin-top: 16px;
+    margin-bottom: 0;
+  }
+  .file-tab + pre {
+    border-radius: 0 6px 6px 6px;
+    margin-top: 0;
+  }
+
+  .practice-box {
+    background: #0d2d16;
+    border: 1px solid #1a7f37;
+    border-radius: 8px;
+    padding: 20px 24px;
+  }
+  .practice-box h3 { color: #3fb950; margin-top: 0; }
+
+  .next-list { padding-left: 0; list-style: none; counter-reset: n; }
+  .next-list li {
+    counter-increment: n;
+    padding: 10px 14px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+  .next-list li::before {
+    content: counter(n) ". ";
+    color: #58a6ff;
+    font-weight: 700;
+  }
+  .next-list li strong { color: #e6edf3; }
+
+  .bug-box {
+    border-left: 4px solid #f85149;
+    background: #1a0a0a;
+    padding: 14px 18px;
+    border-radius: 0 6px 6px 0;
+    margin: 12px 0;
+    font-size: 14px;
+  }
+  .bug-box strong { color: #f85149; display: block; margin-bottom: 4px; }
+
+  .fix-box {
+    border-left: 4px solid #3fb950;
+    background: #0a1a0a;
+    padding: 14px 18px;
+    border-radius: 0 6px 6px 0;
+    margin: 12px 0;
+    font-size: 14px;
+  }
+  .fix-box strong { color: #3fb950; display: block; margin-bottom: 4px; }
+
+  /* 목차 */
+  .toc {
+    position: fixed;
+    top: 40px;
+    right: 24px;
+    width: 164px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 14px 16px;
+    z-index: 100;
+  }
+  .toc-title { font-size: 10px; font-weight: 700; color: #58a6ff; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+  .toc ul { list-style: none; padding: 0; margin: 0; }
+  .toc ul li { margin-bottom: 5px; }
+  .toc ul li a { font-size: 12px; color: #8b949e; text-decoration: none; line-height: 1.4; display: block; }
+  .toc ul li a:hover { color: #c9d1d9; }
+  .toc ul li a.toc-active { color: #58a6ff; }
+  @media (max-width: 1200px) { .toc { display: none; } }
+</style>
+</head>
+<body>
+
+<nav class="toc">
+  <div class="toc-title">목차</div>
+  <ul>
+    <li><a href="#step1">한눈에 보기</a></li>
+    <li><a href="#step2">변경된 파일</a></li>
+    <li><a href="#step3">핵심 코드</a></li>
+    <li><a href="#step4">왜 이렇게?</a></li>
+    <li><a href="#step5">실행 흐름</a></li>
+    <li><a href="#step6">이전과 비교</a></li>
+    <li><a href="#step7">착각 주의</a></li>
+    <li><a href="#step8">중요도</a></li>
+    <li><a href="#step9">오늘 배운 것</a></li>
+    <li><a href="#step10">이해도 확인</a></li>
+    <li><a href="#step11">실습</a></li>
+    <li><a href="#step12">다음 준비</a></li>
+  </ul>
+</nav>
+
+<div class="container">
+
+  <div class="commit-links">
+    <a class="commit-link" href="https://github.com/yzzzwan/springboot_board_practice/commit/e3ead1875b98dd793d35639b9ed1621085946684" target="_blank">커밋 보기: e3ead18 — 검색 기능 1</a>
+    <a class="commit-link" href="https://github.com/yzzzwan/springboot_board_practice/commit/1164b7a617f5d718d43e937589370f4c1ca9ce6f" target="_blank">커밋 보기: 1164b7a — 검색 기능 2</a>
+  </div>
+
+  <h1>검색 기능</h1>
+  <p class="subtitle">Spring Data JPA 쿼리 메서드 · 파라미터 바인딩 · 검색어 유지</p>
+
+  <!-- 중요도 미리보기 -->
+  <div class="learn-box">
+    <h2>이번 커밋에서 배우는 것</h2>
+    <div class="learn-row">
+      <div class="learn-card red-card">
+        <h3>🔴 반드시 이해</h3>
+        <ul>
+          <li>Spring Data JPA 쿼리 메서드</li>
+          <li>Controller 파라미터 바인딩</li>
+          <li>null 체크로 분기 처리</li>
+        </ul>
+      </div>
+      <div class="learn-card yellow-card">
+        <h3>🟡 개념만 이해</h3>
+        <ul>
+          <li>LIKE 쿼리와 Containing</li>
+          <li>Thymeleaf param 객체</li>
+          <li>검색어 유지 패턴</li>
+        </ul>
+      </div>
+      <div class="learn-card green-card">
+        <h3>🟢 나중에 공부</h3>
+        <ul>
+          <li>JPQL 직접 작성</li>
+          <li>Querydsl</li>
+          <li>인덱스 최적화</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="step" id="step1">
+    <div class="step-label">Step 1</div>
+    <h2>이번 커밋 한눈에 보기</h2>
+    <p>이번 두 커밋에서 게시글 목록 페이지에 <strong>검색 기능</strong>을 추가했습니다.<br>
+    사용자가 검색어를 입력하면 제목에 해당 키워드가 포함된 게시글만 목록에 표시됩니다.</p>
+    <p>핵심은 Spring Data JPA의 <code>findByTitleContaining</code> 메서드입니다.<br>
+    SQL을 직접 작성하지 않아도 메서드 이름만으로 <code>LIKE '%keyword%'</code> 쿼리가 자동으로 생성됩니다.</p>
+    <p>또한 페이징 링크에 검색어를 함께 포함시켜, 다음 페이지로 이동해도 검색 결과가 유지되도록 했습니다.</p>
+    <p>첫 번째 커밋(검색 기능 1)에서 if/else 조건이 반대로 작성된 버그가 있었고,<br>
+    두 번째 커밋(검색 기능 2)에서 이를 수정하고 HTML 검색 폼도 추가했습니다.</p>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step" id="step2">
+    <div class="step-label">Step 2</div>
+    <h2>무엇이 변경되었는가</h2>
+
+    <h3>BoardRepository.java</h3>
+    <p>쿼리 메서드 <code>findByTitleContaining</code>이 추가되었습니다.<br>
+    이 메서드 하나를 선언하는 것만으로 제목에 키워드가 포함된 게시글을 페이징 조회하는 기능이 완성됩니다.<br>
+    SQL을 한 줄도 작성하지 않아도 되는 Spring Data JPA의 핵심 기능입니다.</p>
+
+    <h3>BoardService.java</h3>
+    <p>검색 전용 서비스 메서드 <code>boardSearchList</code>가 추가되었습니다.<br>
+    Repository의 <code>findByTitleContaining</code>을 호출해서 결과를 반환합니다.<br>
+    검색어가 없을 때 기존 <code>boardList</code> 메서드를 그대로 사용할 수 있도록 두 메서드를 분리했습니다.</p>
+
+    <h3>BoardController.java</h3>
+    <p><code>boardlist</code> 메서드에 <code>String searchKeyword</code> 파라미터가 추가되었습니다.<br>
+    사용자가 검색어를 입력하지 않으면 <code>searchKeyword</code>는 <code>null</code>이 되고, 전체 목록을 조회합니다.<br>
+    검색어가 있으면 <code>boardSearchList</code>를 호출해 검색 결과를 조회합니다.</p>
+
+    <h3>boardlist.html</h3>
+    <p>두 가지 변경이 있었습니다.<br>
+    첫째, 검색어를 입력하는 <code>&lt;form&gt;</code>이 추가되었습니다.<br>
+    둘째, 페이징 링크에 <code>searchKeyword</code> 파라미터가 포함되어 페이지를 넘겨도 검색어가 유지됩니다.</p>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step" id="step3">
+    <div class="step-label">Step 3</div>
+    <h2>핵심 코드 설명</h2>
+
+    <h3>① BoardRepository — 쿼리 메서드</h3>
+    <p class="file-tab">BoardRepository.java</p>
+    <pre><code class="language-java">Page&lt;Board&gt; findByTitleContaining(String searchKeyword, Pageable pageable);</code></pre>
+    <p>이것이 이번 커밋 전체에서 가장 중요한 한 줄입니다.<br>
+    메서드를 선언만 했는데 실제 SQL이 자동으로 만들어집니다.</p>
+    <p>Spring Data JPA는 메서드 이름을 분석합니다.</p>
+    <ul>
+      <li><code>findBy</code> → SELECT … WHERE</li>
+      <li><code>Title</code> → title 컬럼</li>
+      <li><code>Containing</code> → LIKE '%keyword%'</li>
+    </ul>
+    <p>결국 아래 SQL이 실행됩니다.</p>
+    <p class="file-tab">실행되는 SQL</p>
+    <pre><code class="language-java">SELECT * FROM board WHERE title LIKE '%검색어%' ORDER BY id DESC LIMIT 10</code></pre>
+
+    <h4>메서드 이름 규칙: findBy + 필드명 + 조건 키워드</h4>
+    <p><code>Containing</code>이 필수가 아닙니다.<br>
+    조건 키워드를 바꾸면 다른 SQL이 생성됩니다.</p>
+    <p class="file-tab">쿼리 메서드 종류</p>
+    <pre><code class="language-java">// 포함 검색 — LIKE '%keyword%'
+findByTitleContaining(String keyword)
+
+// 시작 검색 — LIKE 'keyword%'
+findByTitleStartingWith(String keyword)
+
+// 끝 검색 — LIKE '%keyword'
+findByTitleEndingWith(String keyword)
+
+// 정확히 일치 — WHERE title = 'keyword'
+findByTitle(String title)
+
+// OR 조건 — 제목 또는 내용에 포함
+findByTitleContainingOrContentContaining(String title, String content)
+
+// 크기 비교
+findByIdGreaterThan(Integer id)
+
+// 정렬 포함
+findByTitleContainingOrderByIdDesc(String keyword)</code></pre>
+    <p>필드명(<code>Title</code>, <code>Content</code> 등)은 Board 엔티티의 실제 필드명과 대소문자까지 맞춰야 합니다.</p>
+
+    <h4>findById는 왜 Repository에 선언하지 않아도 되나?</h4>
+    <p><code>JpaRepository</code>를 상속받으면 자주 쓰는 메서드들이 기본으로 포함되어 있습니다.</p>
+    <p class="file-tab">JpaRepository 기본 제공 메서드</p>
+    <pre><code class="language-java">findById(ID id)       // 단건 조회
+findAll()             // 전체 조회
+findAll(Pageable p)   // 페이징 조회
+save(T entity)        // 저장 / 수정
+deleteById(ID id)     // 삭제
+count()               // 개수
+existsById(ID id)     // 존재 여부</code></pre>
+    <p>이 메서드들은 어떤 프로젝트에서도 항상 필요하기 때문에 JpaRepository가 처음부터 제공합니다.<br>
+    반면 <code>findByTitleContaining</code>은 어떤 컬럼으로 어떤 조건을 쓸지 프로젝트마다 다르기 때문에 직접 선언해야 합니다.</p>
+
+    <svg viewBox="0 0 700 180" style="width:100%;max-width:700px;display:block;margin:16px auto;" xmlns="http://www.w3.org/2000/svg">
+      <rect width="700" height="180" fill="#0d1117" rx="8"/>
+      <!-- 메서드 이름 분해 -->
+      <text x="350" y="30" text-anchor="middle" fill="#8b949e" font-size="12" font-family="Segoe UI,sans-serif">메서드 이름 → SQL 자동 생성</text>
+      <!-- 토큰들 -->
+      <rect x="30" y="50" width="90" height="36" rx="6" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="75" y="73" text-anchor="middle" fill="#3b82f6" font-size="13" font-family="Consolas,monospace">findBy</text>
+      <rect x="140" y="50" width="80" height="36" rx="6" fill="#2d1515" stroke="#f85149" stroke-width="1.5"/>
+      <text x="180" y="73" text-anchor="middle" fill="#f85149" font-size="13" font-family="Consolas,monospace">Title</text>
+      <rect x="240" y="50" width="130" height="36" rx="6" fill="#0d2d16" stroke="#3fb950" stroke-width="1.5"/>
+      <text x="305" y="73" text-anchor="middle" fill="#3fb950" font-size="13" font-family="Consolas,monospace">Containing</text>
+      <!-- 화살표 아래 -->
+      <line x1="350" y1="100" x2="350" y2="118" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="350,124 344,114 356,114" fill="#4b5563"/>
+      <!-- SQL -->
+      <rect x="60" y="130" width="580" height="34" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+      <text x="350" y="152" text-anchor="middle" fill="#c9d1d9" font-size="12" font-family="Consolas,monospace">WHERE title LIKE '%검색어%'</text>
+      <!-- 레이블들 -->
+      <text x="75" y="103" text-anchor="middle" fill="#3b82f6" font-size="10" font-family="Segoe UI,sans-serif">SELECT WHERE</text>
+      <text x="180" y="103" text-anchor="middle" fill="#f85149" font-size="10" font-family="Segoe UI,sans-serif">컬럼명</text>
+      <text x="305" y="103" text-anchor="middle" fill="#3fb950" font-size="10" font-family="Segoe UI,sans-serif">LIKE '%…%'</text>
+    </svg>
+
+    <h3>② BoardController — 파라미터 바인딩과 분기</h3>
+    <p class="file-tab">BoardController.java</p>
+    <pre><code class="language-java">public String boardlist(Model model,
+                        @PageableDefault(...) Pageable pageable,
+                        String searchKeyword) {
+
+    Page&lt;Board&gt; list = null;
+
+    if (searchKeyword == null) {
+        list = boardService.boardList(pageable);       // 전체 목록
+    } else {
+        list = boardService.boardSearchList(searchKeyword, pageable); // 검색 결과
+    }
+    ...
+}</code></pre>
+    <p><code>String searchKeyword</code>는 URL 쿼리 파라미터 <code>?searchKeyword=xxx</code>를 자동으로 받아줍니다.<br>
+    <code>@RequestParam</code> 없이도 Spring MVC가 이름이 같으면 자동으로 연결해줍니다.<br>
+    검색어가 없으면 <code>null</code>이 들어오고, 검색어가 있으면 문자열이 들어옵니다.</p>
+
+    <div class="warn">
+      <strong>버그와 수정 과정</strong>
+      <p>검색 기능 1 커밋에서 조건이 반대로 작성되었습니다.<br>
+      <code>if (searchKeyword != null)</code>일 때 전체 목록을, <code>else</code>일 때 검색 결과를 조회하는 코드였습니다.<br>
+      이 상태에서는 검색어가 있으면 전체 목록이, 검색어가 없으면 null을 boardSearchList에 넘겨 오류가 납니다.</p>
+      <p>검색 기능 2 커밋에서 <code>!= null</code>을 <code>== null</code>로 수정해 올바르게 동작하게 했습니다.<br>
+      이런 조건 반전 버그는 매우 흔합니다. 코드를 짜고 나면 if/else 조건을 한 번 더 확인하는 습관을 들이세요.</p>
+    </div>
+
+    <h3>③ boardlist.html — 검색 폼과 검색어 유지</h3>
+    <p class="file-tab">boardlist.html</p>
+    <pre><code class="language-html">&lt;!-- 페이징 링크에 searchKeyword를 함께 전달 --&gt;
+&lt;a th:if="${page != nowPage}"
+   th:href="@{/board/list(page=${(page-1)}, searchKeyword = ${param.searchKeyword})}"
+   th:text="${page}"&gt;&lt;/a&gt;
+
+&lt;!-- 검색 폼 --&gt;
+&lt;form th:action="@{/board/list}" method="get"&gt;
+    &lt;input type="text" name="searchKeyword"&gt;
+    &lt;button type="submit"&gt;검색&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+    <p><code>${param.searchKeyword}</code>는 현재 페이지의 URL에서 <code>searchKeyword</code> 파라미터를 읽어옵니다.<br>
+    이것을 페이징 링크에 포함시키면 2페이지, 3페이지로 이동해도 검색어가 사라지지 않습니다.</p>
+    <p>검색 폼의 <code>name="searchKeyword"</code>는 Controller의 <code>String searchKeyword</code> 파라미터 이름과 반드시 일치해야 합니다.<br>
+    이름이 같아야 Spring이 자동으로 연결해줍니다.</p>
+
+    <h4>param.searchKeyword 대신 model.addAttribute를 써도 되나?</h4>
+    <p>됩니다. 둘 다 동작합니다.</p>
+    <p class="file-tab">model.addAttribute 방식 (대안)</p>
+    <pre><code class="language-java">// BoardController.java
+model.addAttribute("searchKeyword", searchKeyword);</code></pre>
+    <pre><code class="language-html">&lt;!-- boardlist.html --&gt;
+searchKeyword = ${searchKeyword}</code></pre>
+    <p>차이는 데이터가 어디서 오는가입니다.<br>
+    <code>${param.searchKeyword}</code>는 Thymeleaf가 현재 URL의 쿼리 파라미터를 직접 읽습니다. Controller를 거치지 않습니다.<br>
+    <code>model.addAttribute</code>는 Controller가 명시적으로 값을 넘겨줍니다.</p>
+    <p>결과는 같지만 <code>param</code>을 쓰면 Controller에 코드를 추가하지 않아도 되어 더 간결합니다.</p>
+
+    <h4>@{/board/list(page=..., searchKeyword=...)} 로 URL이 어떻게 만들어지나?</h4>
+    <p>Thymeleaf의 <code>@{경로(key=value, key=value)}</code> 문법은 괄호 안의 값을 자동으로 쿼리스트링으로 붙여줍니다.</p>
+    <p>예를 들어 현재 URL이 <code>/board/list?searchKeyword=Spring</code>이고 3페이지 링크라면:</p>
+    <p class="file-tab">생성되는 URL</p>
+    <pre><code class="language-java">/board/list?page=2&searchKeyword=Spring</code></pre>
+    <p>검색어 없이 접근한 경우 <code>param.searchKeyword</code>가 null이므로:</p>
+    <pre><code class="language-java">/board/list?page=2</code></pre>
+    <p>null인 파라미터는 Thymeleaf가 URL에 포함시키지 않습니다. <code>searchKeyword=</code>가 사라집니다.</p>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step" id="step4">
+    <div class="step-label">Step 4</div>
+    <h2>왜 이렇게 작성했는가</h2>
+
+    <h3>왜 SQL을 직접 작성하지 않고 findByTitleContaining을 쓰는가?</h3>
+    <p class="file-tab">BoardRepository.java</p>
+    <pre><code class="language-java">Page&lt;Board&gt; findByTitleContaining(String searchKeyword, Pageable pageable);</code></pre>
+    <p>SQL을 직접 작성하면 아래처럼 <code>@Query</code>를 붙여야 합니다.</p>
+    <p class="file-tab">BoardRepository.java — @Query 방식 (대안)</p>
+    <pre><code class="language-java">@Query("SELECT b FROM Board b WHERE b.title LIKE %:keyword%")
+Page&lt;Board&gt; searchByTitle(String keyword, Pageable pageable);</code></pre>
+    <p>두 방법 모두 동일하게 동작합니다.<br>
+    하지만 단순한 검색 조건이라면 메서드 이름 규칙을 따르는 것이 코드가 훨씬 짧고 읽기 쉽습니다.<br>
+    복잡한 조건(여러 컬럼, OR 조건, 동적 쿼리 등)이 필요할 때는 <code>@Query</code>나 Querydsl을 씁니다.</p>
+
+    <h3>왜 boardSearchList라는 메서드를 Service에 따로 만들었는가?</h3>
+    <p class="file-tab">BoardService.java</p>
+    <pre><code class="language-java">public Page&lt;Board&gt; boardSearchList(String searchKeyword, Pageable pageable) {
+    return boardRepository.findByTitleContaining(searchKeyword, pageable);
+}</code></pre>
+    <p>Controller에서 <code>boardRepository.findByTitleContaining(...)</code>을 직접 호출할 수도 있습니다.<br>
+    하지만 그렇게 하면 Controller가 Repository에 직접 의존하게 됩니다.<br>
+    Service 메서드를 하나 두면 나중에 검색 로직이 복잡해져도(예: 제목+내용 동시 검색) Controller 코드를 건드리지 않아도 됩니다.<br>
+    역할을 분리해두면 변경이 생겼을 때 영향 범위가 좁아집니다.</p>
+
+    <h3>왜 null 체크로 분기하는가?</h3>
+    <p class="file-tab">BoardController.java</p>
+    <pre><code class="language-java">Page&lt;Board&gt; list = null;
+
+if (searchKeyword == null) {           // ← 이 if문이 "null 체크"
+    list = boardService.boardList(pageable);              // A 경로: 전체 목록
+} else {
+    list = boardService.boardSearchList(searchKeyword, pageable); // B 경로: 검색 결과
+}</code></pre>
+    <p><strong>분기</strong>란 if/else로 실행 경로가 두 갈래로 나뉜다는 뜻입니다.<br>
+    <code>searchKeyword</code>가 <code>null</code>이면 A 경로(전체 목록), 값이 있으면 B 경로(검색 결과)를 탑니다.</p>
+    <p>그렇다면 왜 <code>null</code>을 기준으로 나누는가?<br>
+    사용자가 그냥 <code>/board/list</code>로 접근하면 URL에 <code>searchKeyword</code> 파라미터가 아예 없습니다.<br>
+    이 경우 Spring은 <code>searchKeyword</code>에 <code>null</code>을 넣어줍니다.<br>
+    반대로 검색 폼에 "Spring"을 입력하면 URL이 <code>/board/list?searchKeyword=Spring</code>이 되고, <code>"Spring"</code>이 들어옵니다.<br>
+    즉 <code>null</code> 여부가 "검색한 상황인가 아닌가"를 구분하는 기준이 됩니다.</p>
+
+    <h3>왜 페이징 링크에 searchKeyword를 포함시키는가?</h3>
+    <p class="file-tab">boardlist.html</p>
+    <pre><code class="language-html">&lt;!-- 변경 전 --&gt;
+&lt;a th:href="@{/board/list(page=${(page-1)})}" th:text="${page}"&gt;&lt;/a&gt;
+
+&lt;!-- 변경 후 --&gt;
+&lt;a th:href="@{/board/list(page=${(page-1)}, searchKeyword = ${param.searchKeyword})}" th:text="${page}"&gt;&lt;/a&gt;</code></pre>
+    <p><code>searchKeyword</code>를 포함하지 않으면 2페이지 링크가 <code>/board/list?page=1</code>이 됩니다.<br>
+    Controller에는 <code>searchKeyword</code>가 없으므로 <code>null</code>이 들어오고, 검색 결과 대신 전체 목록이 나옵니다.<br>
+    "Spring"으로 검색한 뒤 2페이지를 눌렀는데 갑자기 전체 목록이 나오면 매우 불편합니다.</p>
+    <p><code>${param.searchKeyword}</code>는 현재 URL에서 <code>searchKeyword</code> 값을 읽어서 링크에 그대로 실어줍니다.<br>
+    덕분에 <code>/board/list?page=1&amp;searchKeyword=Spring</code>처럼 검색어가 유지됩니다.</p>
+  </div>
+
+  <!-- STEP 5 -->
+  <div class="step" id="step5">
+    <div class="step-label">Step 5</div>
+    <h2>실행 흐름</h2>
+
+    <h3>검색어 없이 목록 접근할 때</h3>
+    <p class="file-tab">HTTP 요청</p>
+    <pre><code class="language-java">GET /board/list</code></pre>
+    <svg viewBox="0 0 480 380" style="width:100%;max-width:480px;display:block;margin:16px auto;" xmlns="http://www.w3.org/2000/svg">
+      <rect width="480" height="380" fill="#0d1117" rx="8"/>
+      <!-- 사용자 -->
+      <rect x="165" y="20" width="150" height="36" rx="6" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="240" y="43" text-anchor="middle" fill="#c9d1d9" font-size="13" font-family="Segoe UI,sans-serif">GET /board/list</text>
+      <!-- 화살표 -->
+      <line x1="240" y1="56" x2="240" y2="74" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="240,80 234,70 246,70" fill="#4b5563"/>
+      <!-- Controller -->
+      <rect x="130" y="80" width="220" height="52" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+      <text x="240" y="101" text-anchor="middle" fill="#3b82f6" font-size="13" font-family="Segoe UI,sans-serif">BoardController</text>
+      <text x="240" y="121" text-anchor="middle" fill="#8b949e" font-size="11" font-family="Consolas,monospace">searchKeyword == null → true</text>
+      <!-- 화살표 -->
+      <line x1="240" y1="132" x2="240" y2="150" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="240,156 234,146 246,146" fill="#4b5563"/>
+      <!-- Service -->
+      <rect x="130" y="156" width="220" height="48" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+      <text x="240" y="177" text-anchor="middle" fill="#3fb950" font-size="13" font-family="Segoe UI,sans-serif">BoardService</text>
+      <text x="240" y="196" text-anchor="middle" fill="#8b949e" font-size="11" font-family="Consolas,monospace">boardList(pageable)</text>
+      <!-- 화살표 -->
+      <line x1="240" y1="204" x2="240" y2="222" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="240,228 234,218 246,218" fill="#4b5563"/>
+      <!-- Repository -->
+      <rect x="130" y="228" width="220" height="48" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+      <text x="240" y="249" text-anchor="middle" fill="#a78bfa" font-size="13" font-family="Segoe UI,sans-serif">BoardRepository</text>
+      <text x="240" y="268" text-anchor="middle" fill="#8b949e" font-size="11" font-family="Consolas,monospace">findAll(pageable)</text>
+      <!-- 화살표 -->
+      <line x1="240" y1="276" x2="240" y2="294" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="240,300 234,290 246,290" fill="#4b5563"/>
+      <!-- DB -->
+      <rect x="155" y="300" width="170" height="36" rx="6" fill="#2d1e00" stroke="#f59e0b" stroke-width="1.5"/>
+      <text x="240" y="323" text-anchor="middle" fill="#f59e0b" font-size="13" font-family="Segoe UI,sans-serif">DB: SELECT * FROM board</text>
+      <text x="240" y="360" text-anchor="middle" fill="#8b949e" font-size="11" font-family="Segoe UI,sans-serif">전체 게시글 반환</text>
+    </svg>
+
+    <h3>검색어 "Spring"으로 검색할 때</h3>
+    <p class="file-tab">HTTP 요청</p>
+    <pre><code class="language-java">GET /board/list?searchKeyword=Spring</code></pre>
+    <svg viewBox="0 0 480 400" style="width:100%;max-width:480px;display:block;margin:16px auto;" xmlns="http://www.w3.org/2000/svg">
+      <rect width="480" height="400" fill="#0d1117" rx="8"/>
+      <!-- 사용자 -->
+      <rect x="95" y="20" width="290" height="36" rx="6" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="240" y="43" text-anchor="middle" fill="#c9d1d9" font-size="13" font-family="Segoe UI,sans-serif">GET /board/list?searchKeyword=Spring</text>
+      <!-- 화살표 -->
+      <line x1="240" y1="56" x2="240" y2="74" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="240,80 234,70 246,70" fill="#4b5563"/>
+      <!-- Controller -->
+      <rect x="110" y="80" width="260" height="52" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+      <text x="240" y="101" text-anchor="middle" fill="#3b82f6" font-size="13" font-family="Segoe UI,sans-serif">BoardController</text>
+      <text x="240" y="121" text-anchor="middle" fill="#8b949e" font-size="11" font-family="Consolas,monospace">searchKeyword = "Spring" → else 분기</text>
+      <!-- 화살표 -->
+      <line x1="240" y1="132" x2="240" y2="150" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="240,156 234,146 246,146" fill="#4b5563"/>
+      <!-- Service -->
+      <rect x="100" y="156" width="280" height="48" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+      <text x="240" y="177" text-anchor="middle" fill="#3fb950" font-size="13" font-family="Segoe UI,sans-serif">BoardService</text>
+      <text x="240" y="196" text-anchor="middle" fill="#8b949e" font-size="11" font-family="Consolas,monospace">boardSearchList("Spring", pageable)</text>
+      <!-- 화살표 -->
+      <line x1="240" y1="204" x2="240" y2="222" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="240,228 234,218 246,218" fill="#4b5563"/>
+      <!-- Repository -->
+      <rect x="80" y="228" width="320" height="48" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+      <text x="240" y="249" text-anchor="middle" fill="#a78bfa" font-size="13" font-family="Segoe UI,sans-serif">BoardRepository</text>
+      <text x="240" y="268" text-anchor="middle" fill="#8b949e" font-size="11" font-family="Consolas,monospace">findByTitleContaining("Spring", pageable)</text>
+      <!-- 화살표 -->
+      <line x1="240" y1="276" x2="240" y2="294" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="240,300 234,290 246,290" fill="#4b5563"/>
+      <!-- DB -->
+      <rect x="60" y="300" width="360" height="36" rx="6" fill="#2d1e00" stroke="#f59e0b" stroke-width="1.5"/>
+      <text x="240" y="323" text-anchor="middle" fill="#f59e0b" font-size="12" font-family="Consolas,monospace">WHERE title LIKE '%Spring%'</text>
+      <text x="240" y="370" text-anchor="middle" fill="#8b949e" font-size="11" font-family="Segoe UI,sans-serif">"Spring" 포함 게시글만 반환</text>
+    </svg>
+  </div>
+
+  <!-- STEP 6 -->
+  <div class="step" id="step6">
+    <div class="step-label">Step 6</div>
+    <h2>이전 커밋과 비교</h2>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <h4>이전 커밋 (페이징 처리)</h4>
+        Controller<br>
+        &nbsp;&nbsp;↓ pageable만 전달<br>
+        Service<br>
+        &nbsp;&nbsp;↓ boardList(pageable)<br>
+        Repository<br>
+        &nbsp;&nbsp;↓ findAll(pageable)<br>
+        DB → 전체 목록 반환<br>
+        <br>
+        HTML 페이징 링크:<br>
+        &nbsp;&nbsp;page 파라미터만 포함
+      </div>
+      <div class="compare-card">
+        <h4>현재 커밋 (검색 기능 추가)</h4>
+        Controller<br>
+        &nbsp;&nbsp;↓ <span class="new">+ searchKeyword 파라미터</span><br>
+        <span class="new">null → boardList</span><br>
+        <span class="new">값 있음 → boardSearchList</span><br>
+        Service<br>
+        &nbsp;&nbsp;↓ <span class="new">+ boardSearchList 메서드</span><br>
+        Repository<br>
+        &nbsp;&nbsp;↓ <span class="new">+ findByTitleContaining</span><br>
+        DB → <span class="new">조건부 조회</span><br>
+        <br>
+        HTML 페이징 링크:<br>
+        &nbsp;&nbsp;<span class="new">+ searchKeyword 파라미터 포함</span>
+      </div>
+    </div>
+
+    <p style="margin-top:16px;">이전 커밋까지는 항상 전체 게시글을 조회했습니다.<br>
+    이번 커밋으로 검색어 유무에 따라 다른 쿼리를 실행하는 분기 로직이 생겼습니다.<br>
+    Repository → Service → Controller 순서로 각 계층에 변경이 생긴 것을 확인할 수 있습니다.</p>
+  </div>
+
+  <!-- STEP 7 -->
+  <div class="step" id="step7">
+    <div class="step-label">Step 7</div>
+    <h2>초보자가 하기 쉬운 착각</h2>
+
+    <div class="warn">
+      <strong>findByTitleContaining은 직접 만든 메서드가 아닌가?</strong>
+      <p>선언은 우리가 했지만, 실제 구현(SQL 실행)은 Spring Data JPA가 합니다.<br>
+      인터페이스에 메서드 이름만 선언하면 Spring이 이름을 분석해서 쿼리를 만들고 실행해줍니다.<br>
+      우리가 메서드 바디를 작성하지 않아도 됩니다.</p>
+    </div>
+
+    <div class="warn">
+      <strong>@RequestParam 없이도 파라미터가 연결된다?</strong>
+      <p>Spring MVC는 메서드 파라미터 이름이 HTTP 파라미터 이름과 같으면 <code>@RequestParam</code> 없이도 자동으로 연결합니다.<br>
+      단, Java 컴파일 옵션에 따라 파라미터 이름이 보존되지 않는 경우가 있습니다.<br>
+      그런 경우에는 <code>@RequestParam("searchKeyword") String searchKeyword</code>처럼 명시하는 것이 안전합니다.</p>
+    </div>
+
+    <div class="warn">
+      <strong>검색어가 없으면 빈 문자열("")이 들어온다?</strong>
+      <p>아닙니다. URL에 <code>?searchKeyword</code> 파라미터 자체가 없으면 <code>null</code>이 들어옵니다.<br>
+      검색 폼에서 아무것도 입력하지 않고 검색 버튼을 누르면 <code>?searchKeyword=</code>처럼 빈 문자열이 전달됩니다.<br>
+      이 경우 <code>searchKeyword</code>는 <code>null</code>이 아닌 <code>""</code>(빈 문자열)이 되어 LIKE '%%' 쿼리가 실행됩니다.<br>
+      실무에서는 빈 문자열 처리도 추가하는 것이 좋습니다.</p>
+    </div>
+
+    <div class="warn">
+      <strong>Containing이 포함 검색이라는 게 SQL에서는 어떻게 동작하나?</strong>
+      <p>SQL LIKE 연산자는 <code>%</code>를 와일드카드(어떤 문자든 허용)로 사용합니다.<br>
+      <code>Containing</code>은 앞뒤 모두 <code>%</code>를 붙인 <code>LIKE '%keyword%'</code>가 됩니다.<br>
+      <code>StartingWith</code>는 <code>LIKE 'keyword%'</code>, <code>EndingWith</code>는 <code>LIKE '%keyword'</code>입니다.</p>
+    </div>
+  </div>
+
+  <!-- STEP 8 -->
+  <div class="step" id="step8">
+    <div class="step-label">Step 8</div>
+    <h2>중요도 구분</h2>
+
+    <div class="learn-row">
+      <div class="learn-card red-card">
+        <h3>🔴 반드시 이해</h3>
+        <ul>
+          <li>Spring Data JPA 쿼리 메서드 이름 규칙</li>
+          <li>findByTitleContaining → LIKE '%…%'</li>
+          <li>Controller에서 String 파라미터로 쿼리스트링 받기</li>
+          <li>null 체크로 검색/전체 분기</li>
+          <li>검색어를 페이징 링크에 포함시키는 이유</li>
+        </ul>
+      </div>
+      <div class="learn-card yellow-card">
+        <h3>🟡 개념만 이해</h3>
+        <ul>
+          <li>param.searchKeyword의 의미</li>
+          <li>StartingWith / EndingWith 등 다른 쿼리 메서드</li>
+          <li>@RequestParam 어노테이션</li>
+        </ul>
+      </div>
+      <div class="learn-card green-card">
+        <h3>🟢 나중에 공부</h3>
+        <ul>
+          <li>@Query 어노테이션으로 JPQL 직접 작성</li>
+          <li>Querydsl 동적 쿼리</li>
+          <li>전문 검색(Full-text search)</li>
+          <li>LIKE 검색의 인덱스 미적용 문제</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 9 -->
+  <div class="step" id="step9">
+    <div class="step-label">Step 9</div>
+    <h2>오늘 배운 것</h2>
+
+    <ul class="summary-list">
+      <li>Spring Data JPA는 메서드 이름을 분석해서 SQL 쿼리를 자동으로 생성한다.</li>
+      <li><code>findByTitleContaining</code>은 <code>WHERE title LIKE '%keyword%'</code>로 변환된다.</li>
+      <li>Controller 메서드에서 파라미터 이름과 HTTP 쿼리 파라미터 이름이 같으면 자동으로 연결된다.</li>
+      <li>파라미터가 없으면 <code>null</code>이 들어오므로, null 체크로 검색/전체 조회를 분기할 수 있다.</li>
+      <li>Thymeleaf에서 <code>${param.파라미터명}</code>으로 현재 URL의 쿼리 파라미터를 읽을 수 있다.</li>
+      <li>페이징 링크에 검색어를 포함시켜야 페이지를 이동해도 검색 결과가 유지된다.</li>
+      <li>if/else 조건의 방향을 반드시 확인해야 한다. 조건 반전 버그는 매우 흔하다.</li>
+    </ul>
+  </div>
+
+  <!-- STEP 10 -->
+  <div class="step" id="step10">
+    <div class="step-label">Step 10</div>
+    <h2>이해도 확인 질문</h2>
+
+    <ol class="question-list">
+      <li>
+        <span><code>findByTitleContaining</code>을 인터페이스에 선언만 했는데 동작하는 이유는?</span>
+        <details><summary></summary><p>Spring Data JPA가 메서드 이름을 파싱해서 LIKE '%keyword%' 쿼리를 자동 생성하고, 프록시 객체를 통해 실행합니다. 인터페이스 구현체는 Spring이 런타임에 만들어줍니다.</p></details>
+      </li>
+      <li>
+        <span>사용자가 검색어 없이 <code>/board/list</code>에 접근했을 때 <code>searchKeyword</code>에 어떤 값이 들어오는가?</span>
+        <details><summary></summary><p>null이 들어옵니다. URL에 searchKeyword 파라미터 자체가 없으므로 Spring은 null을 할당합니다. 이 경우 if (searchKeyword == null) 분기로 전체 목록을 반환합니다.</p></details>
+      </li>
+      <li>
+        <span>페이징 링크에 <code>searchKeyword = ${param.searchKeyword}</code>를 추가하지 않으면 어떤 문제가 생기는가?</span>
+        <details><summary></summary><p>"Spring"으로 검색한 뒤 2페이지를 눌렀을 때 URL에 searchKeyword가 없어 Controller에 null이 전달됩니다. 그러면 전체 목록이 조회되어 검색 결과가 사라집니다.</p></details>
+      </li>
+      <li>
+        <span>검색 기능 1 커밋의 버그는 무엇이었고, 어떻게 수정했는가?</span>
+        <details><summary></summary><p>if (searchKeyword != null) 일 때 boardList(전체 목록)를, else일 때 boardSearchList(검색)를 호출했습니다. 조건이 반대였습니다. 검색 기능 2에서 != null을 == null로 수정해 올바르게 동작하게 했습니다.</p></details>
+      </li>
+      <li>
+        <span>Controller에서 Repository를 직접 호출하지 않고 Service를 거치는 이유는?</span>
+        <details><summary></summary><p>역할 분리를 위해서입니다. Service에 비즈니스 로직을 모아두면 나중에 검색 조건이 복잡해져도 Controller 코드를 변경하지 않아도 됩니다. 변경의 영향 범위를 좁히는 것이 핵심입니다.</p></details>
+      </li>
+    </ol>
+  </div>
+
+  <!-- STEP 11 -->
+  <div class="step" id="step11">
+    <div class="step-label">Step 11</div>
+    <h2>작은 실습</h2>
+
+    <div class="practice-box">
+      <h3>실습: 내용(content)으로도 검색되게 만들기</h3>
+      <p>현재 검색은 제목(<code>title</code>)에만 적용됩니다.<br>
+      게시글의 내용(<code>content</code>) 컬럼에서도 검색어를 찾아 반환하도록 수정해보세요.</p>
+
+      <h4>힌트</h4>
+      <ul>
+        <li>Spring Data JPA에서 OR 조건을 메서드 이름으로 표현할 때 <code>Or</code>를 사용합니다.</li>
+        <li><code>findByTitleContainingOrContentContaining(String title, String content, Pageable pageable)</code> 형태가 됩니다.</li>
+        <li>Service와 Controller에서 searchKeyword를 두 번 넘겨야 합니다.</li>
+      </ul>
+
+      <h4>수정 대상 파일</h4>
+      <ul>
+        <li><code>BoardRepository.java</code> — 새 쿼리 메서드 선언</li>
+        <li><code>BoardService.java</code> — boardSearchList 메서드 수정</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- STEP 12 -->
+  <div class="step" id="step12">
+    <div class="step-label">Step 12</div>
+    <h2>다음 커밋을 위한 준비</h2>
+
+    <ul class="next-list">
+      <li><strong>빈 문자열 검색어 처리</strong> — 검색 폼에서 아무것도 입력 않고 검색하면 <code>""</code>이 전달됩니다. <code>searchKeyword == null || searchKeyword.isEmpty()</code>처럼 처리하는 방법을 생각해보세요.</li>
+      <li><strong>Spring Data JPA 쿼리 메서드 규칙</strong> — <code>findBy</code>, <code>And</code>, <code>Or</code>, <code>Between</code>, <code>LessThan</code>, <code>GreaterThan</code> 등 다양한 키워드가 있습니다. 어떤 규칙이 있는지 살펴보세요.</li>
+      <li><strong>@Query 어노테이션</strong> — 메서드 이름만으로 표현하기 어려운 복잡한 쿼리는 <code>@Query</code>로 JPQL을 직접 작성합니다.</li>
+      <li><strong>검색 결과가 없을 때 처리</strong> — 검색 결과가 0건이면 페이징 처리에서 <code>endPage</code>가 0이 되어 문제가 생길 수 있습니다. 이를 방어하는 방법을 생각해보세요.</li>
+    </ul>
+  </div>
+
+</div>
+
+<script>hljs.highlightAll();</script>
+<script>
+  const sections = document.querySelectorAll('.step');
+  const links = document.querySelectorAll('.toc ul li a');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(a => a.classList.remove('toc-active'));
+        const id = e.target.id;
+        const active = document.querySelector('.toc a[href="#' + id + '"]');
+        if (active) active.classList.add('toc-active');
+      }
+    });
+  }, { threshold: 0.3 });
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
