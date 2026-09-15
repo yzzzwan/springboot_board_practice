@@ -43,15 +43,22 @@ public class BoardController {
     @GetMapping("board/list")
     public String boardlist(Model model,
                             @PageableDefault(page=0, size=10, sort="id", direction = Sort.Direction.DESC) Pageable pageable,
-                            String searchKeyword){
+                            String searchKeywordTitle,
+                            String searchKeywordContent){
 
         Page<Board> list = null;
 
-        if(searchKeyword == null){
+        if(searchKeywordTitle == null && searchKeywordContent == null){
             list = boardService.boardList(pageable);
         }
+        else if(searchKeywordTitle == null && searchKeywordContent != null){
+            list = boardService.boardSearchContentList(searchKeywordContent, pageable);
+        }
+        else if(searchKeywordTitle != null && searchKeywordContent == null){
+            list = boardService.boardSearchTitleList(searchKeywordTitle, pageable);
+        }
         else{
-            list = boardService.boardSearchList(searchKeyword, pageable);
+            list = boardService.boardSearchTotalList(searchKeywordTitle, searchKeywordContent, pageable);
         }
 
 
@@ -63,6 +70,9 @@ public class BoardController {
         model.addAttribute("nowPage", nowPage);
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
+        model.addAttribute("searchKeywordTitle", searchKeywordTitle);
+        model.addAttribute("searchKeywordContent", searchKeywordContent);
+
 
         return "boardlist";
     }

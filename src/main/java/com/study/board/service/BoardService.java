@@ -37,8 +37,16 @@ public class BoardService {
         return boardRepository.findAll(pageable);
     }
 
-    public Page<Board> boardSearchList(String searchKeyword, Pageable pageable){
-        return boardRepository.findByTitleContaining(searchKeyword, pageable);
+    public Page<Board> boardSearchTitleList(String searchKeywordTitle, Pageable pageable){
+        return boardRepository.findByTitleContaining(searchKeywordTitle, pageable);
+    }
+
+    public Page<Board> boardSearchContentList(String searchKeywordContent, Pageable pageable){
+        return boardRepository.findByContentContaining(searchKeywordContent, pageable);
+    }
+
+    public Page<Board> boardSearchTotalList(String searchKeywordTitle, String searchKeywordContent, Pageable pageable){
+        return boardRepository.findByTitleContainingOrContentContaining(searchKeywordTitle, searchKeywordContent, pageable);
     }
 
     // 특정 게시글 불러오기
