@@ -47,7 +47,7 @@ public class BoardController {
 
         Page<Board> list = null;
 
-        if(searchKeyword != null){
+        if(searchKeyword == null){
             list = boardService.boardList(pageable);
         }
         else{
