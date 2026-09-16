@@ -144,7 +144,7 @@
             <div class="field">
                 <label>첨부파일</label>
                 <p class="current-file" th:if="${!#strings.isEmpty(#strings.trim(board.filename))}">
-                    현재 파일: <span th:text="${board.filename}"></span>
+                    현재 파일: <span th:text="${board.original_filename}"></span>
                 </p>
                 <div class="file-upload">
                     <label class="file-upload-btn" for="file">파일 선택</label>

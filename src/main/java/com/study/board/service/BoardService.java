@@ -22,12 +22,14 @@ public class BoardService {
 
         if(!file.isEmpty()){
                                   // 프로젝트의 root 디렉토리
-            String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files\\" + String.valueOf(board.getId());
+            String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
             UUID uuid = UUID.randomUUID();
+            String originalFileName = file.getOriginalFilename();
             String fileName = uuid + "_" + file.getOriginalFilename();
             File saveFile = new File(projectPath,fileName);
             file.transferTo(saveFile);
 
+            board.setOriginal_filename(originalFileName);
             board.setFilename(fileName);
             board.setFilepath("/files/" + fileName);
         }
