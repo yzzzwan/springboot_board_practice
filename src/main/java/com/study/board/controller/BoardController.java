@@ -10,7 +10,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,6 +37,21 @@ public class BoardController {
 
     @PostMapping("/board/writepro")
     public String boardWritePro(Board board, Model model, MultipartFile file)throws Exception{
+
+        if(!StringUtils.hasText(board.getTitle())){
+            model.addAttribute("message", "제목을 입력해주세요.");
+            model.addAttribute("searchUrl", "/board/write");
+
+            return "message";
+        }
+
+        if(!StringUtils.hasText(board.getContent())){
+            model.addAttribute("message", "내용을 입력해주세요.");
+            model.addAttribute("searchUrl", "/board/write");
+
+            return "message";
+        }
+
         boardService.boardWrite(board, file);
 
         model.addAttribute("message", "글 작성이 완료되었습니다.");

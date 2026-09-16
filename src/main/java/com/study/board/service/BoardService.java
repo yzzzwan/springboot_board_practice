@@ -19,15 +19,19 @@ public class BoardService {
 
     // 게시글 작성
     public void boardWrite(Board board, MultipartFile file) throws Exception{
-                            // 프로젝트의 root 디렉토리
-        String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
-        UUID uuid = UUID.randomUUID();
-        String fileName = uuid + "_" + file.getOriginalFilename();
-        File saveFile = new File(projectPath,fileName);
-        file.transferTo(saveFile);
 
-        board.setFilename(fileName);
-        board.setFilepath("/files/" + fileName);
+        if(!file.isEmpty()){
+                                  // 프로젝트의 root 디렉토리
+            String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files\\" + String.valueOf(board.getId());
+            UUID uuid = UUID.randomUUID();
+            String fileName = uuid + "_" + file.getOriginalFilename();
+            File saveFile = new File(projectPath,fileName);
+            file.transferTo(saveFile);
+
+            board.setFilename(fileName);
+            board.setFilepath("/files/" + fileName);
+        }
+
 
         boardRepository.save(board);
     }
@@ -45,8 +49,8 @@ public class BoardService {
         return boardRepository.findByContentContaining(searchKeywordContent, pageable);
     }
 
-    public Page<Board> boardSearchTotalList(String searchKeywordTitle, String searchKeywordContent, Pageable pageable){
-        return boardRepository.findByTitleContainingOrContentContaining(searchKeywordTitle, searchKeywordContent, pageable);
+    public Page<Board> boardSearchTotalList(String searchKeywordTotal, Pageable pageable){
+        return boardRepository.findByTitleContainingOrContentContaining(searchKeywordTotal, searchKeywordTotal, pageable);
     }
 
     // 특정 게시글 불러오기
