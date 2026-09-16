@@ -137,7 +137,7 @@ public class BoardController {
         boardTemp.setContent(board.getContent());
 
         try {
-            boardService.boardWrite(board, file);
+            boardService.boardWrite(boardTemp, file);
         }
         catch (IllegalArgumentException e){
             model.addAttribute("message", e.getMessage());
