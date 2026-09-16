@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>제목, 내용, 통합 검색 기능 추가 — Spring 수업</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0f1117;
+    color: #c9d1d9;
+    font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    padding: 40px 20px;
+  }
+  .container { max-width: 860px; margin: 0 auto; }
+
+  .commit-link {
+    display: inline-block;
+    margin-bottom: 32px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 10px 18px;
+    color: #58a6ff;
+    text-decoration: none;
+    font-size: 13px;
+    font-family: monospace;
+  }
+  .commit-link:hover { background: #1f2937; }
+
+  h1 {
+    font-size: 26px;
+    color: #e6edf3;
+    margin-bottom: 8px;
+  }
+  .subtitle { color: #8b949e; margin-bottom: 40px; font-size: 14px; }
+
+  .learn-box {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin-bottom: 40px;
+  }
+  .learn-box h2 { color: #e6edf3; font-size: 16px; margin-bottom: 16px; }
+  .learn-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .learn-card { border-radius: 8px; padding: 16px; }
+  .learn-card h3 { font-size: 13px; margin-bottom: 8px; }
+  .learn-card ul { padding-left: 16px; font-size: 13px; line-height: 1.8; }
+  .red-card  { background: #2d1515; border: 1px solid #7f2020; }
+  .red-card h3 { color: #f85149; }
+  .yellow-card { background: #2d2200; border: 1px solid #7f5d00; }
+  .yellow-card h3 { color: #e3b341; }
+  .green-card { background: #0d2d16; border: 1px solid #1a7f37; }
+  .green-card h3 { color: #3fb950; }
+
+  .step {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 28px 32px;
+    margin-bottom: 28px;
+  }
+  .step-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #58a6ff;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .step h2 {
+    font-size: 18px;
+    color: #e6edf3;
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #21262d;
+  }
+
+  h3 { color: #e6edf3; font-size: 15px; margin: 20px 0 10px; }
+  h4 { color: #8b949e; font-size: 13px; margin: 14px 0 6px; font-weight: 600; }
+  p { margin-bottom: 10px; }
+
+  pre {
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 12px 0;
+  }
+  pre code.hljs {
+    font-family: 'Consolas', 'D2Coding', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    border-radius: 6px;
+    padding: 16px;
+  }
+  p code, li code {
+    background: #21262d;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 12px;
+  }
+
+  .flow-box {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 2.2;
+    color: #c9d1d9;
+  }
+  .flow-box .highlight { color: #58a6ff; font-weight: 700; }
+
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 14px;
+  }
+  .compare-card {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 16px;
+    font-family: monospace;
+    font-size: 13px;
+    line-height: 2;
+  }
+  .compare-card h4 { font-family: 'Segoe UI', sans-serif; margin-bottom: 10px; color: #8b949e; }
+  .compare-card .new { color: #3fb950; }
+
+  .warn {
+    border-left: 4px solid #e3b341;
+    background: #1c1a00;
+    padding: 14px 18px;
+    border-radius: 0 6px 6px 0;
+    margin: 12px 0;
+    font-size: 14px;
+  }
+  .warn strong { color: #e3b341; display: block; margin-bottom: 4px; }
+
+  .improve {
+    border-left: 4px solid #3b82f6;
+    background: #0d1f3c;
+    padding: 14px 18px;
+    border-radius: 0 6px 6px 0;
+    margin: 12px 0;
+    font-size: 14px;
+  }
+  .improve strong { color: #58a6ff; display: block; margin-bottom: 4px; }
+
+  ul, ol { padding-left: 20px; margin-bottom: 10px; }
+  li { margin-bottom: 4px; }
+
+  .summary-list {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 20px 24px;
+    list-style: none;
+    padding-left: 24px;
+  }
+  .summary-list li {
+    padding: 6px 0;
+    border-bottom: 1px solid #21262d;
+    font-size: 14px;
+  }
+  .summary-list li:last-child { border-bottom: none; }
+  .summary-list li::before { content: "✓ "; color: #3fb950; font-weight: 700; }
+
+  /* 정답 보기 */
+  .question-list details { background: #1e293b; border-radius: 4px; padding: 4px 10px; margin-top: 6px; }
+  .question-list details summary { color: #475569; font-size: 11px; cursor: pointer; user-select: none; list-style: none; }
+  .question-list details summary::-webkit-details-marker { display: none; }
+  .question-list details summary::before { content: "▶ 정답 보기"; }
+  .question-list details[open] summary::before { content: "▼ 정답 보기"; }
+  .question-list details[open] summary { margin-bottom: 4px; color: #64748b; }
+  .question-list details p { color: #cbd5e1; font-size: 13px; margin: 0; }
+
+  .question-list { counter-reset: q; padding-left: 0; list-style: none; }
+  .question-list li {
+    counter-increment: q;
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+  .question-list li::before {
+    content: "Q" counter(q) ". ";
+    color: #58a6ff;
+    font-weight: 700;
+  }
+
+  .file-tab {
+    display: inline-block;
+    background: #21262d;
+    border: 1px solid #30363d;
+    border-bottom: none;
+    border-radius: 6px 6px 0 0;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-family: 'Consolas', 'D2Coding', monospace;
+    color: #8b949e;
+    margin-top: 16px;
+    margin-bottom: 0;
+  }
+  .file-tab + pre {
+    border-radius: 0 6px 6px 6px;
+    margin-top: 0;
+  }
+
+  .practice-box {
+    background: #0d2d16;
+    border: 1px solid #1a7f37;
+    border-radius: 8px;
+    padding: 20px 24px;
+  }
+  .practice-box h3 { color: #3fb950; margin-top: 0; }
+
+  .next-list { padding-left: 0; list-style: none; counter-reset: n; }
+  .next-list li {
+    counter-increment: n;
+    padding: 10px 14px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+  .next-list li::before {
+    content: counter(n) ". ";
+    color: #58a6ff;
+    font-weight: 700;
+  }
+  .next-list li strong { color: #e6edf3; }
+
+  /* 목차 */
+  .toc {
+    position: fixed;
+    top: 40px;
+    right: 24px;
+    width: 164px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 14px 16px;
+    z-index: 100;
+  }
+  .toc-title { font-size: 10px; font-weight: 700; color: #58a6ff; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+  .toc ul { list-style: none; padding: 0; margin: 0; }
+  .toc ul li { margin-bottom: 5px; }
+  .toc ul li a { font-size: 12px; color: #8b949e; text-decoration: none; line-height: 1.4; display: block; }
+  .toc ul li a:hover { color: #c9d1d9; }
+  .toc ul li a.toc-active { color: #58a6ff; }
+  @media (max-width: 1200px) { .toc { display: none; } }
+</style>
+</head>
+<body>
+
+<nav class="toc">
+  <div class="toc-title">목차</div>
+  <ul>
+    <li><a href="#step1">한눈에 보기</a></li>
+    <li><a href="#step2">변경된 파일</a></li>
+    <li><a href="#step3">핵심 코드</a></li>
+    <li><a href="#step4">왜 이렇게?</a></li>
+    <li><a href="#step5">실행 흐름</a></li>
+    <li><a href="#step6">이전과 비교</a></li>
+    <li><a href="#step7">착각 주의</a></li>
+    <li><a href="#step8">중요도</a></li>
+    <li><a href="#step9">오늘 배운 것</a></li>
+    <li><a href="#step10">이해도 확인</a></li>
+    <li><a href="#step11">실습</a></li>
+    <li><a href="#step12">다음 준비</a></li>
+  </ul>
+</nav>
+
+<div class="container">
+
+  <a class="commit-link" href="https://github.com/yzzzwan/springboot_board_practice/commit/c18c8c76715a2523e469501f57b2aba860d17b16" target="_blank">
+    커밋 보기: c18c8c7 — 제목, 내용, 통합 검색 기능 추가
+</a>
+
+  <h1>제목, 내용, 통합 검색 기능 추가</h1>
+  <p class="subtitle">StringUtils.hasText · 초기 화면 redirect · 통합 검색 파라미터 분리</p>
+
+  <!-- 중요도 미리보기 -->
+  <div class="learn-box">
+    <h2>이번 커밋에서 배우는 것</h2>
+    <div class="learn-row">
+      <div class="learn-card red-card">
+        <h3>🔴 반드시 이해</h3>
+        <ul>
+          <li>StringUtils.hasText()로 null과 빈 문자열 동시 처리</li>
+          <li>form 제출 시 빈 입력이 null이 아닌 ""로 전달되는 이유</li>
+          <li>redirect로 초기 화면 설정하기</li>
+          <li>Or 조건 쿼리 메서드의 파라미터 개수 규칙</li>
+        </ul>
+      </div>
+      <div class="learn-card yellow-card">
+        <h3>🟡 개념만 이해</h3>
+        <ul>
+          <li>StringUtils.isEmpty() vs !hasText()</li>
+          <li>index() 메서드 이름 관례</li>
+          <li>Spring MVC 데이터 바인딩</li>
+        </ul>
+      </div>
+      <div class="learn-card green-card">
+        <h3>🟢 나중에 공부</h3>
+        <ul>
+          <li>Bean Validation (@NotBlank, @Valid)</li>
+          <li>Querydsl 동적 쿼리</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="step" id="step1">
+    <div class="step-label">Step 1</div>
+    <h2>이번 커밋 한눈에 보기</h2>
+    <p>이번 커밋에서는 세 가지 문제를 해결했습니다.</p>
+    <p><strong>첫째</strong>, <code>http://localhost:8080/</code>으로 접속했을 때 Whitelabel Error가 뜨던 문제를 고쳤습니다.<br>
+    초기 화면을 게시글 목록으로 연결하는 <code>@GetMapping("/")</code> 매핑을 추가했습니다.</p>
+    <p><strong>둘째</strong>, 기존 검색 분기 로직의 null 체크를 <code>StringUtils.hasText()</code>로 교체했습니다.<br>
+    검색 폼에서 아무것도 입력하지 않으면 <code>null</code>이 아닌 빈 문자열 <code>""</code>이 전달되기 때문에,<br>
+    <code>== null</code>만으로는 "입력 없음"을 제대로 감지할 수 없는 문제가 있었습니다.</p>
+    <p><strong>셋째</strong>, 제목과 내용을 동시에 검색하는 통합 검색 파라미터 <code>searchKeywordTotal</code>을 추가했습니다.<br>
+    기존의 제목 단독, 내용 단독 검색과 분리해 각각 독립적으로 동작하도록 분기를 재구성했습니다.</p>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step" id="step2">
+    <div class="step-label">Step 2</div>
+    <h2>무엇이 변경되었는가</h2>
+
+    <h3>BoardController.java</h3>
+    <p>변경이 가장 많은 파일입니다. 세 가지가 추가·수정되었습니다.</p>
+    <ul>
+      <li><code>@GetMapping("/")</code> 매핑 추가 — <code>/board/list</code>로 redirect</li>
+      <li><code>boardlist</code> 메서드에 <code>String searchKeywordTotal</code> 파라미터 추가</li>
+      <li>if/else 분기 조건을 <code>== null</code>에서 <code>StringUtils.hasText()</code>로 교체, 분기 순서 재구성</li>
+      <li><code>model.addAttribute("searchKeywordTotal", searchKeywordTotal)</code> 추가</li>
+    </ul>
+
+    <h3>boardlist.html</h3>
+    <p>검색 폼의 첫 번째 input name이 <code>searchKeywordContent</code>에서 <code>searchKeywordTotal</code>로 수정되었습니다.<br>
+    페이징 링크에도 <code>searchKeywordTotal</code>이 포함되어 페이지를 넘겨도 통합 검색어가 유지됩니다.</p>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step" id="step3">
+    <div class="step-label">Step 3</div>
+    <h2>핵심 코드 설명</h2>
+
+    <h3>① @GetMapping("/") — 초기 화면 redirect</h3>
+    <p class="file-tab">BoardController.java</p>
+    <pre><code class="language-java">@GetMapping("/")
+public String index(){
+    return "redirect:/board/list";
+}</code></pre>
+    <p><code>http://localhost:8080/</code>으로 접속했을 때 처음 만나는 매핑입니다.<br>
+    메서드 이름 <code>index</code>는 관례입니다. 웹 서버에서 기본 페이지를 <code>index.html</code>이라 부르는 것과 같은 맥락으로, <code>home()</code>을 쓰기도 합니다. Spring이 이름에 의미를 부여하지는 않습니다.</p>
+
+    <h4>왜 return "boardlist"가 아니라 "redirect:/board/list"인가</h4>
+    <p><code>return "boardlist"</code>를 하면 Thymeleaf가 <code>boardlist.html</code>을 렌더링하려 합니다.<br>
+    그런데 <code>boardlist.html</code>은 <code>${list}</code>, <code>${nowPage}</code> 같은 모델 데이터가 없으면 렌더링 중 오류가 납니다.<br>
+    <code>index()</code> 메서드는 그 데이터를 채워주지 않기 때문에 Whitelabel Error가 떴습니다.</p>
+    <p><code>redirect:</code>를 붙이면 브라우저가 <code>/board/list</code>로 다시 요청을 보냅니다.<br>
+    그러면 데이터를 채워주는 <code>boardlist</code> 메서드가 실행되어 정상적으로 화면이 나옵니다.</p>
+
+    <svg viewBox="0 0 700 200" style="width:100%;max-width:700px;display:block;margin:16px auto;" xmlns="http://www.w3.org/2000/svg">
+      <rect width="700" height="200" fill="#0d1117" rx="8"/>
+      <!-- return "boardlist" 경로 -->
+      <text x="170" y="28" text-anchor="middle" fill="#f85149" font-size="12" font-family="Segoe UI,sans-serif">❌ return "boardlist"</text>
+      <rect x="30" y="40" width="130" height="32" rx="6" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="95" y="61" text-anchor="middle" fill="#c9d1d9" font-size="12" font-family="Segoe UI,sans-serif">GET /</text>
+      <line x1="160" y1="56" x2="178" y2="56" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="184,56 174,51 174,61" fill="#4b5563"/>
+      <rect x="184" y="40" width="110" height="32" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+      <text x="239" y="61" text-anchor="middle" fill="#3b82f6" font-size="12" font-family="Segoe UI,sans-serif">index()</text>
+      <line x1="294" y1="56" x2="312" y2="56" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="318,56 308,51 308,61" fill="#4b5563"/>
+      <rect x="318" y="40" width="130" height="32" rx="6" fill="#2d1515" stroke="#f85149" stroke-width="1.5"/>
+      <text x="383" y="57" text-anchor="middle" fill="#f85149" font-size="11" font-family="Segoe UI,sans-serif">boardlist.html</text>
+      <text x="383" y="69" text-anchor="middle" fill="#f85149" font-size="10" font-family="Segoe UI,sans-serif">list 데이터 없음 → 오류</text>
+
+      <!-- redirect 경로 -->
+      <text x="350" y="108" text-anchor="middle" fill="#3fb950" font-size="12" font-family="Segoe UI,sans-serif">✅ return "redirect:/board/list"</text>
+      <rect x="30" y="120" width="130" height="32" rx="6" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="95" y="141" text-anchor="middle" fill="#c9d1d9" font-size="12" font-family="Segoe UI,sans-serif">GET /</text>
+      <line x1="160" y1="136" x2="178" y2="136" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="184,136 174,131 174,141" fill="#4b5563"/>
+      <rect x="184" y="120" width="110" height="32" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+      <text x="239" y="141" text-anchor="middle" fill="#3b82f6" font-size="12" font-family="Segoe UI,sans-serif">index()</text>
+      <line x1="294" y1="136" x2="312" y2="136" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="318,136 308,131 308,141" fill="#4b5563"/>
+      <rect x="318" y="120" width="130" height="32" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+      <text x="383" y="141" text-anchor="middle" fill="#e3b341" font-size="11" font-family="Segoe UI,sans-serif">302 → /board/list</text>
+      <line x1="448" y1="136" x2="466" y2="136" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="472,136 462,131 462,141" fill="#4b5563"/>
+      <rect x="472" y="120" width="130" height="32" rx="6" fill="#0d2d16" stroke="#3fb950" stroke-width="1.5"/>
+      <text x="537" y="141" text-anchor="middle" fill="#3fb950" font-size="11" font-family="Segoe UI,sans-serif">boardlist() 정상 실행</text>
+
+      <text x="350" y="185" text-anchor="middle" fill="#8b949e" font-size="11" font-family="Segoe UI,sans-serif">redirect는 브라우저가 새 URL로 다시 요청을 보내게 한다</text>
+    </svg>
+
+    <h3>② StringUtils.hasText() — null과 빈 문자열 동시 처리</h3>
+    <p class="file-tab">BoardController.java</p>
+    <pre><code class="language-java">// 이전: null만 체크
+if(searchKeywordTitle == null && searchKeywordContent == null){
+    list = boardService.boardList(pageable);
+}
+
+// 현재: null과 "" 모두 처리
+if(!StringUtils.hasText(searchKeywordTitle) && StringUtils.hasText(searchKeywordContent)){
+    list = boardService.boardSearchContentList(searchKeywordContent, pageable);
+}
+else if(StringUtils.hasText(searchKeywordTitle) && !StringUtils.hasText(searchKeywordContent)){
+    list = boardService.boardSearchTitleList(searchKeywordTitle, pageable);
+}
+else if(StringUtils.hasText(searchKeywordTotal)){
+    list = boardService.boardSearchTotalList(searchKeywordTotal, pageable);
+}
+else{
+    list = boardService.boardList(pageable);
+}</code></pre>
+
+    <p><code>StringUtils.hasText()</code>는 다음 세 가지를 모두 <code>false</code>로 처리합니다.</p>
+    <ul>
+      <li><code>null</code></li>
+      <li><code>""</code> (빈 문자열)</li>
+      <li><code>"   "</code> (공백만 있는 문자열)</li>
+    </ul>
+
+    <h4>왜 form에서 빈 입력이 null이 아닌 ""로 오는가</h4>
+    <p>HTML form의 input이 화면에 존재하는 이상, 사용자가 아무것도 입력하지 않아도 <code>name=""</code>의 필드는 <strong>항상 전송됩니다.</strong><br>
+    입력값이 없으면 <code>name=</code>(값 없음), 즉 빈 문자열 <code>""</code>로 전달됩니다.<br>
+    <code>null</code>이 되는 경우는 URL에 해당 파라미터 자체가 아예 없을 때입니다.</p>
+
+    <p class="file-tab">HTTP 요청</p>
+    <pre><code class="language-java">// 검색어 입력 없이 검색 버튼 누름
+GET /board/list?searchKeywordTotal=&searchKeywordTitle=&searchKeywordContent=
+//                              ↑ 빈 문자열 ""
+
+// 주소창에 직접 /board/list 입력
+GET /board/list
+// searchKeywordTitle 파라미터 자체 없음 → null</code></pre>
+
+    <h4>StringUtils.isEmpty()를 쓰면 !가 필요 없다</h4>
+    <p><code>StringUtils.hasText()</code>는 "텍스트가 있는가?"를 확인하므로, 없는 경우를 체크하려면 <code>!</code>를 붙여야 합니다.<br>
+    Spring의 <code>StringUtils.isEmpty()</code>는 반대 방향이라 <code>!</code> 없이 "없는가?"를 바로 표현할 수 있습니다.</p>
+    <p class="file-tab">BoardController.java — 대안 방식</p>
+    <pre><code class="language-java">// hasText + ! 방식
+if (!StringUtils.hasText(searchKeywordTitle)) { ... }
+
+// isEmpty 방식 (! 없이 동일 의미)
+if (StringUtils.isEmpty(searchKeywordTitle)) { ... }</code></pre>
+    <p>단, <code>isEmpty()</code>는 <code>null</code>과 <code>""</code>만 처리합니다. 공백 문자열(<code>"   "</code>)은 비어있지 않다고 판단합니다.<br>
+    사용자가 공백만 입력했을 때도 처리하려면 <code>hasText()</code>가 더 안전합니다.</p>
+
+    <h3>③ findByTitleContainingOrContentContaining — 파라미터 2개</h3>
+    <p class="file-tab">BoardRepository.java</p>
+    <pre><code class="language-java">Page&lt;Board&gt; findByTitleContainingOrContentContaining(
+    String searchKeywordTitle,
+    String searchKeywordContent,
+    Pageable pageable
+);</code></pre>
+    <p>JPA 쿼리 메서드에서 <code>Or</code>는 SQL의 <code>OR</code> 조건입니다.<br>
+    <code>Or</code> 조건이 하나 추가될 때마다 파라미터도 하나씩 늘어납니다.</p>
+    <p class="file-tab">실행되는 SQL</p>
+    <pre><code class="language-java">WHERE title LIKE '%검색어%' OR content LIKE '%검색어%'</code></pre>
+    <p>SQL에서 <code>OR</code> 양쪽이 각각 별개의 값을 비교하기 때문에, Java 메서드도 파라미터를 2개 받아야 합니다.<br>
+    동일한 키워드로 제목과 내용을 동시에 검색하더라도 <code>searchKeywordTotal</code>을 두 번 넘겨야 합니다.</p>
+
+    <p class="file-tab">BoardService.java</p>
+    <pre><code class="language-java">public Page&lt;Board&gt; boardSearchTotalList(String searchKeywordTotal, Pageable pageable){
+    return boardRepository.findByTitleContainingOrContentContaining(
+        searchKeywordTotal,   // title 검색어
+        searchKeywordTotal,   // content 검색어 (같은 값을 두 번)
+        pageable
+    );
+}</code></pre>
+
+    <h4>Or 말고 And도 있나?</h4>
+    <p><code>findByTitleContainingAndContentContaining</code>도 존재합니다.<br>
+    <code>Or</code>와 <code>And</code>는 완전히 다른 결과를 냅니다.</p>
+    <p class="file-tab">실행되는 SQL 비교</p>
+    <pre><code class="language-java">// Or — 제목 또는 내용 중 하나라도 포함
+WHERE title LIKE '%Spring%' OR content LIKE '%Spring%'
+// → "Spring"이 제목에만 있어도, 내용에만 있어도 결과에 포함
+
+// And — 제목과 내용 둘 다 포함
+WHERE title LIKE '%Spring%' AND content LIKE '%Spring%'
+// → "Spring"이 제목과 내용 모두에 있어야만 결과에 포함</code></pre>
+    <p>통합 검색처럼 "어느 곳이든 포함되면 보여줘"는 <code>Or</code>가 맞습니다.<br>
+    파라미터 개수 규칙은 동일합니다. <code>And</code>도 조건이 2개이므로 파라미터 2개가 필요합니다.</p>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step" id="step4">
+    <div class="step-label">Step 4</div>
+    <h2>왜 이렇게 작성했는가</h2>
+
+    <h3>왜 초기 화면을 redirect로 처리하는가</h3>
+    <p class="file-tab">BoardController.java</p>
+    <pre><code class="language-java">@GetMapping("/")
+public String index(){
+    return "redirect:/board/list";
+}</code></pre>
+    <p><code>boardlist.html</code>은 렌더링에 <code>list</code>, <code>nowPage</code>, <code>startPage</code>, <code>endPage</code> 데이터가 필요합니다.<br>
+    이 데이터를 채워주는 건 <code>boardlist()</code> 메서드이지, <code>index()</code>가 아닙니다.<br>
+    <code>index()</code>에서 직접 <code>boardlist.html</code>을 리턴하면 데이터 없이 템플릿이 열려 오류가 납니다.</p>
+    <p><code>redirect:</code>를 붙이면 브라우저가 <code>/board/list</code>로 새 요청을 보냅니다.<br>
+    그 요청을 <code>boardlist()</code>가 받아서 데이터를 채운 뒤 <code>boardlist.html</code>을 렌더링합니다.<br>
+    역할이 명확히 분리됩니다.</p>
+
+    <h4>모델 데이터가 필요 없는 템플릿이라면 return "boardlist"해도 되나?</h4>
+    <p>템플릿에 <code>${list}</code> 같은 모델 데이터가 전혀 없다면 <code>return "boardlist"</code>를 해도 오류는 나지 않습니다.<br>
+    하지만 루트 URL(<code>/</code>)에서는 redirect를 쓰는 것이 관례입니다. 이유가 있습니다.</p>
+    <ul>
+      <li><strong>URL 일관성</strong> — redirect 후 브라우저 주소창이 <code>/board/list</code>로 바뀝니다. 북마크나 링크 공유가 의미 있어집니다.</li>
+      <li><strong>책임 분리</strong> — <code>index()</code>는 "어디로 가라"만 담당합니다. 렌더링 책임은 <code>boardlist()</code>에 있습니다.</li>
+      <li><strong>나중을 위해</strong> — 지금은 데이터가 없어도, 나중에 템플릿이 바뀌어 데이터가 필요해질 수 있습니다. redirect면 <code>index()</code>를 건드릴 필요가 없습니다.</li>
+    </ul>
+    <p>결론: 데이터가 없어도 <code>return "boardlist"</code>는 동작하지만, 루트 URL에서는 redirect가 더 올바른 설계입니다.</p>
+
+    <h3>왜 null 체크만으로는 부족한가</h3>
+    <p class="file-tab">BoardController.java</p>
+    <pre><code class="language-java">// ❌ 이전: form에서 아무것도 입력 않아도 통과 못함
+if(searchKeywordTitle == null && searchKeywordContent == null){
+    list = boardService.boardList(pageable);
+}</code></pre>
+    <p>검색 폼에서 아무것도 입력하지 않고 검색 버튼을 누르면 URL이 이렇게 됩니다.</p>
+    <p class="file-tab">HTTP 요청</p>
+    <pre><code class="language-java">GET /board/list?searchKeywordTotal=&searchKeywordTitle=&searchKeywordContent=</code></pre>
+    <p>파라미터가 URL에 존재하지만 값이 없는 상태, 즉 <code>""</code>가 전달됩니다.<br>
+    <code>searchKeywordTitle == null</code>은 <code>""</code>에 대해 <code>false</code>를 반환합니다.<br>
+    결과적으로 전체 목록 분기를 타지 못하고 검색 분기로 빠져버립니다.</p>
+    <p><code>StringUtils.hasText()</code>는 <code>null</code>과 <code>""</code> 둘 다 <code>false</code>로 처리하기 때문에,<br>
+    "아무것도 입력하지 않은 상태"를 정확하게 판단할 수 있습니다.</p>
+    <div class="improve">
+      <strong>💡 개선 포인트</strong>
+      <p><code>boardWritePro</code>의 제목/내용 검증도 지금은 <code>StringUtils.hasText()</code>로 직접 분기하고 있습니다.<br>
+      나중에 <code>@NotBlank</code>, <code>@Valid</code> (Bean Validation)를 배우면 이 if/else 검증 코드를 어노테이션 하나로 대체할 수 있습니다.</p>
+    </div>
+
+    <h3>왜 검색 분기의 순서가 바뀌었는가</h3>
+    <p class="file-tab">BoardController.java</p>
+    <pre><code class="language-java">if(!StringUtils.hasText(searchKeywordTitle) && StringUtils.hasText(searchKeywordContent)){
+    // 내용만 입력된 경우
+}
+else if(StringUtils.hasText(searchKeywordTitle) && !StringUtils.hasText(searchKeywordContent)){
+    // 제목만 입력된 경우
+}
+else if(StringUtils.hasText(searchKeywordTotal)){
+    // 통합 검색어가 입력된 경우
+}
+else{
+    // 아무것도 입력 없음 → 전체 목록
+}</code></pre>
+    <p>이전에는 전체 목록을 첫 번째 분기로 처리했습니다.<br>
+    <code>searchKeywordTotal</code>이 추가되면서 "아무것도 없음" 조건이 마지막 <code>else</code>로 밀렸습니다.<br>
+    제목/내용 각각을 먼저 체크하고, 그다음 통합 검색을 체크하고, 그래도 아무것도 없으면 전체 목록을 반환하는 구조입니다.</p>
+    <div class="improve">
+      <strong>💡 개선 포인트</strong>
+      <p>현재 분기에서 제목과 내용을 <strong>동시에</strong> 입력하면 어느 분기도 해당하지 않아 전체 목록이 반환됩니다.<br>
+      지금 UI에서는 두 필드를 동시에 입력할 일이 없으니 당장 버그는 아닙니다.<br>
+      나중에 검색 UI가 바뀐다면 이 케이스에 대한 분기를 추가해야 합니다.</p>
+    </div>
+
+    <div class="warn">
+      <strong>if/else if에서 순서 자체가 로직이다</strong>
+      <p>만약 통합 검색 분기를 제일 위로 올리면 어떻게 될까요?</p>
+      <p class="file-tab">BoardController.java — 순서가 잘못된 경우</p>
+      <pre><code class="language-java">// ❌ 통합 검색을 먼저 체크하면
+if(StringUtils.hasText(searchKeywordTotal)){
+    list = boardService.boardSearchTotalList(searchKeywordTotal, pageable);
+}
+// 제목만 입력해도 여기 절대 못 들어옴 (통합 검색 분기에서 걸림)
+else if(StringUtils.hasText(searchKeywordTitle) && !StringUtils.hasText(searchKeywordContent)){
+    list = boardService.boardSearchTitleList(searchKeywordTitle, pageable);
+}</code></pre>
+      <p>제목 검색창에 "Spring"을 입력해도 통합 검색 분기로 들어가버립니다.<br>
+      if/else if는 위에서부터 순서대로 평가하기 때문에, <strong>분기 순서 자체가 비즈니스 로직</strong>입니다.<br>
+      코드가 동작하더라도 순서가 의도와 다르면 전혀 다른 결과가 나올 수 있습니다.</p>
+    </div>
+
+    <h3>왜 Or 조건 쿼리 메서드는 파라미터가 2개인가</h3>
+    <p class="file-tab">BoardRepository.java</p>
+    <pre><code class="language-java">Page&lt;Board&gt; findByTitleContainingOrContentContaining(
+    String title, String content, Pageable pageable
+);</code></pre>
+    <p>JPA 쿼리 메서드는 메서드 이름에 등장하는 조건 키워드 개수만큼 파라미터를 필요로 합니다.<br>
+    <code>TitleContaining</code> 하나, <code>ContentContaining</code> 하나 — 두 조건이므로 파라미터도 두 개입니다.<br>
+    SQL로 보면 이렇게 대응됩니다.</p>
+    <p class="file-tab">실행되는 SQL</p>
+    <pre><code class="language-java">WHERE title LIKE '%:title%'   -- 첫 번째 파라미터
+   OR content LIKE '%:content%'  -- 두 번째 파라미터</code></pre>
+    <p>동일한 키워드로 검색하더라도 SQL 구조상 각 컬럼에 별도 파라미터가 필요합니다.<br>
+    그래서 <code>boardSearchTotalList("Spring", pageable)</code>처럼 하나만 받아도,<br>
+    내부에서는 <code>findByTitleContainingOrContentContaining("Spring", "Spring", pageable)</code>으로 같은 값을 두 번 넘깁니다.</p>
+    <div class="improve">
+      <strong>💡 개선 포인트</strong>
+      <p>같은 값을 두 번 넘기는 구조가 어색하다면, <code>@Query</code>로 직접 JPQL을 작성하면 파라미터를 하나로 줄일 수 있습니다.</p>
+      <p class="file-tab">BoardRepository.java — @Query 방식</p>
+      <pre><code class="language-java">@Query("SELECT b FROM Board b WHERE b.title LIKE %:keyword% OR b.content LIKE %:keyword%")
+Page&lt;Board&gt; findByKeyword(@Param("keyword") String keyword, Pageable pageable);</code></pre>
+    </div>
+  </div>
+
+  <!-- STEP 5 -->
+  <div class="step" id="step5">
+    <div class="step-label">Step 5</div>
+    <h2>실행 흐름</h2>
+
+    <h3>초기 화면 접속 시</h3>
+    <p class="file-tab">HTTP 요청</p>
+    <pre><code class="language-java">GET /</code></pre>
+    <svg viewBox="0 0 480 300" style="width:100%;max-width:480px;display:block;margin:16px auto;" xmlns="http://www.w3.org/2000/svg">
+      <rect width="480" height="300" fill="#0d1117" rx="8"/>
+      <rect x="155" y="20" width="170" height="34" rx="6" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="240" y="42" text-anchor="middle" fill="#c9d1d9" font-size="13" font-family="Segoe UI,sans-serif">브라우저 GET /</text>
+      <line x1="240" y1="54" x2="240" y2="72" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="240,78 234,68 246,68" fill="#4b5563"/>
+      <rect x="120" y="78" width="240" height="40" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+      <text x="240" y="95" text-anchor="middle" fill="#3b82f6" font-size="13" font-family="Segoe UI,sans-serif">BoardController.index()</text>
+      <text x="240" y="111" text-anchor="middle" fill="#8b949e" font-size="11" font-family="Consolas,monospace">return "redirect:/board/list"</text>
+      <line x1="240" y1="118" x2="240" y2="136" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="240,142 234,132 246,132" fill="#4b5563"/>
+      <rect x="100" y="142" width="280" height="34" rx="6" fill="#2d2200" stroke="#e3b341" stroke-width="1.5"/>
+      <text x="240" y="164" text-anchor="middle" fill="#e3b341" font-size="12" font-family="Segoe UI,sans-serif">302 Redirect → /board/list 재요청</text>
+      <line x1="240" y1="176" x2="240" y2="194" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="240,200 234,190 246,190" fill="#4b5563"/>
+      <rect x="80" y="200" width="320" height="40" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+      <text x="240" y="217" text-anchor="middle" fill="#3b82f6" font-size="13" font-family="Segoe UI,sans-serif">BoardController.boardlist()</text>
+      <text x="240" y="233" text-anchor="middle" fill="#8b949e" font-size="11" font-family="Consolas,monospace">DB 조회 → 모델 데이터 채움</text>
+      <line x1="240" y1="240" x2="240" y2="258" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="240,264 234,254 246,254" fill="#4b5563"/>
+      <rect x="130" y="264" width="220" height="24" rx="6" fill="#0d2d16" stroke="#3fb950" stroke-width="1.5"/>
+      <text x="240" y="281" text-anchor="middle" fill="#3fb950" font-size="12" font-family="Segoe UI,sans-serif">boardlist.html 정상 렌더링</text>
+    </svg>
+
+    <h3>통합 검색어 "Spring" 입력 시</h3>
+    <p class="file-tab">HTTP 요청</p>
+    <pre><code class="language-java">GET /board/list?searchKeywordTotal=Spring&searchKeywordTitle=&searchKeywordContent=</code></pre>
+    <svg viewBox="0 0 520 360" style="width:100%;max-width:520px;display:block;margin:16px auto;" xmlns="http://www.w3.org/2000/svg">
+      <rect width="520" height="360" fill="#0d1117" rx="8"/>
+      <rect x="60" y="20" width="400" height="34" rx="6" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="260" y="42" text-anchor="middle" fill="#c9d1d9" font-size="12" font-family="Consolas,monospace">searchKeywordTotal=Spring</text>
+      <line x1="260" y1="54" x2="260" y2="72" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="260,78 254,68 266,68" fill="#4b5563"/>
+      <rect x="60" y="78" width="400" height="56" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+      <text x="260" y="98" text-anchor="middle" fill="#3b82f6" font-size="13" font-family="Segoe UI,sans-serif">BoardController.boardlist()</text>
+      <text x="260" y="115" text-anchor="middle" fill="#8b949e" font-size="11" font-family="Consolas,monospace">hasText(title)=false, hasText(content)=false</text>
+      <text x="260" y="128" text-anchor="middle" fill="#3fb950" font-size="11" font-family="Consolas,monospace">→ hasText(total)=true → 통합 검색 분기</text>
+      <line x1="260" y1="134" x2="260" y2="152" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="260,158 254,148 266,148" fill="#4b5563"/>
+      <rect x="80" y="158" width="360" height="40" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+      <text x="260" y="176" text-anchor="middle" fill="#3fb950" font-size="13" font-family="Segoe UI,sans-serif">BoardService.boardSearchTotalList("Spring")</text>
+      <text x="260" y="192" text-anchor="middle" fill="#8b949e" font-size="11" font-family="Consolas,monospace">→ repository에 ("Spring", "Spring") 전달</text>
+      <line x1="260" y1="198" x2="260" y2="216" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="260,222 254,212 266,212" fill="#4b5563"/>
+      <rect x="40" y="222" width="440" height="40" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+      <text x="260" y="240" text-anchor="middle" fill="#a78bfa" font-size="13" font-family="Segoe UI,sans-serif">BoardRepository</text>
+      <text x="260" y="256" text-anchor="middle" fill="#8b949e" font-size="11" font-family="Consolas,monospace">findByTitleContainingOrContentContaining("Spring","Spring")</text>
+      <line x1="260" y1="262" x2="260" y2="280" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="260,286 254,276 266,276" fill="#4b5563"/>
+      <rect x="40" y="286" width="440" height="34" rx="6" fill="#2d1e00" stroke="#f59e0b" stroke-width="1.5"/>
+      <text x="260" y="308" text-anchor="middle" fill="#f59e0b" font-size="12" font-family="Consolas,monospace">WHERE title LIKE '%Spring%' OR content LIKE '%Spring%'</text>
+      <text x="260" y="340" text-anchor="middle" fill="#8b949e" font-size="11" font-family="Segoe UI,sans-serif">제목 또는 내용에 "Spring"이 포함된 게시글 반환</text>
+    </svg>
+  </div>
+
+  <!-- STEP 6 -->
+  <div class="step" id="step6">
+    <div class="step-label">Step 6</div>
+    <h2>이전 커밋과 비교</h2>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <h4>이전 커밋 (검색 기능 1, 2)</h4>
+        검색 파라미터: title, content<br>
+        <br>
+        분기 조건:<br>
+        &nbsp;title == null → 전체 목록<br>
+        &nbsp;else → 제목 또는 내용 검색<br>
+        <br>
+        문제점:<br>
+        &nbsp;form 제출 시 "" 전달<br>
+        &nbsp;→ null 체크 통과 못함<br>
+        &nbsp;→ 항상 검색 분기로 빠짐<br>
+        <br>
+        초기 화면(/):<br>
+        &nbsp;매핑 없음 → Whitelabel Error
+      </div>
+      <div class="compare-card">
+        <h4>현재 커밋</h4>
+        검색 파라미터: <span class="new">+ searchKeywordTotal</span><br>
+        <br>
+        분기 조건:<br>
+        &nbsp;<span class="new">hasText() 기반</span><br>
+        &nbsp;내용만 → 내용 검색<br>
+        &nbsp;제목만 → 제목 검색<br>
+        &nbsp;<span class="new">통합 → 제목+내용 OR 검색</span><br>
+        &nbsp;없음 → 전체 목록<br>
+        <br>
+        초기 화면(/):<br>
+        &nbsp;<span class="new">redirect:/board/list</span>
+      </div>
+    </div>
+
+    <p style="margin-top:16px;">이전 커밋까지 null 체크 방식은 URL에 파라미터가 아예 없는 경우만 처리했습니다.<br>
+    form 제출 시 항상 파라미터가 존재하기 때문에 실제 운용에서 null 분기를 타는 경우가 없었습니다.<br>
+    이번 커밋에서 <code>StringUtils.hasText()</code>로 교체하면서 이 문제가 해결되었습니다.</p>
+  </div>
+
+  <!-- STEP 7 -->
+  <div class="step" id="step7">
+    <div class="step-label">Step 7</div>
+    <h2>초보자가 하기 쉬운 착각</h2>
+
+    <div class="warn">
+      <strong>검색어를 비우고 검색하면 null이 들어온다?</strong>
+      <p>아닙니다. HTML form의 input은 화면에 있는 이상 항상 전송됩니다.<br>
+      입력값이 없으면 빈 문자열 <code>""</code>이 전달됩니다.<br>
+      <code>null</code>이 오는 경우는 URL에 파라미터 자체가 없을 때입니다.<br>
+      예를 들어 주소창에 <code>/board/list</code>를 직접 입력하면 파라미터가 없으니 <code>null</code>이 됩니다.</p>
+    </div>
+
+    <div class="warn">
+      <strong>isEmpty()와 hasText()는 완전히 같은가?</strong>
+      <p>아닙니다. 공백 문자열 <code>"   "</code> 처리가 다릅니다.<br>
+      <code>isEmpty("   ")</code>는 <code>false</code>입니다. 공백도 문자열로 봅니다.<br>
+      <code>hasText("   ")</code>는 <code>false</code>입니다. 공백만 있으면 텍스트가 없다고 봅니다.<br>
+      사용자가 공백만 입력했을 때도 "입력 없음"으로 처리하고 싶다면 <code>hasText()</code>가 더 적합합니다.</p>
+    </div>
+
+    <div class="warn">
+      <strong>Or 조건 메서드는 파라미터가 하나여도 되지 않나?</strong>
+      <p>안 됩니다. JPA는 메서드 이름에 등장한 조건 키워드 개수만큼 파라미터를 요구합니다.<br>
+      <code>TitleContaining</code>과 <code>ContentContaining</code>이 각각 하나씩이므로 파라미터 2개가 필수입니다.<br>
+      파라미터를 1개로 선언하면 앱 실행 시점에 오류가 납니다.</p>
+    </div>
+
+    <div class="warn">
+      <strong>redirect는 항상 써야 하는가?</strong>
+      <p>아닙니다. <code>index()</code>처럼 직접 모델 데이터를 채우지 않고 다른 메서드의 처리 결과가 필요할 때만 씁니다.<br>
+      <code>boardWriteForm()</code>처럼 데이터 없이 HTML만 보여주면 되는 경우는 <code>return "boardwrite"</code>로 충분합니다.<br>
+      redirect를 무조건 쓰면 불필요한 HTTP 왕복이 생깁니다.</p>
+    </div>
+  </div>
+
+  <!-- STEP 8 -->
+  <div class="step" id="step8">
+    <div class="step-label">Step 8</div>
+    <h2>중요도 구분</h2>
+
+    <div class="learn-row">
+      <div class="learn-card red-card">
+        <h3>🔴 반드시 이해</h3>
+        <ul>
+          <li>form 제출 시 빈 입력 = "" (null 아님)</li>
+          <li>StringUtils.hasText()의 동작 범위</li>
+          <li>redirect:/경로 — 브라우저 재요청 유발</li>
+          <li>Or 조건 쿼리 메서드 파라미터 2개 규칙</li>
+          <li>모델에 searchKeywordTotal 추가해야 페이징 검색어 유지</li>
+        </ul>
+      </div>
+      <div class="learn-card yellow-card">
+        <h3>🟡 개념만 이해</h3>
+        <ul>
+          <li>StringUtils.isEmpty() vs hasText()</li>
+          <li>index() 메서드 이름 관례</li>
+          <li>302 Redirect HTTP 상태 코드</li>
+        </ul>
+      </div>
+      <div class="learn-card green-card">
+        <h3>🟢 나중에 공부</h3>
+        <ul>
+          <li>Bean Validation (@NotBlank, @Valid)</li>
+          <li>Querydsl 동적 쿼리 (OR 조건 동적 처리)</li>
+          <li>PRG 패턴 (Post-Redirect-Get)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 9 -->
+  <div class="step" id="step9">
+    <div class="step-label">Step 9</div>
+    <h2>오늘 배운 것</h2>
+
+    <ul class="summary-list">
+      <li>HTML form에서 빈 입력을 제출하면 <code>null</code>이 아닌 빈 문자열 <code>""</code>이 전달된다.</li>
+      <li><code>StringUtils.hasText()</code>는 <code>null</code>, <code>""</code>, 공백 문자열을 모두 <code>false</code>로 처리한다.</li>
+      <li><code>StringUtils.isEmpty()</code>를 쓰면 <code>!</code> 없이 "비어있는 경우"를 표현할 수 있다. 단 공백 문자열은 처리하지 못한다.</li>
+      <li><code>return "redirect:/경로"</code>는 브라우저가 해당 경로로 다시 GET 요청을 보내게 한다.</li>
+      <li>데이터가 필요한 템플릿을 직접 리턴하면 오류가 난다. 데이터를 채워주는 매핑으로 redirect해야 한다.</li>
+      <li>JPA Or 조건 쿼리 메서드는 조건 개수만큼 파라미터가 필요하다. 같은 키워드라도 두 번 넘겨야 한다.</li>
+      <li>검색 파라미터를 모델에 추가해야 페이지를 이동해도 검색어가 유지된다.</li>
+    </ul>
+  </div>
+
+  <!-- STEP 10 -->
+  <div class="step" id="step10">
+    <div class="step-label">Step 10</div>
+    <h2>이해도 확인 질문</h2>
+
+    <ol class="question-list">
+      <li>
+        <span>검색 폼에서 아무것도 입력하지 않고 검색 버튼을 눌렀을 때 컨트롤러 파라미터에 어떤 값이 들어오는가?</span>
+        <details><summary></summary><p>null이 아닌 빈 문자열 ""이 들어옵니다. HTML form의 input은 화면에 존재하는 이상 항상 전송되기 때문입니다. 파라미터 자체가 URL에 없는 경우에만 null이 됩니다.</p></details>
+      </li>
+      <li>
+        <span><code>@GetMapping("/")</code>에서 <code>return "boardlist"</code>가 아닌 <code>return "redirect:/board/list"</code>를 써야 하는 이유는?</span>
+        <details><summary></summary><p>boardlist.html은 list, nowPage 등 모델 데이터가 없으면 렌더링 오류가 납니다. index()는 그 데이터를 채워주지 않으므로 직접 템플릿을 리턴하면 안 됩니다. redirect로 /board/list에 새 요청을 보내면 boardlist() 메서드가 데이터를 채운 뒤 정상 렌더링합니다.</p></details>
+      </li>
+      <li>
+        <span><code>findByTitleContainingOrContentContaining</code>에 파라미터가 2개 필요한 이유는?</span>
+        <details><summary></summary><p>JPA 쿼리 메서드는 조건 키워드 개수만큼 파라미터를 요구합니다. TitleContaining과 ContentContaining이 각각 하나씩이라 파라미터도 2개입니다. SQL의 title LIKE '%?%' OR content LIKE '%?%' 각각에 값을 바인딩하기 때문입니다.</p></details>
+      </li>
+      <li>
+        <span><code>StringUtils.hasText()</code>와 <code>== null</code>의 차이는?</span>
+        <details><summary></summary><p>== null은 null인 경우만 true입니다. StringUtils.hasText()는 null, "", "   "(공백만 있는 문자열)을 모두 false로 처리합니다. 검색어가 없는 상태를 정확히 판단하려면 hasText()가 더 안전합니다.</p></details>
+      </li>
+      <li>
+        <span>통합 검색으로 "Spring"을 검색했을 때 boardSearchTotalList 내부에서 repository에 어떤 값이 전달되는가?</span>
+        <details><summary></summary><p>findByTitleContainingOrContentContaining("Spring", "Spring", pageable)처럼 같은 값이 두 번 전달됩니다. Or 조건 양쪽에 각각 파라미터가 필요하기 때문에, 동일한 키워드라도 두 번 넘겨야 합니다.</p></details>
+      </li>
+    </ol>
+  </div>
+
+  <!-- STEP 11 -->
+  <div class="step" id="step11">
+    <div class="step-label">Step 11</div>
+    <h2>작은 실습</h2>
+
+    <div class="practice-box">
+      <h3>실습: 검색어가 공백만 있을 때 전체 목록이 나오는지 확인하기</h3>
+      <p>검색 폼에서 스페이스바를 몇 번 누른 뒤 검색 버튼을 눌러보세요.<br>
+      <code>StringUtils.hasText("   ")</code>가 <code>false</code>를 반환하기 때문에 전체 목록이 나와야 합니다.</p>
+      <p>확인 후, 브라우저 URL 창을 보고 다음을 직접 확인해보세요.</p>
+      <ul>
+        <li>파라미터에 어떤 값이 담겨 있는가?</li>
+        <li><code>== null</code>로 체크했다면 이 경우 어떤 분기를 탔을까?</li>
+      </ul>
+
+      <h4>추가 실습 (선택)</h4>
+      <p>현재 통합 검색(<code>searchKeywordTotal</code>)과 제목 검색(<code>searchKeywordTitle</code>)을 동시에 입력하면<br>
+      어떤 분기가 실행되는지 코드를 보고 예상한 뒤, 실제로 확인해보세요.</p>
+    </div>
+  </div>
+
+  <!-- STEP 12 -->
+  <div class="step" id="step12">
+    <div class="step-label">Step 12</div>
+    <h2>다음 커밋을 위한 준비</h2>
+
+    <ul class="next-list">
+      <li><strong>입력값 검증 위치</strong> — "제목이 비어있는가?"는 비즈니스 로직이 아니라 입력값 형식 검증입니다. Controller에서 처리하는 것이 원칙입니다. Service는 올바른 데이터가 들어온다고 가정하고 동작합니다.</li>
+      <li><strong>비즈니스 로직 vs 입력값 검증</strong> — "공지글은 관리자만 작성 가능하다"처럼 서비스가 정한 규칙은 Service에 둡니다. "제목을 입력했는가?"처럼 형식 문제는 Controller에 둡니다.</li>
+      <li><strong>Bean Validation</strong> — <code>@NotBlank</code>, <code>@Valid</code>를 사용하면 Controller에 if 문 없이 검증 코드를 깔끔하게 처리할 수 있습니다. 지금 방식으로 흐름을 이해한 뒤 나중에 배우면 더 잘 이해됩니다.</li>
+      <li><strong>파일 없을 때 처리</strong> — 현재 게시글 작성 시 파일이 없어도 오류 없이 저장되도록 수정이 필요합니다. <code>file.isEmpty()</code>로 파일 존재 여부를 확인하는 분기를 추가해보세요.</li>
+    </ul>
+  </div>
+
+
+</div>
+
+<script>hljs.highlightAll();</script>
+<script>
+  const sections = document.querySelectorAll('.step');
+  const links = document.querySelectorAll('.toc ul li a');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(a => a.classList.remove('toc-active'));
+        const id = e.target.id;
+        const active = document.querySelector('.toc a[href="#' + id + '"]');
+        if (active) active.classList.add('toc-active');
+      }
+    });
+  }, { threshold: 0.3 });
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

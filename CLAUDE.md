@@ -91,7 +91,7 @@ Commit을 분석할 때 다음 순서로 설명한다.
 
 ---
 
-### STEP 2. 무엇이 변경되었는지
+### STEP 2. 무엇이 변경되었는가
 
 변경된 파일을 확인하고 파일별로 설명한다.
 
@@ -103,6 +103,12 @@ Commit을 분석할 때 다음 순서로 설명한다.
 * 다른 코드와 어떻게 연결되는가?
 
 를 설명한다.
+
+**STEP 2에서 제외할 항목:**
+
+- HTML/CSS 변경(스타일, 레이아웃, 버튼 추가 등)은 기술하지 않는다. 백엔드 학습이 목적이므로 프론트엔드 변경은 생략한다.
+- 단순 공백 줄 제거, 빈 줄 정리 등 내용 변경이 없는 수정은 언급하지 않는다.
+- 위 항목만 변경된 파일이라면 STEP 2에서 해당 파일 자체를 언급하지 않는다.
 
 ---
 
@@ -558,7 +564,28 @@ claude 자료/게시글 목록 조회 기능 추가.html
 
 - **상단에 커밋 링크 배치**: commit hash를 클릭하면 GitHub commit 페이지로 이동하는 링크
   - URL 형식: `https://github.com/yzzzwan/springboot_board_practice/commit/<full-hash>`
-  - 표시 형식 예: `커밋 보기: f299b44` (짧은 hash 표시, 클릭 시 이동)
+  - 반드시 아래 구조와 CSS를 그대로 사용한다. 래퍼 div나 다른 변형 금지.
+  ```css
+  .commit-link {
+    display: inline-block;
+    margin-bottom: 32px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 10px 18px;
+    color: #58a6ff;
+    text-decoration: none;
+    font-size: 13px;
+    font-family: monospace;
+  }
+  .commit-link:hover { background: #1f2937; }
+  ```
+  ```html
+  <a class="commit-link" href="https://github.com/yzzzwan/springboot_board_practice/commit/<full-hash>" target="_blank">
+    커밋 보기: <short-hash>
+  </a>
+  ```
+  - 텍스트 형식: `커밋 보기: <7자리 hash> — <커밋 제목(prefix 제외)>`
 - 다크 테마 배경 (`#0f1117`)
 - 각 STEP을 섹션으로 구분
 - **코드 블록은 highlight.js로 문법 하이라이팅 적용**
@@ -637,6 +664,85 @@ SVG를 작성한 후 반드시 확인:
 
 STEP 12까지 수업을 마치면 자동으로 저장한다.
 사용자가 중간에 요청해도 저장한다.
+
+---
+
+## 현업 중요도 강조 규칙
+
+이번 수업에서 **현업에서 특히 자주 쓰이거나 실수하기 쉬운 핵심 개념**이 있을 경우, 별도 강조 박스로 표시한다.
+
+강조 방법: `<div class="highlight-box">` 사용
+
+```css
+.highlight-box {
+  border: 1px solid #58a6ff;
+  background: #0d1f3c;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin: 14px 0;
+}
+.highlight-box .hb-title {
+  color: #58a6ff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+```
+
+```html
+<div class="highlight-box">
+  <div class="hb-title">⭐ 현업 포인트</div>
+  <p>강조할 내용</p>
+</div>
+```
+
+**사용 기준:**
+- 이번 수업의 개념 중 실무에서 특히 자주 쓰이는 것
+- 초보자가 실수하면 나중에 크게 고생하는 것
+- 해당하는 내용이 없으면 강조 박스를 억지로 만들지 않는다
+
+---
+
+## 코드 개선 포인트 안내 규칙
+
+사용자가 강의가 아닌 **혼자 하는 추가 학습**임을 감안한다.
+코드가 완벽하지 않을 수 있으며、더 나은 방법이 있다면 부드럽게 안내한다.
+
+**작성 기준:**
+- **이번 수업에서 다룬 범위 안에서** 더 나은 방법이 있으면 언급한다.
+- 별도 섹션으로 만들지 않는다. 관련 STEP(주로 STEP 3 또는 STEP 4)의 해당 코드 설명 바로 아래에 자연스럽게 녹여 넣는다.
+- "틀렸다"가 아닌 "이렇게 하면 더 낫다" 톤으로 작성한다.
+- 개선 포인트가 없으면 생략한다.
+
+**스타일: `.improve` 박스 사용** (`.warn` 박스와 동일한 구조, 파란 좌측 border)
+
+```css
+.improve {
+  border-left: 4px solid #3b82f6;
+  background: #0d1f3c;
+  padding: 14px 18px;
+  border-radius: 0 6px 6px 0;
+  margin: 12px 0;
+  font-size: 14px;
+}
+.improve strong { color: #58a6ff; display: block; margin-bottom: 4px; }
+```
+
+```html
+<div class="improve">
+  <strong>💡 개선 포인트</strong>
+  <p>내용</p>
+</div>
+```
+
+---
+
+## if/else if 분기 순서 설명 규칙
+
+if/else if 분기가 있는 코드는 **순서 자체가 로직**임을 반드시 설명한다.
+순서가 바뀌면 결과가 달라지는 경우, 왜 이 순서여야 하는지 STEP 4에서 짚어준다.
 
 ## HTML 텍스트 줄바꿈 규칙
 
