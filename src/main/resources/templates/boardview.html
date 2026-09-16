@@ -4,9 +4,22 @@
     <meta charset="UTF-8">
     <title>게시글 보기</title>
     <style>
+        body {
+            background-color: #f5f6f8;
+            font-family: 'Malgun Gothic', sans-serif;
+        }
+
         .layout {
             width: 500px;
             margin: 50px auto;
+        }
+
+        .form-card {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
         }
 
         .title {
@@ -16,13 +29,17 @@
         }
 
         .content {
-            border: 1px solid #ccc;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            background-color: #fafafa;
             padding: 15px;
             min-height: 200px;
+            font-size: 14px;
+            white-space: pre-wrap;
         }
 
         .btn-area {
-            margin-top: 15px;
+            margin-top: 20px;
             text-align: right;
         }
 
@@ -64,16 +81,18 @@
 </head>
 <body>
     <div class="layout">
-        <div class="title" th:text="${board.title}">제목</div>
-        <div class="content" th:text="${board.content}">내용</div>
-        <div class="btn-area">
-            <a class="btn btn-modify" th:href="@{/board/modify/{id}(id=${board.id})}">수정</a>
-            <a class="btn btn-download"
-               th:if="${!#strings.isEmpty(#strings.trim(board.filename))}"
-               th:href="@{${board.filepath}}">
-                다운로드
-            </a>
-            <a class="btn btn-delete" th:href="@{/board/delete(id=${board.id})}">삭제</a>
+        <div class="form-card">
+            <div class="title" th:text="${board.title}">제목</div>
+            <div class="content" th:text="${board.content}">내용</div>
+            <div class="btn-area">
+                <a class="btn btn-modify" th:href="@{/board/modify/{id}(id=${board.id})}">수정</a>
+                <a class="btn btn-download"
+                   th:if="${!#strings.isEmpty(#strings.trim(board.filename))}"
+                   th:href="@{${board.filepath}}">
+                    다운로드
+                </a>
+                <a class="btn btn-delete" th:href="@{/board/delete(id=${board.id})}">삭제</a>
+            </div>
         </div>
     </div>
 </body>
