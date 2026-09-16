@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>파일 업로드 기능 개선 — Spring 수업</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0f1117;
+    color: #c9d1d9;
+    font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    padding: 40px 20px;
+  }
+  .container { max-width: 860px; margin: 0 auto; }
+
+  .commit-link {
+    display: inline-block;
+    margin-bottom: 10px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 10px 18px;
+    color: #58a6ff;
+    text-decoration: none;
+    font-size: 13px;
+    font-family: monospace;
+  }
+  .commit-link:hover { background: #1f2937; }
+  .commit-links { margin-bottom: 32px; display: flex; flex-direction: column; gap: 6px; }
+
+  h1 {
+    font-size: 26px;
+    color: #e6edf3;
+    margin-bottom: 8px;
+  }
+  .subtitle { color: #8b949e; margin-bottom: 40px; font-size: 14px; }
+
+  .learn-box {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin-bottom: 40px;
+  }
+  .learn-box h2 { color: #e6edf3; font-size: 16px; margin-bottom: 16px; }
+  .learn-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .learn-card { border-radius: 8px; padding: 16px; }
+  .learn-card h3 { font-size: 13px; margin-bottom: 8px; }
+  .learn-card ul { padding-left: 16px; font-size: 13px; line-height: 1.8; }
+  .red-card  { background: #2d1515; border: 1px solid #7f2020; }
+  .red-card h3 { color: #f85149; }
+  .yellow-card { background: #2d2200; border: 1px solid #7f5d00; }
+  .yellow-card h3 { color: #e3b341; }
+  .green-card { background: #0d2d16; border: 1px solid #1a7f37; }
+  .green-card h3 { color: #3fb950; }
+
+  .step {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 28px 32px;
+    margin-bottom: 28px;
+  }
+  .step-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #58a6ff;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .step h2 {
+    font-size: 18px;
+    color: #e6edf3;
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #21262d;
+  }
+
+  h3 { color: #e6edf3; font-size: 15px; margin: 20px 0 10px; }
+  h4 { color: #8b949e; font-size: 13px; margin: 14px 0 6px; font-weight: 600; }
+  p { margin-bottom: 10px; }
+
+  pre {
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 12px 0;
+  }
+  pre code.hljs {
+    font-family: 'Consolas', 'D2Coding', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    border-radius: 6px;
+    padding: 16px;
+  }
+  p code, li code {
+    background: #21262d;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 12px;
+  }
+
+  .flow-box {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 2.2;
+    color: #c9d1d9;
+  }
+  .flow-box .highlight { color: #58a6ff; font-weight: 700; }
+
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 14px;
+  }
+  .compare-card {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 16px;
+    font-family: monospace;
+    font-size: 13px;
+    line-height: 2;
+  }
+  .compare-card h4 { font-family: 'Segoe UI', sans-serif; margin-bottom: 10px; color: #8b949e; }
+  .compare-card .new { color: #3fb950; }
+
+  .warn {
+    border-left: 4px solid #e3b341;
+    background: #1c1a00;
+    padding: 14px 18px;
+    border-radius: 0 6px 6px 0;
+    margin: 12px 0;
+    font-size: 14px;
+  }
+  .warn strong { color: #e3b341; display: block; margin-bottom: 4px; }
+
+  .improve {
+    border-left: 4px solid #3b82f6;
+    background: #0d1f3c;
+    padding: 14px 18px;
+    border-radius: 0 6px 6px 0;
+    margin: 12px 0;
+    font-size: 14px;
+  }
+  .improve strong { color: #58a6ff; display: block; margin-bottom: 4px; }
+
+  .highlight-box {
+    border: 1px solid #58a6ff;
+    background: #0d1f3c;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 14px 0;
+  }
+  .highlight-box .hb-title {
+    color: #58a6ff;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  ul, ol { padding-left: 20px; margin-bottom: 10px; }
+  li { margin-bottom: 4px; }
+
+  .summary-list {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 20px 24px;
+    list-style: none;
+    padding-left: 24px;
+  }
+  .summary-list li {
+    padding: 6px 0;
+    border-bottom: 1px solid #21262d;
+    font-size: 14px;
+  }
+  .summary-list li:last-child { border-bottom: none; }
+  .summary-list li::before { content: "✓ "; color: #3fb950; font-weight: 700; }
+
+  /* 정답 보기 */
+  .question-list details { background: #1e293b; border-radius: 4px; padding: 4px 10px; margin-top: 6px; }
+  .question-list details summary { color: #475569; font-size: 11px; cursor: pointer; user-select: none; list-style: none; }
+  .question-list details summary::-webkit-details-marker { display: none; }
+  .question-list details summary::before { content: "▶ 정답 보기"; }
+  .question-list details[open] summary::before { content: "▼ 정답 보기"; }
+  .question-list details[open] summary { margin-bottom: 4px; color: #64748b; }
+  .question-list details p { color: #cbd5e1; font-size: 13px; margin: 0; }
+
+  .question-list { counter-reset: q; padding-left: 0; list-style: none; }
+  .question-list li {
+    counter-increment: q;
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+  .question-list li::before {
+    content: "Q" counter(q) ". ";
+    color: #58a6ff;
+    font-weight: 700;
+  }
+
+  .file-tab {
+    display: inline-block;
+    background: #21262d;
+    border: 1px solid #30363d;
+    border-bottom: none;
+    border-radius: 6px 6px 0 0;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-family: 'Consolas', 'D2Coding', monospace;
+    color: #8b949e;
+    margin-top: 16px;
+    margin-bottom: 0;
+  }
+  .file-tab + pre {
+    border-radius: 0 6px 6px 6px;
+    margin-top: 0;
+  }
+
+  .practice-box {
+    background: #0d2d16;
+    border: 1px solid #1a7f37;
+    border-radius: 8px;
+    padding: 20px 24px;
+  }
+  .practice-box h3 { color: #3fb950; margin-top: 0; }
+
+  .next-list { padding-left: 0; list-style: none; counter-reset: n; }
+  .next-list li {
+    counter-increment: n;
+    padding: 10px 14px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+  .next-list li::before {
+    content: counter(n) ". ";
+    color: #58a6ff;
+    font-weight: 700;
+  }
+  .next-list li strong { color: #e6edf3; }
+
+  /* 목차 */
+  .toc {
+    position: fixed;
+    top: 40px;
+    right: 24px;
+    width: 164px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 14px 16px;
+    z-index: 100;
+  }
+  .toc-title { font-size: 10px; font-weight: 700; color: #58a6ff; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+  .toc ul { list-style: none; padding: 0; margin: 0; }
+  .toc ul li { margin-bottom: 5px; }
+  .toc ul li a { font-size: 12px; color: #8b949e; text-decoration: none; line-height: 1.4; display: block; }
+  .toc ul li a:hover { color: #c9d1d9; }
+  .toc ul li a.toc-active { color: #58a6ff; }
+  @media (max-width: 1200px) { .toc { display: none; } }
+</style>
+</head>
+<body>
+
+<nav class="toc">
+  <div class="toc-title">목차</div>
+  <ul>
+    <li><a href="#learn">배우는 것</a></li>
+    <li><a href="#step1">1. 한눈에 보기</a></li>
+    <li><a href="#step2">2. 변경 파일</a></li>
+    <li><a href="#step3">3. 핵심 코드</a></li>
+    <li><a href="#step4">4. 왜 이렇게?</a></li>
+    <li><a href="#step5">5. 실행 흐름</a></li>
+    <li><a href="#step6">6. 이전과 비교</a></li>
+    <li><a href="#step7">7. 초보자 착각</a></li>
+    <li><a href="#step8">8. 중요도</a></li>
+    <li><a href="#step9">9. 오늘 배운 것</a></li>
+    <li><a href="#step10">10. 이해도 질문</a></li>
+    <li><a href="#step11">11. 작은 실습</a></li>
+    <li><a href="#step12">12. 다음 준비</a></li>
+  </ul>
+</nav>
+
+<div class="container">
+
+  <div class="commit-links">
+    <a class="commit-link" href="https://github.com/yzzzwan/springboot_board_practice/commit/f29c09166c3dda359d8bf4ec00f87b20430178fe" target="_blank">커밋 보기: f29c091 — 파일 업로드 저장 경로 오류 수정 및 uuid 제거한 원본 파일명으로 표시</a>
+    <a class="commit-link" href="https://github.com/yzzzwan/springboot_board_practice/commit/30831eb4d156207fb8eaab20cb13e723252fa72a" target="_blank">커밋 보기: 30831eb — 파일 재업로드 시 이전 첨부파일 삭제 기능 추가</a>
+    <a class="commit-link" href="https://github.com/yzzzwan/springboot_board_practice/commit/84a27ed609ebf9d3f56ac37607d33a47e4816601" target="_blank">커밋 보기: 84a27ed — 게시물 삭제 시 해당 게시물의 파일 삭제</a>
+    <a class="commit-link" href="https://github.com/yzzzwan/springboot_board_practice/commit/f8c8e31593174dcd922eb638359d72c894dae9bb" target="_blank">커밋 보기: f8c8e31 — 파일 업로드 시 확장자 검사</a>
+  </div>
+
+  <h1>파일 업로드 기능 개선</h1>
+  <p class="subtitle">원본 파일명 표시 · 이전 파일 정리 · 게시글 삭제 시 파일 정리 · 확장자 검사</p>
+
+  <!-- 배우는 것 -->
+  <div class="learn-box" id="learn">
+    <h2>이번 네 커밋에서 배우는 것</h2>
+    <div class="learn-row">
+      <div class="learn-card red-card">
+        <h3>🔴 반드시 이해</h3>
+        <ul>
+          <li>값을 덮어쓰기 전에 미리 저장해두는 패턴 (prevFileName)</li>
+          <li>되돌릴 수 없는 작업은 DB 저장이 확정된 뒤에 수행한다</li>
+          <li>화면 표시용 값과 저장/식별용 값을 분리하는 설계</li>
+          <li>checked 예외와 unchecked 예외를 구분해서 쓰는 기준</li>
+          <li>try-catch로 예외를 사용자 메시지로 바꾸는 흐름</li>
+        </ul>
+      </div>
+      <div class="learn-card yellow-card">
+        <h3>🟡 개념만 이해</h3>
+        <ul>
+          <li>Files.deleteIfExists()의 동작 범위 (재귀 삭제 아님)</li>
+          <li>String.substring()의 경계값 동작</li>
+          <li>메서드 지역변수를 클래스 필드로 끌어올리는 리팩터링</li>
+          <li>확장자 검사가 보안의 전부는 아니라는 것</li>
+        </ul>
+      </div>
+      <div class="learn-card green-card">
+        <h3>🟢 나중에 공부</h3>
+        <ul>
+          <li>파일 내용(매직바이트) 기반 실제 콘텐츠 검증</li>
+          <li>Hibernate가 INSERT 시점에 PK를 채워주는 내부 동작</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="step" id="step1">
+    <div class="step-label">Step 1</div>
+    <h2>이번 Commit 한눈에 보기</h2>
+    <p>이번에는 큰 기능 하나가 아니라, 이미 만들어둔 <strong>파일 업로드 기능을 실무 수준으로 다듬는 네 번의 작은 커밋</strong>이 이어졌습니다.</p>
+    <p>첫 번째 커밋에서는 화면에 보여줄 원본 파일명과 실제로 디스크에 저장되는 파일명을 분리하고, 게시글 id별로 폴더를 나누던 구조도 없앴습니다.<br>
+    두 번째 커밋에서는 파일을 다시 올려서 기존 파일을 교체할 때, 이전 파일이 디스크에 그대로 남아있던 문제(고아 파일)를 정리했습니다.</p>
+    <p>세 번째 커밋에서는 게시글을 삭제할 때 DB row만 지워지고 첨부파일은 디스크에 남아있던 문제를 고쳤습니다.<br>
+    마지막 커밋에서는 아무 확장자의 파일이나 업로드할 수 있던 문제를 막기 위해 확장자 화이트리스트 검사를 추가했습니다.</p>
+    <p>네 커밋 모두 <strong>"파일을 다루는 코드가 실제 서비스에서 안전하게 동작하려면 무엇을 더 신경 써야 하는가"</strong>라는 하나의 질문으로 이어집니다.</p>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step" id="step2">
+    <div class="step-label">Step 2</div>
+    <h2>무엇이 변경되었는가</h2>
+
+    <h3>Board.java — original_filename 필드 추가</h3>
+    <p class="file-tab">Board.java</p>
+    <pre><code class="language-java">private String original_filename;
+private String filename;
+private String filepath;</code></pre>
+    <ul>
+      <li><strong>어떤 파일?</strong> 게시글 정보를 담는 엔티티</li>
+      <li><strong>왜 추가?</strong> 화면에 보여줄 이름(원본 파일명)과 디스크에 실제로 저장되는 이름(uuid가 붙은 이름)을 분리하기 위해</li>
+      <li><strong>역할:</strong> DB 컬럼과 매핑되는 "표시용" 파일명</li>
+      <li><strong>연결:</strong> BoardService에서 값이 채워지고, boardmodify.html에서 화면에 표시됨</li>
+    </ul>
+
+    <h3>BoardService.java — 파일 저장/삭제 로직 전면 정리</h3>
+    <p class="file-tab">BoardService.java</p>
+    <pre><code class="language-java">private String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
+
+public void boardWrite(Board board, MultipartFile file) throws Exception{
+    String prevFileName = board.getFilename();
+    if(!file.isEmpty()){
+        UUID uuid = UUID.randomUUID();
+        String originalFileName = file.getOriginalFilename();
+        String fileName = uuid + "_" + file.getOriginalFilename();
+
+        if(!checkFileExtension(fileName)){
+            throw new IllegalArgumentException("허용되지 않는 파일 확장자입니다.");
+        }
+
+        File saveFile = new File(projectPath, fileName);
+        file.transferTo(saveFile);
+
+        board.setOriginal_filename(originalFileName);
+        board.setFilename(fileName);
+        board.setFilepath("/files/" + fileName);
+    }
+
+    boardRepository.save(board);
+
+    if(!file.isEmpty() && StringUtils.hasText(prevFileName)) {
+        Files.deleteIfExists(Path.of(projectPath, prevFileName));
+    }
+}
+
+public void boardDelete(Integer id) throws Exception{
+    Board board = boardView(id);
+    boardRepository.deleteById(id);
+
+    if(StringUtils.hasText(board.getFilename())) {
+        Files.deleteIfExists(Path.of(projectPath, board.getFilename()));
+    }
+}
+
+public boolean checkFileExtension(String filename){
+    String extension = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
+    if(Set.of("txt", "jpg", "png", "jfif").contains(extension)) return true;
+    else return false;
+}</code></pre>
+    <ul>
+      <li><strong>어떤 파일?</strong> 비즈니스 로직을 담당하는 서비스 계층</li>
+      <li><strong>왜 이렇게 커졌나?</strong> 네 커밋 모두 결국 이 파일의 <code>boardWrite()</code>/<code>boardDelete()</code>를 조금씩 안전하게 다듬는 작업이었기 때문</li>
+      <li><strong>연결:</strong> <code>BoardController</code>가 호출하고, 결과에 따라 예외를 던지면 컨트롤러가 잡아서 화면에 메시지로 보여줌</li>
+    </ul>
+
+    <h3>BoardController.java — 예외를 잡아서 사용자에게 메시지로 보여줌</h3>
+    <p class="file-tab">BoardController.java</p>
+    <pre><code class="language-java">try {
+    boardService.boardWrite(board, file);
+}
+catch (IllegalArgumentException e){
+    model.addAttribute("message", e.getMessage());
+    model.addAttribute("searchUrl", "/board/list");
+    return "message";
+}</code></pre>
+    <ul>
+      <li><strong>어떤 파일?</strong> HTTP 요청을 받아 처리하는 컨트롤러 계층</li>
+      <li><strong>왜 추가?</strong> 서비스에서 던진 <code>IllegalArgumentException</code>을 그냥 두면 500 에러 화면이 떠서, 사용자에게 이유를 보여주기 위해</li>
+      <li><strong>연결:</strong> 제목/내용 검증과 동일하게 <code>message.html</code>로 안내 메시지를 보여주는 패턴을 그대로 재사용</li>
+    </ul>
+
+    <h3>참고 — boardmodify.html의 표시 필드 변경</h3>
+    <p>레이아웃이 바뀐 건 아니고, 새로 생긴 <code>original_filename</code> 필드를 화면에 연결한 것뿐입니다.</p>
+    <p class="file-tab">boardmodify.html</p>
+    <pre><code class="language-html">현재 파일: &lt;span th:text="${board.original_filename}"&gt;&lt;/span&gt;</code></pre>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step" id="step3">
+    <div class="step-label">Step 3</div>
+    <h2>핵심 코드 설명</h2>
+
+    <h3>왜 원본 파일명과 저장 파일명을 나누는가</h3>
+    <p class="file-tab">Board.java</p>
+    <pre><code class="language-java">private String original_filename;   // 화면 표시용 (예: minions.jfif)
+private String filename;            // 디스크 저장용 (예: b283222f-...-minions.jfif)</code></pre>
+    <h4>초보자 관점</h4>
+    <p>같은 파일이라도 "사람이 보기 좋은 이름"과 "컴퓨터가 안전하게 관리하기 좋은 이름"은 다를 수 있습니다. 그래서 아예 필드를 두 개로 나눴습니다.</p>
+    <h4>Java 관점</h4>
+    <p>두 필드는 똑같은 <code>String</code> 타입이지만 서로 다른 값을 담습니다. <code>original_filename</code>은 사용자가 올린 그대로, <code>filename</code>은 <code>UUID + "_" + 원본이름</code> 형태입니다.</p>
+    <h4>설계 관점</h4>
+    <p>같은 이름의 파일을 여러 사람이 올려도 <code>filename</code>은 uuid 덕분에 절대 겹치지 않습니다. 반면 사용자에게는 uuid가 붙은 지저분한 이름 대신 <code>original_filename</code>을 보여줘서, "저장의 안전성"과 "화면 표시의 가독성"을 동시에 만족시킵니다.</p>
+
+    <h3>덮어쓰기 전에 값을 미리 확보해두기 — prevFileName</h3>
+    <p class="file-tab">BoardService.java</p>
+    <pre><code class="language-java">String prevFileName = board.getFilename();   // (1) 아직 덮어쓰기 전 — "이전" 값
+if(!file.isEmpty()){
+    ...
+    board.setFilename(fileName);             // (2) 이 시점에 새 값으로 덮어씀
+    ...
+}</code></pre>
+    <h4>초보자 관점</h4>
+    <p><code>board.setFilename(fileName)</code>이 실행되고 나면, <code>board.getFilename()</code>을 다시 불러도 예전 값은 이미 사라지고 없습니다. 그래서 "예전 값이 필요할 것 같다"면 덮어쓰기 <strong>이전에</strong> 미리 다른 변수에 담아둬야 합니다.</p>
+    <h4>Java 관점</h4>
+    <p><code>prevFileName</code>은 <code>board.getFilename()</code>이 리턴한 <code>String</code> 값의 복사본을 담고 있을 뿐이라, 이후 <code>board</code>의 필드가 바뀌어도 <code>prevFileName</code>은 영향을 받지 않습니다.</p>
+
+    <h3>이전 파일은 DB 저장이 끝난 뒤에만 지운다</h3>
+    <p class="file-tab">BoardService.java</p>
+    <pre><code class="language-java">boardRepository.save(board);
+
+if(!file.isEmpty() && StringUtils.hasText(prevFileName)) {
+    Files.deleteIfExists(Path.of(projectPath, prevFileName));
+}</code></pre>
+    <h4>초보자 관점</h4>
+    <p>파일 삭제는 되돌릴 수 없는 작업입니다. 만약 DB 저장이 실패했는데 파일부터 지워버리면, DB는 여전히 옛날 파일을 가리키는데 그 파일은 이미 없는 상태가 되어 다운로드 링크가 깨집니다.</p>
+    <h4>설계 관점</h4>
+    <p>그래서 순서가 중요합니다. <strong>1) 새 파일 저장 → 2) DB 저장 성공 확인 → 3) 그제서야 이전 파일 삭제</strong>. <code>!file.isEmpty()</code> 조건을 저장 전후로 두 번 검사하는 비용은 아주 작지만, 이 순서 덕분에 DB 저장이 실패했을 때 삭제 코드 자체가 실행되지 않아 데이터가 안전합니다.</p>
+
+    <h3>게시글을 지우기 전에 먼저 조회해서 파일명을 확보한다</h3>
+    <p class="file-tab">BoardService.java</p>
+    <pre><code class="language-java">public void boardDelete(Integer id) throws Exception{
+    Board board = boardView(id);           // (1) 지우기 전에 먼저 조회
+    boardRepository.deleteById(id);        // (2) DB row 삭제
+
+    if(StringUtils.hasText(board.getFilename())) {
+        Files.deleteIfExists(Path.of(projectPath, board.getFilename()));  // (3) 파일 삭제
+    }
+}</code></pre>
+    <h4>초보자 관점</h4>
+    <p><code>boardRepository.deleteById(id)</code>를 먼저 해버리면, 그 게시글이 어떤 파일을 가지고 있었는지 알 방법이 사라집니다. 그래서 지우기 전에 <code>boardView(id)</code>로 먼저 조회해서 파일명을 변수에 담아둬야 합니다.</p>
+    <p>바로 위에서 배운 <code>prevFileName</code>과 완전히 같은 원리입니다 — <strong>"사라질 값은 사라지기 전에 먼저 읽어둔다."</strong></p>
+
+    <h3>확장자 검사와 예외 던지기</h3>
+    <p class="file-tab">BoardService.java</p>
+    <pre><code class="language-java">if(!checkFileExtension(fileName)){
+    throw new IllegalArgumentException("허용되지 않는 파일 확장자입니다.");
+}
+
+public boolean checkFileExtension(String filename){
+    String extension = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
+    if(Set.of("txt", "jpg", "png", "jfif").contains(extension)) return true;
+    else return false;
+}</code></pre>
+    <h4>초보자 관점</h4>
+    <p>허용된 확장자 목록(<code>Set</code>)에 없는 파일이 들어오면, 그냥 조용히 넘어가지 않고 "이건 문제가 있는 입력이다"라고 예외를 던져서 알립니다.</p>
+    <h4>Java 관점</h4>
+    <p><code>IllegalArgumentException</code>은 <code>RuntimeException</code>의 한 종류라 <strong>unchecked 예외</strong>입니다. 지난 시간에 배운 <code>Files.deleteIfExists()</code>의 <code>IOException</code>(checked 예외)과 대조됩니다. <code>IOException</code>은 "디스크 장애처럼 코드로 막을 수 없는 문제"에 붙는 반면, <code>IllegalArgumentException</code>은 "호출한 쪽이 잘못된 값을 넘겼다"는 의미로 자바 표준 라이브러리에서도 널리 쓰입니다.</p>
+    <div class="highlight-box">
+      <div class="hb-title">⭐ 현업 포인트</div>
+      <p>확장자만 검사하는 지금 방식은 <strong>1차 방어선일 뿐</strong>입니다. 파일 확장자는 사용자가 파일명을 바꾸기만 하면 얼마든지 위조할 수 있기 때문입니다 (예: <code>malware.exe</code> → <code>malware.jpg</code>).</p>
+      <p>실무에서는 파일의 실제 내용(맨 앞 몇 바이트, 매직 바이트)을 읽어서 진짜 이미지/문서 형식이 맞는지 확인합니다 (Apache Tika 같은 라이브러리, 또는 <code>Files.probeContentType()</code>). 지금은 화이트리스트 검사만으로도 충분한 학습 단계이지만, "왜 이게 완벽한 보안이 아닌지"는 기억해두면 좋습니다.</p>
+    </div>
+    <div class="improve">
+      <strong>💡 개선 포인트</strong>
+      <p>파일명에 점(<code>.</code>)이 아예 없는 경우(<code>filename.lastIndexOf(".")</code>가 <code>-1</code>)를 아직 처리하지 않고 있습니다. 이 경우 <code>substring(0)</code>이 호출되어 파일명 전체가 <code>extension</code> 변수에 들어가고, 당연히 허용 목록에 없으니 결과적으로 <code>false</code>(거부)가 되긴 하지만, "확장자가 없다"는 것과 "확장자가 이상하다"는 것을 구분하고 싶다면 <code>dotIndex == -1</code>을 먼저 체크하는 분기를 추가하면 더 명확해집니다.</p>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step" id="step4">
+    <div class="step-label">Step 4</div>
+    <h2>왜 이렇게 작성했는가?</h2>
+
+    <h3>왜 별도 테이블 대신 Board에 필드 하나만 추가했는가</h3>
+    <p>원본 파일명을 저장할 곳이 필요할 때, 실무라면 <code>Attachment</code> 같은 별도 엔티티로 분리하는 경우가 많습니다. 하지만 지금 프로젝트는 게시글 하나에 파일 하나만 첨부하는 구조라서, <code>Board</code>에 필드 하나(<code>original_filename</code>) 추가하는 것으로 충분합니다. 나중에 "게시글 하나에 파일 여러 개" 요구사항이 생기면 그때 별도 테이블로 확장하면 됩니다.</p>
+
+    <h3>왜 파일 삭제 코드를 save() 다음으로 옮겼는가</h3>
+    <p>파일 삭제는 <strong>되돌릴 수 없는 작업</strong>입니다. 반면 DB 저장은 실패할 수도 있는 작업입니다. 되돌릴 수 없는 작업은 항상 "확실히 성공한 것을 확인한 뒤에" 실행해야, 중간에 실패했을 때 시스템이 어중간한 상태(DB는 옛날 파일을 가리키는데 그 파일은 이미 삭제된 상태)에 빠지지 않습니다.</p>
+
+    <h3>왜 확장자 오류엔 checked Exception이 아니라 unchecked Exception을 던지는가</h3>
+    <p><code>boardWrite()</code>는 이미 <code>throws Exception</code>이 붙어있어서 checked 예외를 던져도 컴파일은 됩니다. 하지만 <code>Exception</code>을 그대로 던지면 나중에 컨트롤러에서 "이게 파일 문제인지, 디스크 문제인지, 다른 문제인지" 구분해서 잡을 수 없습니다. <code>IllegalArgumentException</code>처럼 의미가 명확한 예외를 던지면, 컨트롤러에서 <code>catch (IllegalArgumentException e)</code>로 정확히 이 상황만 골라서 사용자에게 안내할 수 있습니다.</p>
+
+    <h3>왜 컨트롤러에서 예외를 잡아 메시지로 보여주는가</h3>
+    <p>제목/내용을 비워뒀을 때 이미 <code>StringUtils.hasText()</code>로 검증하고 <code>message.html</code>로 안내하는 패턴이 있었습니다. 확장자 검증도 "사용자 입력이 잘못됐다"는 점에서 성격이 같기 때문에, 같은 사용자 경험(안내 메시지 화면)으로 통일한 것입니다. 다만 확장자 검사는 파일명을 조합하는 서비스 로직 한가운데서 이뤄지기 때문에, 제목/내용처럼 컨트롤러에서 미리 걸러내기보다 예외 + try-catch 방식이 더 자연스럽습니다.</p>
+  </div>
+
+  <!-- STEP 5 -->
+  <div class="step" id="step5">
+    <div class="step-label">Step 5</div>
+    <h2>실행 흐름</h2>
+
+    <h3>파일을 재업로드해서 기존 파일을 교체할 때</h3>
+    <svg viewBox="0 0 700 570" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:600px;display:block;margin:0 auto;">
+      <rect x="160" y="20" width="380" height="56" rx="8" fill="#1f2937" stroke="#6b7280" stroke-width="1.5"/>
+      <text x="350" y="42" text-anchor="middle" fill="#9ca3af" font-size="12" font-family="sans-serif">브라우저</text>
+      <text x="350" y="62" text-anchor="middle" fill="#c9d1d9" font-size="12" font-family="Consolas,monospace">새 파일 첨부 후 저장/수정 버튼 클릭</text>
+      <line x1="350" y1="76" x2="350" y2="100" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="350,106 344,96 356,96" fill="#4b5563"/>
+
+      <rect x="160" y="110" width="380" height="56" rx="8" fill="#1e2d40" stroke="#3b82f6" stroke-width="2"/>
+      <text x="350" y="132" text-anchor="middle" fill="#93c5fd" font-size="12" font-family="sans-serif" font-weight="bold">BoardController</text>
+      <text x="350" y="152" text-anchor="middle" fill="#c9d1d9" font-size="12" font-family="Consolas,monospace">boardWritePro() / boardUpdate()</text>
+      <line x1="350" y1="166" x2="350" y2="190" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="350,196 344,186 356,186" fill="#4b5563"/>
+
+      <rect x="160" y="200" width="380" height="56" rx="8" fill="#1a2e1a" stroke="#3fb950" stroke-width="2"/>
+      <text x="350" y="222" text-anchor="middle" fill="#3fb950" font-size="12" font-family="sans-serif" font-weight="bold">BoardService.boardWrite()</text>
+      <text x="350" y="242" text-anchor="middle" fill="#c9d1d9" font-size="11" font-family="Consolas,monospace">prevFileName = board.getFilename()</text>
+      <line x1="350" y1="256" x2="350" y2="280" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="350,286 344,276 356,276" fill="#4b5563"/>
+
+      <rect x="160" y="290" width="380" height="56" rx="8" fill="#1a2e1a" stroke="#3fb950" stroke-width="2"/>
+      <text x="350" y="312" text-anchor="middle" fill="#3fb950" font-size="12" font-family="sans-serif" font-weight="bold">새 파일 저장 + board 필드 갱신</text>
+      <text x="350" y="332" text-anchor="middle" fill="#c9d1d9" font-size="11" font-family="Consolas,monospace">file.transferTo(...), board.setFilename(...)</text>
+      <line x1="350" y1="346" x2="350" y2="370" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="350,376 344,366 356,366" fill="#4b5563"/>
+
+      <rect x="160" y="380" width="380" height="56" rx="8" fill="#2d1f10" stroke="#f59e0b" stroke-width="2"/>
+      <text x="350" y="402" text-anchor="middle" fill="#fbbf24" font-size="12" font-family="sans-serif" font-weight="bold">boardRepository.save(board)</text>
+      <text x="350" y="422" text-anchor="middle" fill="#c9d1d9" font-size="11" font-family="Consolas,monospace">DB 반영 완료</text>
+      <line x1="350" y1="436" x2="350" y2="460" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="350,466 344,456 356,456" fill="#4b5563"/>
+
+      <rect x="160" y="470" width="380" height="64" rx="8" fill="#1a2e1a" stroke="#f85149" stroke-width="2"/>
+      <text x="350" y="492" text-anchor="middle" fill="#f85149" font-size="12" font-family="sans-serif" font-weight="bold">이전 파일 삭제 (save 성공 확인 후)</text>
+      <text x="350" y="512" text-anchor="middle" fill="#c9d1d9" font-size="11" font-family="Consolas,monospace">Files.deleteIfExists(projectPath, prevFileName)</text>
+      <text x="350" y="527" text-anchor="middle" fill="#6b7280" font-size="10" font-family="sans-serif">새 파일이 실제로 업로드됐을 때만 실행</text>
+    </svg>
+
+    <h3>게시글 삭제 시 DB + 파일 정리</h3>
+    <svg viewBox="0 0 700 490" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:600px;display:block;margin:0 auto;">
+      <rect x="160" y="20" width="380" height="56" rx="8" fill="#1f2937" stroke="#6b7280" stroke-width="1.5"/>
+      <text x="350" y="42" text-anchor="middle" fill="#9ca3af" font-size="12" font-family="sans-serif">브라우저</text>
+      <text x="350" y="62" text-anchor="middle" fill="#c9d1d9" font-size="12" font-family="Consolas,monospace">GET /board/delete?id=3</text>
+      <line x1="350" y1="76" x2="350" y2="100" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="350,106 344,96 356,96" fill="#4b5563"/>
+
+      <rect x="160" y="110" width="380" height="56" rx="8" fill="#1e2d40" stroke="#3b82f6" stroke-width="2"/>
+      <text x="350" y="132" text-anchor="middle" fill="#93c5fd" font-size="12" font-family="sans-serif" font-weight="bold">BoardController.boardDelete()</text>
+      <text x="350" y="152" text-anchor="middle" fill="#c9d1d9" font-size="11" font-family="Consolas,monospace">boardService.boardDelete(id)</text>
+      <line x1="350" y1="166" x2="350" y2="190" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="350,196 344,186 356,186" fill="#4b5563"/>
+
+      <rect x="160" y="200" width="380" height="64" rx="8" fill="#1a2e1a" stroke="#f85149" stroke-width="2"/>
+      <text x="350" y="222" text-anchor="middle" fill="#f85149" font-size="12" font-family="sans-serif" font-weight="bold">Board board = boardView(id)</text>
+      <text x="350" y="242" text-anchor="middle" fill="#c9d1d9" font-size="11" font-family="Consolas,monospace">삭제 전에 파일명부터 확보</text>
+      <line x1="350" y1="264" x2="350" y2="288" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="350,294 344,284 356,284" fill="#4b5563"/>
+
+      <rect x="160" y="298" width="380" height="56" rx="8" fill="#2a1f30" stroke="#a78bfa" stroke-width="2"/>
+      <text x="350" y="320" text-anchor="middle" fill="#c4b5fd" font-size="12" font-family="sans-serif" font-weight="bold">boardRepository.deleteById(id)</text>
+      <text x="350" y="340" text-anchor="middle" fill="#c9d1d9" font-size="11" font-family="Consolas,monospace">DB row 삭제</text>
+      <line x1="350" y1="354" x2="350" y2="378" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="350,384 344,374 356,374" fill="#4b5563"/>
+
+      <rect x="160" y="388" width="380" height="64" rx="8" fill="#2d1f10" stroke="#f59e0b" stroke-width="2"/>
+      <text x="350" y="410" text-anchor="middle" fill="#fbbf24" font-size="12" font-family="sans-serif" font-weight="bold">Files.deleteIfExists(...)</text>
+      <text x="350" y="430" text-anchor="middle" fill="#c9d1d9" font-size="11" font-family="Consolas,monospace">파일명이 있을 때만 실제 파일 삭제</text>
+    </svg>
+
+    <h3>확장자가 허용되지 않을 때</h3>
+    <div class="flow-box">
+      사용자가 .exe 파일 업로드<br>
+      ↓<br>
+      <span class="highlight">checkFileExtension()</span> → false<br>
+      ↓<br>
+      <span class="highlight">throw new IllegalArgumentException(...)</span><br>
+      ↓<br>
+      BoardController의 catch(IllegalArgumentException e)에서 잡음<br>
+      ↓<br>
+      message.html에 "허용되지 않는 파일 확장자입니다." 표시
+    </div>
+  </div>
+
+  <!-- STEP 6 -->
+  <div class="step" id="step6">
+    <div class="step-label">Step 6</div>
+    <h2>이전 Commit과 비교</h2>
+    <div class="compare-grid">
+      <div class="compare-card">
+        <h4>이전 — 개선 전</h4>
+        board.getId() 폴더에 저장<br>
+        &nbsp;&nbsp;→ id가 null이면 files/null/<br><br>
+        화면에 uuid 붙은 이름 그대로 노출<br><br>
+        파일 교체/삭제 시<br>
+        &nbsp;&nbsp;예전 파일 방치 (고아 파일)<br><br>
+        확장자 무검증<br>
+        &nbsp;&nbsp;.exe도 그대로 업로드됨
+      </div>
+      <div class="compare-card">
+        <h4>현재 — 개선 후</h4>
+        <span class="new">files/ 바로 아래 flat 구조<br>
+        &nbsp;&nbsp;(uuid로만 충돌 방지)<br><br>
+        original_filename으로<br>
+        &nbsp;&nbsp;깔끔한 원본 이름 표시<br><br>
+        prevFileName 캡처 후<br>
+        &nbsp;&nbsp;save() 성공 시에만 이전 파일 삭제<br><br>
+        checkFileExtension()으로<br>
+        &nbsp;&nbsp;화이트리스트 검사 + 예외 처리</span>
+      </div>
+    </div>
+    <p style="margin-top:16px;">이제 파일 업로드 기능이 "일단 동작하는 수준"에서 "재업로드·삭제·잘못된 입력까지 고려한 수준"으로 한 단계 올라왔습니다.</p>
+  </div>
+
+  <!-- STEP 7 -->
+  <div class="step" id="step7">
+    <div class="step-label">Step 7</div>
+    <h2>초보자가 하기 쉬운 착각</h2>
+
+    <div class="warn">
+      <strong>변수를 미리 캡처해두면 그걸로 끝이라고 착각하기 쉽다</strong>
+      <p><code>prevFileName</code>을 덮어쓰기 전에 잘 저장해뒀더라도, 정작 삭제하는 줄에서 <code>board.getFilename()</code>(새 값)을 다시 불러버리면 아무 의미가 없습니다.</p>
+      <p>"올바른 변수를 만드는 것"과 "그 변수를 실제로 사용하는 것"은 별개의 실수 포인트입니다. 실제로 이번 기능을 만드는 과정에서도 이 실수가 두 번이나 반복됐습니다.</p>
+    </div>
+
+    <div class="warn">
+      <strong>Files.deleteIfExists()가 폴더 안의 파일까지 재귀적으로 지워준다고 착각하기 쉽다</strong>
+      <p><code>Files.deleteIfExists(Path.of(projectPath))</code>처럼 파일명 없이 폴더 경로만 넘기면, 그 폴더 자체를 지우려는 시도가 됩니다. 폴더 안에 파일이 있으면 오히려 삭제에 실패(예외)합니다. 재귀 삭제 기능은 아예 없습니다.</p>
+    </div>
+
+    <div class="warn">
+      <strong>확장자만 막으면 보안이 완성됐다고 착각하기 쉽다</strong>
+      <p>확장자는 파일명 문자열일 뿐이라 얼마든지 위조할 수 있습니다. 지금 단계에서는 화이트리스트 검사만으로 충분하지만, "이걸로 다 막았다"고 생각하면 안 됩니다.</p>
+    </div>
+  </div>
+
+  <!-- STEP 8 -->
+  <div class="step" id="step8">
+    <div class="step-label">Step 8</div>
+    <h2>중요도 구분</h2>
+    <div class="learn-row">
+      <div class="learn-card red-card">
+        <h3>🔴 반드시 이해</h3>
+        <ul>
+          <li>값을 덮어쓰기 전에 미리 캡처해두는 패턴</li>
+          <li>되돌릴 수 없는 작업은 저장이 확정된 뒤에</li>
+          <li>화면 표시용 값과 저장/식별용 값 분리</li>
+          <li>checked/unchecked 예외 선택 기준</li>
+        </ul>
+      </div>
+      <div class="learn-card yellow-card">
+        <h3>🟡 개념만 이해</h3>
+        <ul>
+          <li>Files.deleteIfExists()의 동작 범위</li>
+          <li>String.substring() 경계값 동작</li>
+          <li>확장자 검사의 한계</li>
+        </ul>
+      </div>
+      <div class="learn-card green-card">
+        <h3>🟢 나중에 공부</h3>
+        <ul>
+          <li>매직바이트 기반 파일 내용 검증</li>
+          <li>Attachment 엔티티 분리, 다중 파일 첨부</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 9 -->
+  <div class="step" id="step9">
+    <div class="step-label">Step 9</div>
+    <h2>오늘 배운 것</h2>
+    <ul class="summary-list">
+      <li>필드를 덮어쓰기 전에 이전 값을 별도 변수에 담아두면, 나중에 "이전 상태"를 참조할 수 있다.</li>
+      <li>파일 삭제처럼 되돌릴 수 없는 작업은 DB 저장이 확정된 뒤에 실행해야 안전하다.</li>
+      <li>화면 표시용 값(original_filename)과 저장/식별용 값(filename)을 분리하면 안전성과 가독성을 동시에 챙길 수 있다.</li>
+      <li>Files.deleteIfExists()는 파일 하나 또는 빈 디렉토리만 지울 수 있고, 재귀 삭제 기능은 없다.</li>
+      <li>checked 예외는 코드로 막을 수 없는 문제에, unchecked 예외는 잘못된 입력값에 사용한다.</li>
+      <li>확장자 검사는 첫 번째 방어선일 뿐, 실무에서는 파일 내용까지 검증한다.</li>
+    </ul>
+  </div>
+
+  <!-- STEP 10 -->
+  <div class="step" id="step10">
+    <div class="step-label">Step 10</div>
+    <h2>이해도 확인 질문</h2>
+    <p style="margin-bottom:16px; font-size:13px; color:#475569">클릭해서 정답을 확인하세요.</p>
+    <ol class="question-list">
+      <li>
+        <span>prevFileName 변수를 만들어뒀는데도 실제로는 "새로 올린 파일"이 지워지는 실수가 발생했습니다. 왜 그럴까요?</span>
+        <details><summary></summary><p>변수를 캡처해두는 시점(덮어쓰기 전)은 맞았지만, 실제로 삭제할 때 그 변수(prevFileName) 대신 이미 새 값으로 바뀐 board.getFilename()을 다시 참조했기 때문입니다. 변수를 올바르게 만드는 것과 실제 사용하는 곳에서 그 변수를 쓰는 것은 별개의 문제입니다.</p></details>
+      </li>
+      <li>
+        <span>이전 파일을 지우는 코드를 boardRepository.save(board) 이후로 옮긴 이유는 무엇인가요?</span>
+        <details><summary></summary><p>파일 삭제는 되돌릴 수 없는 작업이기 때문입니다. save()가 실패할 수도 있는데, 저장 전에 파일부터 지우면 DB는 옛날 파일을 가리키는데 그 파일은 이미 삭제된 상태가 되어 데이터가 깨집니다. 저장이 성공한 것을 확인한 뒤에 지워야 안전합니다.</p></details>
+      </li>
+      <li>
+        <span>Files.deleteIfExists(Path.of(projectPath))처럼 파일명 없이 폴더 경로만 넘기면 폴더 안의 파일이 다 지워지나요?</span>
+        <details><summary></summary><p>아닙니다. deleteIfExists는 넘겨받은 경로 하나만 대상으로 합니다. 그 경로가 폴더이고 안에 파일이 있으면 오히려 삭제에 실패(DirectoryNotEmptyException)합니다. 재귀적으로 안의 파일들을 지우는 기능은 없습니다.</p></details>
+      </li>
+      <li>
+        <span>IOException과 IllegalArgumentException을 구분해서 쓰는 기준은 무엇인가요?</span>
+        <details><summary></summary><p>IOException은 디스크 용량 부족, 권한 없음처럼 코드로 막을 수 없는 외부 요인에 의한 실패에 사용하는 checked 예외입니다. IllegalArgumentException은 호출한 쪽이 애초에 잘못된 값(예: 허용 안 된 확장자)을 넘겼을 때 사용하는 unchecked 예외입니다.</p></details>
+      </li>
+    </ol>
+  </div>
+
+  <!-- STEP 11 -->
+  <div class="step" id="step11">
+    <div class="step-label">Step 11</div>
+    <h2>작은 실습</h2>
+    <div class="practice-box">
+      <h3>실습: 확장자가 없는 파일명 처리하기</h3>
+      <p><code>checkFileExtension()</code>은 파일명에 점(<code>.</code>)이 아예 없는 경우를 아직 명시적으로 처리하지 않습니다. <code>lastIndexOf(".")</code>가 <code>-1</code>인 경우를 먼저 걸러내는 분기를 추가해보세요.</p>
+      <pre><code class="language-java">public boolean checkFileExtension(String filename){
+    int dotIndex = filename.lastIndexOf(".");
+    if(dotIndex == -1) return false;   // 여기부터 직접 채워보기
+
+    String extension = filename.substring(dotIndex + 1).toLowerCase();
+    return Set.of("txt", "jpg", "png", "jfif").contains(extension);
+}</code></pre>
+      <p><strong>힌트:</strong></p>
+      <ul>
+        <li>지금도 결과적으로는 <code>false</code>가 나오지만, "확장자가 없다"와 "확장자가 허용되지 않는다"는 의미가 다릅니다.</li>
+        <li>메시지를 구분해서 보여주고 싶다면 <code>IllegalArgumentException</code>의 메시지도 상황에 따라 다르게 던져보세요.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- STEP 12 -->
+  <div class="step" id="step12">
+    <div class="step-label">Step 12</div>
+    <h2>다음 Commit을 위한 준비</h2>
+    <ul class="next-list">
+      <li><strong>파일 내용 기반 검증</strong> — Apache Tika 등으로 실제 파일 형식을 확인하는 방법</li>
+      <li><strong>파일 크기 제한</strong> — application.properties의 spring.servlet.multipart 설정</li>
+      <li><strong>Bean Validation(@Valid, @NotBlank)</strong> — 지금 if문으로 하고 있는 검증들을 어노테이션으로 대체하는 방법</li>
+    </ul>
+  </div>
+
+</div>
+<script>hljs.highlightAll();</script>
+<script>
+  const tocLinks = document.querySelectorAll('.toc a[href^="#"]');
+  const sections = Array.from(tocLinks).map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        tocLinks.forEach(a => a.classList.remove('toc-active'));
+        const active = document.querySelector(`.toc a[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('toc-active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
