@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +24,11 @@ public class BoardController {
 
     public BoardController(BoardService boardService) {
         this.boardService = boardService;
+    }
+
+    @GetMapping("/")
+    public String index(){
+        return "redirect:/board/list";
     }
 
     @GetMapping("/board/write") // localhost:8080/board/write
@@ -43,22 +49,23 @@ public class BoardController {
     @GetMapping("board/list")
     public String boardlist(Model model,
                             @PageableDefault(page=0, size=10, sort="id", direction = Sort.Direction.DESC) Pageable pageable,
+                            String searchKeywordTotal,
                             String searchKeywordTitle,
                             String searchKeywordContent){
 
         Page<Board> list = null;
 
-        if(searchKeywordTitle == null && searchKeywordContent == null){
-            list = boardService.boardList(pageable);
-        }
-        else if(searchKeywordTitle == null && searchKeywordContent != null){
+      if(!StringUtils.hasText(searchKeywordTitle) && StringUtils.hasText(searchKeywordContent)){
             list = boardService.boardSearchContentList(searchKeywordContent, pageable);
         }
-        else if(searchKeywordTitle != null && searchKeywordContent == null){
+        else if(StringUtils.hasText(searchKeywordTitle) && !StringUtils.hasText(searchKeywordContent)){
             list = boardService.boardSearchTitleList(searchKeywordTitle, pageable);
         }
+        else if(StringUtils.hasText(searchKeywordTotal)){
+            list = boardService.boardSearchTotalList(searchKeywordTotal, pageable);
+        }
         else{
-            list = boardService.boardSearchTotalList(searchKeywordTitle, searchKeywordContent, pageable);
+            list = boardService.boardList(pageable);
         }
 
 
@@ -72,6 +79,7 @@ public class BoardController {
         model.addAttribute("endPage", endPage);
         model.addAttribute("searchKeywordTitle", searchKeywordTitle);
         model.addAttribute("searchKeywordContent", searchKeywordContent);
+        model.addAttribute("searchKeywordTotal", searchKeywordTotal);
 
 
         return "boardlist";
