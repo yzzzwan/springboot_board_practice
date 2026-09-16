@@ -106,7 +106,7 @@ public class BoardController {
     }
 
     @GetMapping("/board/delete")
-    public String boardDelete(Integer id, Model model){
+    public String boardDelete(Integer id, Model model) throws Exception{
         boardService.boardDelete(id);
 
         model.addAttribute("message", "글이 삭제되었습니다.");

@@ -19,11 +19,10 @@ import java.util.UUID;
 public class BoardService {
     @Autowired
     private BoardRepository boardRepository;
+    private String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
 
     // 게시글 작성
     public void boardWrite(Board board, MultipartFile file) throws Exception{
-
-        String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
         String prevFileName =  board.getFilename(); // 덮어쓰기 전에 기존 파일명 미리 저장
         if(!file.isEmpty()){
                                   // 프로젝트의 root 디렉토리
@@ -71,7 +70,15 @@ public class BoardService {
         return boardRepository.findById(id).get();
     }
 
-    public void boardDelete(Integer id){
+    public void boardDelete(Integer id) throws Exception{
+        Board board = boardView(id);
+
         boardRepository.deleteById(id);
+
+        if(StringUtils.hasText(board.getFilename())) {
+            Files.deleteIfExists(Path.of(projectPath, board.getFilename()));
+        }
+
+
     }
 }
