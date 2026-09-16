@@ -51,8 +51,14 @@ public class BoardController {
 
             return "message";
         }
-
-        boardService.boardWrite(board, file);
+        try {
+            boardService.boardWrite(board, file);
+        }
+        catch (IllegalArgumentException e){
+            model.addAttribute("message", e.getMessage());
+            model.addAttribute("searchUrl", "/board/list");
+            return "message";
+        }
 
         model.addAttribute("message", "글 작성이 완료되었습니다.");
         model.addAttribute("searchUrl", "/board/list");
@@ -130,7 +136,14 @@ public class BoardController {
         boardTemp.setTitle(board.getTitle());
         boardTemp.setContent(board.getContent());
 
-        boardService.boardWrite(boardTemp, file);
+        try {
+            boardService.boardWrite(board, file);
+        }
+        catch (IllegalArgumentException e){
+            model.addAttribute("message", e.getMessage());
+            model.addAttribute("searchUrl", "/board/list");
+            return "message";
+        }
 
         model.addAttribute("message", "글이 수정되었습니다.");
         model.addAttribute("searchUrl", "/board/list");

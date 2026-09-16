@@ -13,6 +13,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -29,6 +30,11 @@ public class BoardService {
             UUID uuid = UUID.randomUUID();
             String originalFileName = file.getOriginalFilename();
             String fileName = uuid + "_" + file.getOriginalFilename();
+
+            if(!checkFileExtension(fileName)){
+                throw new IllegalArgumentException("허용되지 않는 파일 확장자입니다.");
+            }
+
             File saveFile = new File(projectPath,fileName);
             file.transferTo(saveFile);
 
@@ -36,7 +42,6 @@ public class BoardService {
             board.setFilename(fileName);
             board.setFilepath("/files/" + fileName);
         }
-
 
         boardRepository.save(board);
 
@@ -66,7 +71,6 @@ public class BoardService {
 
     // 특정 게시글 불러오기
     public Board boardView(Integer id){
-
         return boardRepository.findById(id).get();
     }
 
@@ -78,7 +82,13 @@ public class BoardService {
         if(StringUtils.hasText(board.getFilename())) {
             Files.deleteIfExists(Path.of(projectPath, board.getFilename()));
         }
+    }
 
+    public boolean checkFileExtension(String filename){
+        String extension = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
+
+        if(Set.of("txt", "jpg", "png", "jfif").contains(extension))return true;
+        else return false;
 
     }
 }
