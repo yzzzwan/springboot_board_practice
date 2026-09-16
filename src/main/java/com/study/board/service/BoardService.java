@@ -6,9 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,9 +23,10 @@ public class BoardService {
     // 게시글 작성
     public void boardWrite(Board board, MultipartFile file) throws Exception{
 
+        String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
+        String prevFileName =  board.getFilename(); // 덮어쓰기 전에 기존 파일명 미리 저장
         if(!file.isEmpty()){
                                   // 프로젝트의 root 디렉토리
-            String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
             UUID uuid = UUID.randomUUID();
             String originalFileName = file.getOriginalFilename();
             String fileName = uuid + "_" + file.getOriginalFilename();
@@ -36,6 +40,12 @@ public class BoardService {
 
 
         boardRepository.save(board);
+
+        // 새 파일과 새 파일 정보 DB 저장 후 이전 파일 삭제
+        if(!file.isEmpty() && StringUtils.hasText(prevFileName)) {
+            Files.deleteIfExists(Path.of(projectPath, prevFileName));
+        }
+
     }
 
     // 게시글 리스트 불러오기
