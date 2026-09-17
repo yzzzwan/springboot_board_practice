@@ -119,12 +119,20 @@
 
         .search-form {
             display: flex;
-            flex-wrap: wrap;
             gap: 8px;
+            align-items: center;
+        }
+
+        .search-form select {
+            padding: 10px 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            background: #fff;
         }
 
         .search-form input[type="text"] {
-            flex: 1 1 140px;
+            flex: 1;
             min-width: 0;
             padding: 10px 12px;
             border: 1px solid #ccc;
@@ -139,7 +147,6 @@
         }
 
         .search-form button {
-            flex: 1 1 100%;
             padding: 10px 20px;
             background-color: #1976d2;
             color: white;
@@ -147,6 +154,7 @@
             border-radius: 4px;
             font-size: 14px;
             cursor: pointer;
+            white-space: nowrap;
         }
 
         .search-form button:hover {
@@ -183,29 +191,31 @@
             <div class="pagination">
                 <th:block th:each="page: ${#numbers.sequence(startPage, endPage)}">
                     <a th:if="${page != nowPage}"
-                       th:href="@{/board/list(page=${(page-1)}, searchKeywordTitle = ${searchKeywordTitle}, searchKeywordContent = ${searchKeywordContent}, searchKeywordTotal = ${searchKeywordTotal})}"
+                       th:href="@{/board/list(page=${(page-1)}, searchKeyword = ${searchKeyword}, searchOption =${searchOption})}"
                        th:text="${page}"></a>
                     <strong th:if="${page == nowPage}" th:href="@{/board/list(page=${(page-1)})}" th:text="${page}"></strong>
                 </th:block>
             </div>
 
             <form class="search-form" th:action="@{/board/list}" method="get">
-                <input
-                        type="text"
-                        name="searchKeywordTotal"
-                        placeholder="통합검색(제목+내용)"
-                        th:value="${searchKeywordTotal}">
+                <select name="searchOption">
+                    <option value="Total" th:selected="${searchOption} == 'Total'">
+                        통합검색 (제목+내용)
+                    </option>
+                    <option value="Title" th:selected="${searchOption} == 'Title'">
+                        제목
+                    </option>
+                    <option value="Content" th:selected="${searchOption} == 'Content'">
+                        내용
+                    </option>
+                </select>
 
                 <input
                         type="text"
-                        name="searchKeywordTitle"
-                        placeholder="제목"
-                        th:value="${searchKeywordTitle}">
-                <input
-                        type="text"
-                        name="searchKeywordContent"
-                        placeholder="내용"
-                        th:value="${searchKeywordContent}">
+                        name="searchKeyword"
+                        placeholder="검색어를 입력해주세요."
+                        th:value="${searchKeyword}">
+
                 <button type="submit">검색</button>
             </form>
         </div>

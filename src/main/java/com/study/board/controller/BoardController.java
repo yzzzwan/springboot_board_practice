@@ -69,22 +69,29 @@ public class BoardController {
     @GetMapping("board/list")
     public String boardlist(Model model,
                             @PageableDefault(page=0, size=10, sort="id", direction = Sort.Direction.DESC) Pageable pageable,
-                            String searchKeywordTotal,
-                            String searchKeywordTitle,
-                            String searchKeywordContent){
+                            String searchOption,
+                            String searchKeyword){
 
         Page<Board> list = null;
 
-      if(!StringUtils.hasText(searchKeywordTitle) && StringUtils.hasText(searchKeywordContent)){
-            list = boardService.boardSearchContentList(searchKeywordContent, pageable);
+        if(StringUtils.hasText(searchKeyword)){
+            if("Total".equals(searchOption)) {
+                list = boardService.boardSearchTotalList(searchKeyword, pageable);
+            }
+            else if("Title".equals(searchOption)) {
+                list = boardService.boardSearchTitleList(searchKeyword, pageable);
+            }
+
+            else if("Content".equals(searchOption)) {
+                list = boardService.boardSearchContentList(searchKeyword, pageable);
+            }
+
+            else {
+                list = boardService.boardList(pageable);
+            }
         }
-        else if(StringUtils.hasText(searchKeywordTitle) && !StringUtils.hasText(searchKeywordContent)){
-            list = boardService.boardSearchTitleList(searchKeywordTitle, pageable);
-        }
-        else if(StringUtils.hasText(searchKeywordTotal)){
-            list = boardService.boardSearchTotalList(searchKeywordTotal, pageable);
-        }
-        else{
+
+        else {
             list = boardService.boardList(pageable);
         }
 
@@ -97,9 +104,8 @@ public class BoardController {
         model.addAttribute("nowPage", nowPage);
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
-        model.addAttribute("searchKeywordTitle", searchKeywordTitle);
-        model.addAttribute("searchKeywordContent", searchKeywordContent);
-        model.addAttribute("searchKeywordTotal", searchKeywordTotal);
+        model.addAttribute("searchOption", searchOption);
+        model.addAttribute("searchKeyword", searchKeyword);
 
 
         return "boardlist";
