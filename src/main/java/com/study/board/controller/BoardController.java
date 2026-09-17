@@ -2,11 +2,15 @@ package com.study.board.controller;
 
 import com.study.board.entity.Board;
 import com.study.board.service.BoardService;
+import org.springframework.core.io.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -14,6 +18,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.nio.file.Path;
 
 @Controller
 public class BoardController {
@@ -156,7 +162,19 @@ public class BoardController {
 
         return "message";
     }
+    @GetMapping("/board/download/{id}")
+    public ResponseEntity<Resource> download(@PathVariable Integer id) throws Exception {
+        Board board = boardService.boardView(id);
 
+        String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
+        Path filePath = Path.of(projectPath, board.getFilename());
 
+        Resource resource = new FileSystemResource(filePath);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + board.getOriginal_filename() + "\"")
+                .body(resource);
+    }
 
 }
