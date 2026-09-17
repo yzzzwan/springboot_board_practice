@@ -97,8 +97,8 @@ public class BoardController {
 
 
         int nowPage = list.getPageable().getPageNumber() + 1;
-        int startPage = Math.max(nowPage -4, 1);
-        int endPage = Math.min(nowPage + 5,  list.getTotalPages());
+        int startPage = Math.min(Math.max(nowPage -2, 1), (list.getTotalPages() - 5) + 1);
+        int endPage = Math.max(Math.min(nowPage + 2,  list.getTotalPages()), 5);
 
         model.addAttribute("list", list);
         model.addAttribute("nowPage", nowPage);
