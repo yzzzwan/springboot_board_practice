@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>검색 select 통합 · 페이지네이션 개선 · 파일 다운로드 — Spring 수업</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0f1117;
+    color: #c9d1d9;
+    font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    padding: 40px 20px;
+  }
+  .container { max-width: 860px; margin: 0 auto; }
+
+  .commit-link {
+    display: inline-block;
+    margin-bottom: 12px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 10px 18px;
+    color: #58a6ff;
+    text-decoration: none;
+    font-size: 13px;
+    font-family: monospace;
+  }
+  .commit-link:hover { background: #1f2937; }
+
+  h1 {
+    font-size: 26px;
+    color: #e6edf3;
+    margin-bottom: 8px;
+  }
+  .subtitle { color: #8b949e; margin-bottom: 40px; font-size: 14px; }
+
+  .learn-box {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin-bottom: 40px;
+  }
+  .learn-box h2 { color: #e6edf3; font-size: 16px; margin-bottom: 16px; }
+  .learn-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .learn-card { border-radius: 8px; padding: 16px; }
+  .learn-card h3 { font-size: 13px; margin-bottom: 8px; }
+  .learn-card ul { padding-left: 16px; font-size: 13px; line-height: 1.8; }
+  .red-card  { background: #2d1515; border: 1px solid #7f2020; }
+  .red-card h3 { color: #f85149; }
+  .yellow-card { background: #2d2200; border: 1px solid #7f5d00; }
+  .yellow-card h3 { color: #e3b341; }
+  .green-card { background: #0d2d16; border: 1px solid #1a7f37; }
+  .green-card h3 { color: #3fb950; }
+
+  .step {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 28px 32px;
+    margin-bottom: 28px;
+  }
+  .step-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #58a6ff;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .step h2 {
+    font-size: 18px;
+    color: #e6edf3;
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #21262d;
+  }
+
+  h3 { color: #e6edf3; font-size: 15px; margin: 20px 0 10px; }
+  h4 { color: #8b949e; font-size: 13px; margin: 14px 0 6px; font-weight: 600; }
+  p { margin-bottom: 10px; }
+
+  pre {
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 12px 0;
+  }
+  pre code.hljs {
+    font-family: 'Consolas', 'D2Coding', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    border-radius: 6px;
+    padding: 16px;
+  }
+  p code, li code {
+    background: #21262d;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 12px;
+  }
+
+  .file-tab {
+    display: inline-block;
+    background: #21262d;
+    border: 1px solid #30363d;
+    border-bottom: none;
+    border-radius: 6px 6px 0 0;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-family: monospace;
+    color: #8b949e;
+    margin-bottom: 0;
+    margin-top: 16px;
+  }
+  .file-tab + pre { margin-top: 0; border-radius: 0 6px 6px 6px; }
+
+  .flow-box {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 2.2;
+    color: #c9d1d9;
+  }
+  .flow-box .highlight { color: #58a6ff; font-weight: 700; }
+
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 14px;
+  }
+  .compare-card {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 16px;
+    font-family: monospace;
+    font-size: 13px;
+    line-height: 2;
+  }
+  .compare-card h4 { font-family: 'Segoe UI', sans-serif; margin-bottom: 10px; color: #8b949e; }
+  .compare-card .new { color: #3fb950; }
+
+  .warn {
+    border-left: 4px solid #e3b341;
+    background: #1c1a00;
+    padding: 14px 18px;
+    border-radius: 0 6px 6px 0;
+    margin: 12px 0;
+    font-size: 14px;
+  }
+  .warn strong { color: #e3b341; display: block; margin-bottom: 4px; }
+
+  .improve {
+    border-left: 4px solid #3b82f6;
+    background: #0d1f3c;
+    padding: 14px 18px;
+    border-radius: 0 6px 6px 0;
+    margin: 12px 0;
+    font-size: 14px;
+  }
+  .improve strong { color: #58a6ff; display: block; margin-bottom: 4px; }
+
+  .highlight-box {
+    border: 1px solid #58a6ff;
+    background: #0d1f3c;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 14px 0;
+  }
+  .highlight-box .hb-title {
+    color: #58a6ff;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  ul, ol { padding-left: 20px; margin-bottom: 10px; }
+  li { margin-bottom: 4px; }
+
+  .summary-list {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 20px 24px;
+    list-style: none;
+    padding-left: 24px;
+  }
+  .summary-list li {
+    padding: 6px 0;
+    border-bottom: 1px solid #21262d;
+    font-size: 14px;
+  }
+  .summary-list li:last-child { border-bottom: none; }
+  .summary-list li::before { content: "✓ "; color: #3fb950; font-weight: 700; }
+
+  .question-list details { background: #1e293b; border-radius: 4px; padding: 4px 10px; margin-top: 6px; }
+  .question-list details summary { color: #475569; font-size: 11px; cursor: pointer; user-select: none; list-style: none; }
+  .question-list details summary::-webkit-details-marker { display: none; }
+  .question-list details summary::before { content: "▶ 정답 보기"; }
+  .question-list details[open] summary::before { content: "▼ 정답 보기"; }
+  .question-list details[open] summary { margin-bottom: 4px; color: #64748b; }
+  .question-list details p { color: #cbd5e1; font-size: 13px; margin: 0; }
+
+  .question-list { counter-reset: q; padding-left: 0; list-style: none; }
+  .question-list li {
+    counter-increment: q;
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+  .question-list li::before {
+    content: "Q" counter(q) ". ";
+    color: #58a6ff;
+    font-weight: 700;
+  }
+
+  .practice-box {
+    background: #0d2d16;
+    border: 1px solid #1a7f37;
+    border-radius: 8px;
+    padding: 20px 24px;
+  }
+  .practice-box h3 { color: #3fb950; margin-top: 0; }
+
+  .next-list { padding-left: 0; list-style: none; counter-reset: n; }
+  .next-list li {
+    counter-increment: n;
+    padding: 10px 14px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+  .next-list li::before {
+    content: counter(n) ". ";
+    color: #58a6ff;
+    font-weight: 700;
+  }
+  .next-list li strong { color: #e6edf3; }
+
+  .toc {
+    position: fixed;
+    top: 40px;
+    right: 24px;
+    width: 164px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 14px 16px;
+    z-index: 100;
+  }
+  .toc-title { font-size: 10px; font-weight: 700; color: #58a6ff; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+  .toc ul { list-style: none; padding: 0; margin: 0; }
+  .toc ul li { margin-bottom: 5px; }
+  .toc ul li a { font-size: 12px; color: #8b949e; text-decoration: none; line-height: 1.4; display: block; }
+  .toc ul li a:hover { color: #c9d1d9; }
+  .toc ul li a.toc-active { color: #58a6ff; }
+  @media (max-width: 1200px) { .toc { display: none; } }
+
+  table.info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    font-size: 13px;
+  }
+  table.info-table th {
+    background: #21262d;
+    color: #8b949e;
+    padding: 8px 14px;
+    text-align: left;
+    font-weight: 600;
+    border: 1px solid #30363d;
+  }
+  table.info-table td {
+    padding: 8px 14px;
+    border: 1px solid #30363d;
+    vertical-align: top;
+  }
+  table.info-table td code {
+    background: #21262d;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+<nav class="toc">
+  <div class="toc-title">목차</div>
+  <ul>
+    <li><a href="#learn">배우는 것</a></li>
+    <li><a href="#step1">1. 한눈에 보기</a></li>
+    <li><a href="#step2">2. 변경 파일</a></li>
+    <li><a href="#step3">3. 핵심 코드</a></li>
+    <li><a href="#step4">4. 왜 이렇게?</a></li>
+    <li><a href="#step5">5. 실행 흐름</a></li>
+    <li><a href="#step6">6. 이전과 비교</a></li>
+    <li><a href="#step7">7. 초보자 착각</a></li>
+    <li><a href="#step8">8. 중요도</a></li>
+    <li><a href="#step9">9. 오늘 배운 것</a></li>
+    <li><a href="#step10">10. 이해도 질문</a></li>
+    <li><a href="#step11">11. 작은 실습</a></li>
+    <li><a href="#step12">12. 다음 준비</a></li>
+  </ul>
+</nav>
+<div class="container">
+
+  <a class="commit-link" href="https://github.com/yzzzwan/springboot_board_practice/commit/dc1f33e6ca3dd5bd62f188e8103be18cd08478c4" target="_blank">
+    커밋 보기: dc1f33e — 게시글 검색 옵션 select로 통합
+  </a><br>
+  <a class="commit-link" href="https://github.com/yzzzwan/springboot_board_practice/commit/a374cd35fb77acbb806bfdbe2b064dba8221f750" target="_blank">
+    커밋 보기: a374cd3 — 페이지네이션 범위 계산 로직 개선
+  </a><br>
+  <a class="commit-link" href="https://github.com/yzzzwan/springboot_board_practice/commit/b8f8ca37be41b52c52dce4cfd8b72eaf81a70022" target="_blank">
+    커밋 보기: b8f8ca3 — 파일 보기/다운로드 분리
+  </a>
+
+  <h1 style="margin-top:28px;">검색 select 통합 · 페이지네이션 개선 · 파일 다운로드</h1>
+  <p class="subtitle">세 커밋 통합 수업</p>
+
+  <!-- 배우는 것 -->
+  <div class="learn-box" id="learn">
+    <h2>이번 Commit에서 배우는 것</h2>
+    <div class="learn-row">
+      <div class="learn-card red-card">
+        <h3>🔴 반드시 이해</h3>
+        <ul>
+          <li>String == vs .equals()</li>
+          <li>select name → @RequestParam</li>
+          <li>th:selected</li>
+          <li>ResponseEntity&lt;Resource&gt;</li>
+          <li>Content-Disposition 헤더</li>
+        </ul>
+      </div>
+      <div class="learn-card yellow-card">
+        <h3>🟡 개념만 이해</h3>
+        <ul>
+          <li>페이지네이션 범위 계산</li>
+          <li>Resource 인터페이스</li>
+          <li>HTTP 응답 헤더</li>
+        </ul>
+      </div>
+      <div class="learn-card green-card">
+        <h3>🟢 나중에 공부</h3>
+        <ul>
+          <li>HTTP/1.1 Content-Disposition 스펙</li>
+          <li>대용량 파일 스트리밍</li>
+          <li>파일 보안 처리</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="step" id="step1">
+    <div class="step-label">Step 1</div>
+    <h2>이번 Commit 한눈에 보기</h2>
+    <p>세 커밋에 걸쳐 검색 기능과 파일 기능을 개선했습니다.</p>
+    <p><strong>첫 번째 커밋</strong>에서는 검색 입력창 3개를 <code>&lt;select&gt; + input 1개</code>로 통합했습니다.<br>
+    이전에는 제목/내용/통합 검색창이 따로 있었는데, 이제 드롭다운으로 옵션을 고르고 키워드 하나만 입력합니다.<br>
+    동시에 Java에서 String 비교를 <code>==</code> 대신 <code>.equals()</code>로 수정했습니다.</p>
+    <p><strong>두 번째 커밋</strong>에서는 페이지네이션 번호 범위 계산이 현재 페이지 기준으로 중앙 정렬되도록 개선했습니다.</p>
+    <p><strong>세 번째 커밋</strong>에서는 파일 "보기"와 "다운로드"를 분리했습니다.<br>
+    보기 버튼은 브라우저에서 바로 열고, 다운로드 버튼은 <code>ResponseEntity&lt;Resource&gt;</code>를 활용해 파일을 강제 저장합니다.</p>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step" id="step2">
+    <div class="step-label">Step 2</div>
+    <h2>무엇이 변경되었는가</h2>
+
+    <h3>① BoardController.java — 검색 파라미터 구조 변경 (dc1f33e)</h3>
+    <p>파라미터가 3개에서 2개로 줄었습니다.<br>
+    분기 로직도 <code>==</code> 비교에서 <code>.equals()</code>로 수정됐습니다.</p>
+
+    <h3>② boardlist.html — select 추가, 페이지네이션 링크 수정 (dc1f33e)</h3>
+    <p>검색 폼에 <code>&lt;select&gt;</code>가 추가되었고, 페이지 번호 링크에 <code>searchOption</code>이 포함되어 페이지 이동 시 검색 상태가 유지됩니다.</p>
+
+    <h3>③ BoardController.java — 페이지 범위 계산 로직 수정 (a374cd3)</h3>
+    <p>startPage, endPage 계산식이 현재 페이지 기준 좌우 균등 분배 방식으로 변경됐습니다.</p>
+
+    <h3>④ BoardController.java — 다운로드 엔드포인트 추가 (b8f8ca3)</h3>
+    <p>새 메서드 <code>download()</code>가 추가됐습니다.<br>
+    <code>ResponseEntity&lt;Resource&gt;</code>를 반환해 파일을 강제 다운로드하게 합니다.</p>
+
+    <h3>⑤ boardview.html — 파일 보기/다운로드 버튼 분리 (b8f8ca3)</h3>
+    <p>단일 다운로드 버튼이 "보기(회색)"와 "다운로드(초록)" 두 버튼으로 나뉘었습니다.</p>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step" id="step3">
+    <div class="step-label">Step 3</div>
+    <h2>핵심 코드 설명</h2>
+
+    <h3>① String 비교: == vs .equals()</h3>
+
+    <p class="file-tab">BoardController.java</p>
+    <pre><code class="language-java">// 이전
+if(searchOption == "Total") { ... }
+
+// 이후
+if("Total".equals(searchOption)) { ... }</code></pre>
+
+    <p>Java에서 <code>==</code>는 두 변수가 <strong>메모리상 같은 객체를 가리키는지</strong>를 비교합니다.<br>
+    반면 <code>.equals()</code>는 <strong>문자열 내용이 같은지</strong>를 비교합니다.</p>
+    <p>HTTP 요청으로 들어온 <code>searchOption</code>은 새로 생성된 String 객체이기 때문에,<br>
+    코드에 직접 쓴 <code>"Total"</code>과 주소가 달라서 <code>==</code>로는 항상 <code>false</code>가 됩니다.</p>
+
+    <div class="warn">
+      <strong>⚠ 왜 우연히 맞을 수도 있다고 하는가?</strong>
+      <p>Java는 String Pool이라는 메모리 영역에 동일한 문자열 리터럴을 재사용합니다.<br>
+      코드에서 직접 <code>"Total"</code>을 두 번 쓰면 같은 객체를 가리켜서 <code>==</code>가 맞습니다.<br>
+      하지만 HTTP 요청으로 들어온 문자열은 Pool 밖에서 생성되므로 보장되지 않습니다.</p>
+    </div>
+
+    <p><code>"Total".equals(searchOption)</code>처럼 리터럴을 앞에 두는 이유는,<br>
+    <code>searchOption</code>이 <code>null</code>이어도 <code>NullPointerException</code>이 나지 않기 때문입니다.</p>
+
+    <h3>② select → Controller 파라미터 흐름</h3>
+
+    <p class="file-tab">boardlist.html</p>
+    <pre><code class="language-html">&lt;form th:action="@{/board/list}" method="get"&gt;
+    &lt;select name="searchOption"&gt;
+        &lt;option value="Total" th:selected="${searchOption == 'Total'}"&gt;통합검색&lt;/option&gt;
+        &lt;option value="Title" th:selected="${searchOption == 'Title'}"&gt;제목&lt;/option&gt;
+        &lt;option value="Content" th:selected="${searchOption == 'Content'}"&gt;내용&lt;/option&gt;
+    &lt;/select&gt;
+    &lt;input type="text" name="searchKeyword" th:value="${searchKeyword}"&gt;
+    &lt;button type="submit"&gt;검색&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+
+    <p>form이 submit되면 브라우저는 <code>name=value</code> 쌍을 URL에 붙여 보냅니다.<br>
+    예를 들어 "제목"을 선택하고 "스프링"을 입력하면:</p>
+
+    <p class="file-tab">HTTP 요청</p>
+    <pre><code>GET /board/list?searchOption=Title&amp;searchKeyword=스프링</code></pre>
+
+    <p>Controller는 파라미터 이름이 일치하면 자동으로 받습니다.</p>
+
+    <p class="file-tab">BoardController.java</p>
+    <pre><code class="language-java">public String boardlist(Model model,
+                        Pageable pageable,
+                        String searchOption,   // "Title"
+                        String searchKeyword){ // "스프링"</code></pre>
+
+    <p><code>th:selected="${searchOption == 'Total'}"</code>는 검색 후 페이지가 다시 렌더링될 때,<br>
+    Controller가 Model에 넣어준 <code>searchOption</code> 값에 맞춰 드롭다운 선택 상태를 복원합니다.</p>
+
+    <div class="warn">
+      <strong>⚠ th:selected 의 비교식 위치 주의</strong>
+      <p><code>th:selected="${searchOption} == 'Total'"</code>은 잘못된 방식입니다.<br>
+      <code>${}</code> 밖에서 비교하면 Thymeleaf가 제대로 평가하지 않습니다.<br>
+      반드시 <code>th:selected="${searchOption == 'Total'}"</code> — <strong>달러 중괄호 안에서 비교</strong>해야 합니다.</p>
+    </div>
+
+    <h3>③ 페이지네이션 범위 계산</h3>
+
+    <p class="file-tab">BoardController.java — 이전</p>
+    <pre><code class="language-java">int startPage = Math.max(nowPage - 4, 1);
+int endPage   = Math.min(nowPage + 5, list.getTotalPages());</code></pre>
+
+    <p class="file-tab">BoardController.java — 이후</p>
+    <pre><code class="language-java">int startPage = Math.min(Math.max(nowPage - 2, 1), (list.getTotalPages() - 5) + 1);
+int endPage   = Math.max(Math.min(nowPage + 2, list.getTotalPages()), 5);</code></pre>
+
+    <p>이전 방식은 현재 페이지가 5페이지면 1~10, 6페이지면 2~11처럼 비대칭적으로 늘어났습니다.<br>
+    개선 후에는 현재 페이지를 기준으로 좌우 2칸씩, 총 5개의 페이지 번호가 보입니다.</p>
+
+    <h3>④ ResponseEntity&lt;Resource&gt; — 파일 다운로드 핵심</h3>
+
+    <p>이 부분을 처음 보면 낯선 타입이 많이 등장합니다. 하나씩 분해해서 설명합니다.</p>
+
+    <p class="file-tab">BoardController.java</p>
+    <pre><code class="language-java">@GetMapping("/board/download/{id}")
+public ResponseEntity&lt;Resource&gt; download(@PathVariable Integer id) throws Exception {
+    Board board = boardService.boardView(id);
+
+    String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
+    Path filePath = Path.of(projectPath, board.getFilename());
+
+    Resource resource = new FileSystemResource(filePath);
+
+    return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION,
+                    "attachment; filename=\"" + board.getOriginal_filename() + "\"")
+            .body(resource);
+}</code></pre>
+
+    <p><strong>@PathVariable이란?</strong><br>
+    URL 경로 안의 <code>{id}</code> 값을 메서드 파라미터로 꺼내오는 어노테이션입니다.<br>
+    <code>@RequestParam</code>은 어노테이션을 생략해도 파라미터 이름으로 자동 매핑되지만,<br>
+    <code>@PathVariable</code>은 생략하면 Spring이 경로 변수와 파라미터를 연결하지 못합니다.</p>
+
+    <p class="file-tab">BoardController.java — 대안 방식</p>
+    <pre><code class="language-java">// ❌ @PathVariable 없으면 id = null
+@GetMapping("/board/download/{id}")
+public ResponseEntity&lt;Resource&gt; download(Integer id) { ... }
+
+// ✅ 반드시 @PathVariable 필요
+@GetMapping("/board/download/{id}")
+public ResponseEntity&lt;Resource&gt; download(@PathVariable Integer id) { ... }</code></pre>
+
+    <p>또한 파라미터 이름이 <code>{id}</code>와 일치해야 자동으로 매핑됩니다.<br>
+    이름을 다르게 쓰고 싶다면 <code>@PathVariable("id")</code>처럼 명시해야 합니다.</p>
+
+    <p class="file-tab">BoardController.java — 이름이 다를 때</p>
+    <pre><code class="language-java">// boardId라는 이름을 쓰고 싶을 때
+@GetMapping("/board/download/{id}")
+public ResponseEntity&lt;Resource&gt; download(@PathVariable("id") Integer boardId) { ... }</code></pre>
+
+    <p><strong>{id}에 Integer가 아닌 값이 들어오면?</strong><br>
+    예를 들어 <code>/board/download/abc</code>로 요청하면 Spring이 <code>"abc"</code>를 <code>Integer</code>로 변환하다 실패해<br>
+    <strong>400 Bad Request</strong> 에러가 발생합니다. 사용자가 직접 URL을 조작하지 않는 한 실제로 발생하지 않습니다.</p>
+
+    <p><strong>그러면 /board/list처럼 id가 없는 경우는?</strong><br>
+    <code>/board/list</code>는 Path Variable이 없고 <code>?searchKeyword=스프링</code>처럼 Query Parameter를 사용합니다.<br>
+    Query Parameter는 없으면 <code>null</code>이 들어오고 에러가 나지 않습니다.<br>
+    그래서 <code>StringUtils.hasText(searchKeyword)</code>로 null 체크를 하는 것입니다.</p>
+
+    <table class="info-table">
+      <tr>
+        <th>방식</th>
+        <th>URL 예시</th>
+        <th>없을 때</th>
+      </tr>
+      <tr>
+        <td>Path Variable</td>
+        <td><code>/board/download/5</code></td>
+        <td>URL 자체가 매칭 안 되어 400 에러</td>
+      </tr>
+      <tr>
+        <td>Query Parameter</td>
+        <td><code>/board/list?searchKeyword=스프링</code></td>
+        <td><code>null</code>로 들어옴, 에러 없음</td>
+      </tr>
+    </table>
+
+    <p><strong>ResponseEntity란?</strong><br>
+    지금까지 Controller 메서드는 <code>String</code>을 반환해서 어떤 HTML을 보여줄지 알려줬습니다.<br>
+    <code>ResponseEntity</code>는 그것과 다릅니다. HTML을 보여주는 게 아니라 <strong>HTTP 응답 전체를 직접 만드는 객체</strong>입니다.<br>
+    상태코드 + 헤더 + 본문(body)을 모두 직접 제어할 수 있습니다.</p>
+
+    <p><code>ResponseEntity&lt;Resource&gt;</code>에서 <code>Resource</code>는 body에 담길 내용의 타입입니다.<br>
+    파일을 body로 보내기 때문에 <code>Resource</code>를 씁니다.</p>
+
+    <p><strong>Resource란?</strong><br>
+    <code>org.springframework.core.io.Resource</code>는 Spring이 파일, URL, 클래스패스 등<br>
+    다양한 "자원"을 통일된 방식으로 다루기 위해 만든 인터페이스입니다.<br>
+    실제 파일을 읽을 때는 그 구현체인 <code>FileSystemResource</code>를 사용합니다.</p>
+
+    <p class="file-tab">BoardController.java</p>
+    <pre><code class="language-java">Resource resource = new FileSystemResource(filePath);</code></pre>
+
+    <p>디스크의 파일 경로를 Spring이 읽을 수 있는 <code>Resource</code> 객체로 감싸는 것입니다.<br>
+    Spring은 이 객체를 받아서 파일 내용을 HTTP 응답 body에 바이트 단위로 실어 보냅니다.</p>
+
+    <p><strong>Content-Disposition 헤더란?</strong><br>
+    브라우저에게 "이 파일을 어떻게 처리해라"고 지시하는 HTTP 헤더입니다.</p>
+
+    <table class="info-table">
+      <tr>
+        <th>헤더 값</th>
+        <th>브라우저 동작</th>
+      </tr>
+      <tr>
+        <td><code>inline</code></td>
+        <td>브라우저가 파일을 직접 열어서 보여줌 (이미지, PDF 등)</td>
+      </tr>
+      <tr>
+        <td><code>attachment</code></td>
+        <td>브라우저가 파일을 저장 대화상자를 열어 다운로드함</td>
+      </tr>
+    </table>
+
+    <p class="file-tab">BoardController.java</p>
+    <pre><code class="language-java">.header(HttpHeaders.CONTENT_DISPOSITION,
+        "attachment; filename=\"" + board.getOriginal_filename() + "\"")</code></pre>
+
+    <p><code>attachment</code>로 지정했기 때문에 브라우저는 파일을 열지 않고 저장합니다.<br>
+    <code>filename=</code> 뒤에 <code>original_filename</code>을 넣었기 때문에, UUID가 붙은 서버 파일명이 아닌<br>
+    사용자가 업로드한 원본 파일명으로 저장됩니다.</p>
+
+    <p><strong>ResponseEntity.ok().header(...).body(...) 구조</strong><br>
+    메서드 체이닝으로 응답을 조립하는 방식입니다.</p>
+
+    <p class="file-tab">BoardController.java — 풀어서 보면</p>
+    <pre><code class="language-java">// ResponseEntity.ok() → 상태코드 200 OK 설정
+// .header(이름, 값)   → HTTP 헤더 추가
+// .body(resource)     → 응답 본문에 파일 내용 삽입
+
+return ResponseEntity.ok()
+        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"파일명\"")
+        .body(resource);</code></pre>
+
+    <div class="highlight-box">
+      <div class="hb-title">⭐ 현업 포인트</div>
+      <p>현업에서 파일 다운로드 엔드포인트는 대부분 이 구조를 그대로 씁니다.<br>
+      바뀌는 건 <code>filename</code> 인코딩 처리 정도입니다 (한글 파일명은 인코딩이 필요합니다).<br>
+      이 패턴을 익혀두면 어떤 프로젝트에서도 바로 응용할 수 있습니다.</p>
+    </div>
+
+    <div class="improve">
+      <strong>💡 개선 포인트 — 한글 파일명 깨짐</strong>
+      <p>현재 코드는 파일명을 그냥 문자열로 넣기 때문에 한글 파일명이 깨질 수 있습니다.<br>
+      실무에서는 URL 인코딩 처리가 필요합니다.</p>
+      <pre style="margin-top:8px;"><code class="language-java">import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
+String encodedName = URLEncoder.encode(board.getOriginal_filename(), StandardCharsets.UTF_8);
+.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedName + "\"")</code></pre>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step" id="step4">
+    <div class="step-label">Step 4</div>
+    <h2>왜 이렇게 작성했는가?</h2>
+
+    <h3>왜 String 비교에 .equals()를 쓰는가?</h3>
+    <p class="file-tab">BoardController.java</p>
+    <pre><code class="language-java">if("Total".equals(searchOption)) { ... }</code></pre>
+    <p>Java의 <code>==</code>는 주소 비교입니다.<br>
+    HTTP 요청으로 들어온 문자열은 새로 생성된 객체라서, 코드에 쓴 <code>"Total"</code>과 주소가 다릅니다.<br>
+    내용이 같아도 <code>==</code>는 <code>false</code>를 반환하기 때문에 검색이 동작하지 않습니다.<br>
+    <code>.equals()</code>는 주소가 아닌 내용을 비교하므로 항상 올바르게 동작합니다.</p>
+
+    <h3>왜 페이지네이션 링크에 searchOption을 포함해야 하는가?</h3>
+    <p class="file-tab">boardlist.html</p>
+    <pre><code class="language-html">&lt;a th:href="@{/board/list(page=${page-1}, searchKeyword=${searchKeyword}, searchOption=${searchOption})}"&gt;</code></pre>
+    <p>페이지 번호를 클릭하면 Controller에 새 GET 요청이 전송됩니다.<br>
+    URL에 <code>searchOption</code>이 없으면 Controller는 <code>searchOption=null</code>로 받고,<br>
+    <code>"Total".equals(null)</code>은 <code>false</code>이므로 어떤 분기도 타지 않아 전체 목록이 나옵니다.<br>
+    검색 상태를 유지하려면 페이지 이동 URL에 검색 조건을 함께 실어 보내야 합니다.</p>
+
+    <h3>왜 파일 다운로드를 별도 엔드포인트로 만드는가?</h3>
+    <p class="file-tab">BoardController.java</p>
+    <pre><code class="language-java">@GetMapping("/board/download/{id}")
+public ResponseEntity&lt;Resource&gt; download(@PathVariable Integer id) { ... }</code></pre>
+    <p>이전 방식은 파일 경로(<code>/files/uuid_파일명.jpg</code>)를 링크로 직접 연결했습니다.<br>
+    그러면 브라우저가 판단해서 이미지나 PDF는 그냥 열어버립니다 (다운로드 안 됨).<br>
+    또한 UUID가 붙은 파일명으로 저장됩니다.</p>
+    <p>별도 엔드포인트를 만들면 <code>Content-Disposition: attachment</code> 헤더로 강제 다운로드하고,<br>
+    <code>original_filename</code>을 이용해 원본 파일명으로 저장되게 할 수 있습니다.</p>
+
+    <h3>왜 다운로드는 Controller에서 처리하고 Service를 만들지 않는가?</h3>
+    <p>Service는 비즈니스 로직(규칙, 계산, 트랜잭션)을 담당합니다.<br>
+    파일 다운로드는 "파일 경로를 찾아 HTTP 응답에 담아 보내는 것"으로,<br>
+    비즈니스 규칙이 아닌 <strong>HTTP 응답 구성</strong>에 해당합니다.<br>
+    DB에서 Board를 꺼내는 건 이미 있는 <code>boardService.boardView(id)</code>를 재사용하면 충분합니다.</p>
+  </div>
+
+  <!-- STEP 5 -->
+  <div class="step" id="step5">
+    <div class="step-label">Step 5</div>
+    <h2>실행 흐름</h2>
+
+    <h3>검색 요청 흐름</h3>
+    <svg viewBox="0 0 760 320" width="100%" style="max-width:760px; display:block; margin:16px auto;">
+      <!-- 박스들 -->
+      <rect x="290" y="10" width="180" height="44" rx="8" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="380" y="37" text-anchor="middle" fill="#93c5fd" font-size="13" font-family="Malgun Gothic, sans-serif">사용자가 검색 form 제출</text>
+
+      <rect x="290" y="90" width="180" height="44" rx="8" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="380" y="112" text-anchor="middle" fill="#93c5fd" font-size="12">GET /board/list</text>
+      <text x="380" y="127" text-anchor="middle" fill="#64748b" font-size="11">?searchOption=Title&amp;searchKeyword=스프링</text>
+
+      <rect x="290" y="170" width="180" height="44" rx="8" fill="#1a3a1a" stroke="#3fb950" stroke-width="1.5"/>
+      <text x="380" y="192" text-anchor="middle" fill="#86efac" font-size="13" font-family="Malgun Gothic, sans-serif">BoardController</text>
+      <text x="380" y="207" text-anchor="middle" fill="#64748b" font-size="11">"Title".equals(searchOption)</text>
+
+      <rect x="50" y="250" width="160" height="44" rx="8" fill="#2a1a3a" stroke="#a78bfa" stroke-width="1.5"/>
+      <text x="130" y="272" text-anchor="middle" fill="#c4b5fd" font-size="13" font-family="Malgun Gothic, sans-serif">boardSearchTitleList()</text>
+      <text x="130" y="287" text-anchor="middle" fill="#64748b" font-size="11">Service → Repository</text>
+
+      <rect x="550" y="250" width="160" height="44" rx="8" fill="#1a2a1a" stroke="#3fb950" stroke-width="1.5"/>
+      <text x="630" y="272" text-anchor="middle" fill="#86efac" font-size="13" font-family="Malgun Gothic, sans-serif">boardList()</text>
+      <text x="630" y="287" text-anchor="middle" fill="#64748b" font-size="11">searchKeyword 없을 때</text>
+
+      <!-- 화살표 -->
+      <line x1="380" y1="54" x2="380" y2="84" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="380,90 374,80 386,80" fill="#4b5563"/>
+
+      <line x1="380" y1="134" x2="380" y2="164" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="380,170 374,160 386,160" fill="#4b5563"/>
+
+      <line x1="330" y1="214" x2="190" y2="244" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="183,248 188,237 198,243" fill="#4b5563"/>
+
+      <line x1="430" y1="214" x2="570" y2="244" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="577,248 567,243 572,237" fill="#4b5563"/>
+
+      <text x="210" y="238" fill="#e3b341" font-size="11" font-family="Malgun Gothic">검색어 있을 때</text>
+      <text x="430" y="238" fill="#8b949e" font-size="11" font-family="Malgun Gothic">검색어 없을 때</text>
+    </svg>
+
+    <h3>파일 다운로드 요청 흐름</h3>
+    <svg viewBox="0 0 760 380" width="100%" style="max-width:760px; display:block; margin:16px auto;">
+      <rect x="280" y="10" width="200" height="44" rx="8" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="380" y="37" text-anchor="middle" fill="#93c5fd" font-size="13" font-family="Malgun Gothic, sans-serif">다운로드 버튼 클릭</text>
+
+      <rect x="280" y="90" width="200" height="44" rx="8" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="380" y="112" text-anchor="middle" fill="#93c5fd" font-size="12">GET /board/download/{id}</text>
+      <text x="380" y="127" text-anchor="middle" fill="#64748b" font-size="11">HTML 반환이 아닌 파일 응답</text>
+
+      <rect x="280" y="170" width="200" height="44" rx="8" fill="#1a3a1a" stroke="#3fb950" stroke-width="1.5"/>
+      <text x="380" y="192" text-anchor="middle" fill="#86efac" font-size="13" font-family="Malgun Gothic, sans-serif">download() 메서드</text>
+      <text x="380" y="207" text-anchor="middle" fill="#64748b" font-size="11">boardService.boardView(id)</text>
+
+      <rect x="280" y="250" width="200" height="44" rx="8" fill="#2a1a1a" stroke="#f59e0b" stroke-width="1.5"/>
+      <text x="380" y="272" text-anchor="middle" fill="#fcd34d" font-size="13" font-family="Malgun Gothic, sans-serif">FileSystemResource</text>
+      <text x="380" y="287" text-anchor="middle" fill="#64748b" font-size="11">디스크의 파일을 Resource로 감싸기</text>
+
+      <rect x="280" y="330" width="200" height="44" rx="8" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="380" y="352" text-anchor="middle" fill="#93c5fd" font-size="13" font-family="Malgun Gothic, sans-serif">ResponseEntity 반환</text>
+      <text x="380" y="367" text-anchor="middle" fill="#64748b" font-size="11">200 OK + Content-Disposition + 파일</text>
+
+      <line x1="380" y1="54" x2="380" y2="84" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="380,90 374,80 386,80" fill="#4b5563"/>
+      <line x1="380" y1="134" x2="380" y2="164" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="380,170 374,160 386,160" fill="#4b5563"/>
+      <line x1="380" y1="214" x2="380" y2="244" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="380,250 374,240 386,240" fill="#4b5563"/>
+      <line x1="380" y1="294" x2="380" y2="324" stroke="#4b5563" stroke-width="1.5"/>
+      <polygon points="380,330 374,320 386,320" fill="#4b5563"/>
+    </svg>
+  </div>
+
+  <!-- STEP 6 -->
+  <div class="step" id="step6">
+    <div class="step-label">Step 6</div>
+    <h2>이전 Commit과 연결</h2>
+
+    <h3>검색 파라미터 구조 변화</h3>
+    <div class="compare-grid">
+      <div class="compare-card">
+        <h4>이전</h4>
+        String searchKeywordTotal<br>
+        String searchKeywordTitle<br>
+        String searchKeywordContent<br><br>
+        입력창 3개<br>
+        복잡한 분기 조건<br>
+        페이지 이동 시 파라미터 3개 전달
+      </div>
+      <div class="compare-card">
+        <h4>현재</h4>
+        <span class="new">String searchOption</span><br>
+        <span class="new">String searchKeyword</span><br><br>
+        <span class="new">select + 입력창 1개</span><br>
+        <span class="new">단순한 if/else if 분기</span><br>
+        <span class="new">페이지 이동 시 파라미터 2개 전달</span>
+      </div>
+    </div>
+
+    <h3>파일 응답 방식 변화</h3>
+    <div class="compare-grid">
+      <div class="compare-card">
+        <h4>이전</h4>
+        버튼 1개<br>
+        /files/uuid_파일명.jpg 링크<br>
+        브라우저가 알아서 처리<br>
+        이미지 → 브라우저에서 열림<br>
+        UUID 포함된 파일명으로 저장
+      </div>
+      <div class="compare-card">
+        <h4>현재</h4>
+        <span class="new">보기 / 다운로드 버튼 분리</span><br>
+        <span class="new">/board/download/{id} 엔드포인트</span><br>
+        <span class="new">Content-Disposition: attachment</span><br>
+        <span class="new">파일 종류 무관하게 강제 다운로드</span><br>
+        <span class="new">원본 파일명으로 저장</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 7 -->
+  <div class="step" id="step7">
+    <div class="step-label">Step 7</div>
+    <h2>초보자가 하기 쉬운 착각</h2>
+
+    <div class="warn">
+      <strong>⚠ "String == 비교가 때로는 되니까 써도 된다"</strong>
+      <p>String Pool 때문에 컨트롤러 내부 로직에서는 우연히 맞을 수 있습니다.<br>
+      하지만 HTTP 요청으로 받은 파라미터는 보장되지 않습니다.<br>
+      Java에서 String 비교는 <strong>항상 .equals()</strong>를 씁니다. 예외가 없습니다.</p>
+    </div>
+
+    <div class="warn">
+      <strong>⚠ "select에서 선택한 텍스트가 서버로 간다"</strong>
+      <p><code>&lt;option value="Title"&gt;제목&lt;/option&gt;</code>에서 서버로 전송되는 건 "제목"이 아니라 <code>"Title"</code>입니다.<br>
+      <code>value</code> 속성 값이 전송되고, 태그 안 텍스트는 화면에 보여주는 용도입니다.</p>
+    </div>
+
+    <div class="warn">
+      <strong>⚠ "ResponseEntity를 반환하면 항상 파일이 다운로드된다"</strong>
+      <p><code>ResponseEntity</code> 자체는 그냥 HTTP 응답을 만드는 객체입니다.<br>
+      파일이 다운로드되는 건 <code>Content-Disposition: attachment</code> 헤더 때문입니다.<br>
+      이 헤더가 없으면 파일을 보내더라도 브라우저가 열어버릴 수 있습니다.</p>
+    </div>
+
+    <div class="warn">
+      <strong>⚠ "FileSystemResource가 파일을 직접 복사해서 보낸다"</strong>
+      <p><code>FileSystemResource</code>는 파일을 읽기 위한 참조(포인터)를 만드는 것입니다.<br>
+      Spring이 이 객체를 받아서 HTTP 응답 body에 바이트를 스트리밍합니다.<br>
+      우리 코드에서 파일을 직접 읽거나 byte[]로 변환하지 않아도 됩니다.</p>
+    </div>
+  </div>
+
+  <!-- STEP 8 -->
+  <div class="step" id="step8">
+    <div class="step-label">Step 8</div>
+    <h2>중요도 구분</h2>
+    <div class="learn-row">
+      <div class="learn-card red-card">
+        <h3>🔴 반드시 이해</h3>
+        <ul>
+          <li>String은 .equals()로 비교</li>
+          <li>select의 name이 파라미터 이름, value가 파라미터 값</li>
+          <li>th:selected로 드롭다운 상태 복원</li>
+          <li>페이지 이동 링크에 검색 조건 포함</li>
+          <li>ResponseEntity로 HTTP 응답 직접 제어</li>
+          <li>Content-Disposition: attachment = 강제 다운로드</li>
+        </ul>
+      </div>
+      <div class="learn-card yellow-card">
+        <h3>🟡 개념만 이해</h3>
+        <ul>
+          <li>Resource 인터페이스 역할</li>
+          <li>FileSystemResource가 파일 경로를 감싸는 것</li>
+          <li>페이지 범위 Math.max/min 중첩</li>
+          <li>String Pool 개념</li>
+        </ul>
+      </div>
+      <div class="learn-card green-card">
+        <h3>🟢 나중에 공부</h3>
+        <ul>
+          <li>한글 파일명 URL 인코딩</li>
+          <li>대용량 파일 청크 스트리밍</li>
+          <li>파일 접근 권한 제어</li>
+          <li>HTTP/1.1 Content-Disposition 스펙 전체</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 9 -->
+  <div class="step" id="step9">
+    <div class="step-label">Step 9</div>
+    <h2>오늘 배운 것</h2>
+    <ul class="summary-list">
+      <li>Java에서 String 비교는 반드시 <code>.equals()</code>를 사용한다. <code>==</code>는 주소 비교다.</li>
+      <li><code>&lt;select name="X"&gt;</code>에서 선택된 <code>&lt;option value="Y"&gt;</code>는 <code>X=Y</code>로 서버에 전달된다.</li>
+      <li><code>th:selected="${변수 == '값'}"</code>으로 드롭다운 선택 상태를 복원할 수 있다.</li>
+      <li>페이지 이동 링크에 검색 조건을 포함하지 않으면 검색 상태가 초기화된다.</li>
+      <li><code>ResponseEntity</code>는 상태코드, 헤더, 본문을 모두 직접 제어하는 HTTP 응답 객체다.</li>
+      <li><code>Content-Disposition: attachment</code> 헤더가 브라우저에게 파일을 저장하게 지시한다.</li>
+      <li><code>FileSystemResource</code>는 디스크의 파일을 Spring이 읽을 수 있는 형태로 감싸는 클래스다.</li>
+    </ul>
+  </div>
+
+  <!-- STEP 10 -->
+  <div class="step" id="step10">
+    <div class="step-label">Step 10</div>
+    <h2>이해도 확인 질문</h2>
+    <ul class="question-list">
+      <li>
+        <span>Java에서 <code>searchOption == "Total"</code>이 항상 동작하지 않는 이유는?</span>
+        <details><summary></summary><p>HTTP 요청으로 전달된 searchOption은 새로 생성된 String 객체다. <code>==</code>는 주소를 비교하기 때문에, 코드에 쓴 "Total" 리터럴과 주소가 달라 false가 된다. 내용 비교는 .equals()를 써야 한다.</p></details>
+      </li>
+      <li>
+        <span><code>&lt;option value="Title"&gt;제목&lt;/option&gt;</code>에서 서버로 전송되는 값은 무엇인가?</span>
+        <details><summary></summary><p>"Title"이다. value 속성 값이 전송된다. "제목"이라는 텍스트는 화면에 보여주는 용도이며 서버로 가지 않는다.</p></details>
+      </li>
+      <li>
+        <span>페이지 이동 링크에 <code>searchOption</code>을 포함하지 않으면 어떤 일이 생기는가?</span>
+        <details><summary></summary><p>Controller에 searchOption=null로 전달된다. null은 어떤 조건도 만족하지 않아 전체 목록이 나오고, 검색 결과가 사라진다.</p></details>
+      </li>
+      <li>
+        <span><code>ResponseEntity</code>는 무엇이며, 일반 Controller 메서드의 String 반환과 무엇이 다른가?</span>
+        <details><summary></summary><p>ResponseEntity는 HTTP 응답 전체(상태코드 + 헤더 + 본문)를 직접 구성하는 객체다. String 반환은 어떤 HTML 뷰를 렌더링할지 Thymeleaf에게 알려주는 것이고, ResponseEntity는 HTML이 아닌 파일, JSON 등 어떤 데이터든 HTTP 응답으로 직접 보낼 수 있다.</p></details>
+      </li>
+      <li>
+        <span><code>Content-Disposition: inline</code>과 <code>attachment</code>의 차이는?</span>
+        <details><summary></summary><p>inline은 브라우저가 파일을 직접 열어서 보여주고(이미지, PDF 등), attachment는 파일 저장 대화상자를 열어 다운로드한다. 이번 커밋에서는 attachment를 사용해서 어떤 파일이든 강제 다운로드하게 했다.</p></details>
+      </li>
+    </ul>
+  </div>
+
+  <!-- STEP 11 -->
+  <div class="step" id="step11">
+    <div class="step-label">Step 11</div>
+    <h2>작은 실습</h2>
+    <div class="practice-box">
+      <h3>파일 다운로드 시 원본 파일명에 한글이 있으면 깨지는 문제 해결하기</h3>
+      <p>현재 코드는 파일명을 그대로 헤더에 넣기 때문에 한글 파일명이 깨집니다.<br>
+      <code>URLEncoder.encode()</code>를 이용해 파일명을 인코딩한 뒤 헤더에 넣도록 수정해보세요.</p>
+      <p>힌트: <code>java.net.URLEncoder</code>, <code>StandardCharsets.UTF_8</code></p>
+      <p>수정 위치: <code>BoardController.java</code>의 <code>download()</code> 메서드 내 <code>.header(...)</code> 부분</p>
+    </div>
+  </div>
+
+  <!-- STEP 12 -->
+  <div class="step" id="step12">
+    <div class="step-label">Step 12</div>
+    <h2>다음 Commit을 위한 준비</h2>
+    <ul class="next-list">
+      <li><strong>댓글 기능</strong> — Board와 Comment를 연결하려면 <code>@ManyToOne</code>, <code>@OneToMany</code> JPA 연관관계를 배워야 합니다.</li>
+      <li><strong>조회수 기능</strong> — 게시글 상세 조회 시 카운트를 올리려면 <code>@Transactional</code>과 dirty checking 개념이 필요합니다.</li>
+      <li><strong>회원 기능 (세션 로그인)</strong> — <code>HttpSession</code>을 이용한 로그인 구현. Spring Security 없이 직접 구현해보면 Security의 필요성을 체감할 수 있습니다.</li>
+      <li><strong>Optional 안전하게 사용하기</strong> — 현재 <code>boardRepository.findById(id).get()</code>은 데이터가 없으면 예외가 납니다. <code>orElseThrow()</code>로 수정하면 더 명확합니다.</li>
+    </ul>
+  </div>
+
+</div>
+<script>hljs.highlightAll();</script>
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const id = entry.target.getAttribute('id');
+      const link = document.querySelector(`.toc a[href="#${id}"]`);
+      if (!link) return;
+      if (entry.isIntersecting) link.classList.add('toc-active');
+      else link.classList.remove('toc-active');
+    });
+  }, { rootMargin: '0px 0px -60% 0px' });
+  document.querySelectorAll('[id]').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
