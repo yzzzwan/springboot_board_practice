@@ -6,18 +6,20 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "file")
 @Data
-public class Board {
+public class BoardFile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer boardId;
-
-    private String title;
-    private String content;
+    private Integer fileId;
 
     @ManyToOne
-    @JoinColumn(name = "create_user_id")
-    private User user;
+    @JoinColumn(name = "board_id")
+    private Board board;
+
+    private String originalFilename;
+    private String filename;
+    private String filepath;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
