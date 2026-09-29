@@ -1,6 +1,8 @@
 package com.study.board.controller;
 
 import com.study.board.entity.Board;
+import com.study.board.entity.BoardFile;
+import com.study.board.repository.BoardFileRepository;
 import com.study.board.service.BoardService;
 import org.springframework.core.io.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
+import java.util.Optional;
 
 @Controller
 public class BoardController {
@@ -72,9 +75,9 @@ public class BoardController {
         return "message";
     }
 
-    @GetMapping("board/list")
+    @GetMapping("/board/list")
     public String boardlist(Model model,
-                            @PageableDefault(page=0, size=10, sort="id", direction = Sort.Direction.DESC) Pageable pageable,
+                            @PageableDefault(page=0, size=10, sort="boardId", direction = Sort.Direction.DESC) Pageable pageable,
                             String searchOption,
                             String searchKeyword){
 
@@ -101,10 +104,16 @@ public class BoardController {
             list = boardService.boardList(pageable);
         }
 
-
+        int totalPages = list.getTotalPages() ;
         int nowPage = list.getPageable().getPageNumber() + 1;
-        int startPage = Math.min(Math.max(nowPage -2, 1), (list.getTotalPages() - 5) + 1);
-        int endPage = Math.max(Math.min(nowPage + 2,  list.getTotalPages()), 5);
+        int startPage = Math.max(nowPage - 2, 1);
+        int endPage = Math.min(startPage + 4, totalPages);
+        startPage = Math.max(endPage - 4, 1);
+
+        if(list.getTotalPages() == 0){
+            startPage = 1;
+            endPage = 1;
+        }
 
         model.addAttribute("list", list);
         model.addAttribute("nowPage", nowPage);
@@ -118,14 +127,18 @@ public class BoardController {
     }
 
     @GetMapping("/board/view") //localhost:8080/board/view?id=1
-    public String boardView(Model model, Integer id){
-        model.addAttribute("board", boardService.boardView(id));
+    public String boardView(Model model, Integer boardId){
+        BoardFile boardFile = boardService.boardFileGet(boardId);
+
+        model.addAttribute("board", boardService.boardView(boardId));
+        model.addAttribute("boardFile", boardFile);
+
         return "boardview";
     }
 
     @GetMapping("/board/delete")
-    public String boardDelete(Integer id, Model model) throws Exception{
-        boardService.boardDelete(id);
+    public String boardDelete(Integer boardId, Model model) throws Exception{
+        boardService.boardDelete(boardId);
 
         model.addAttribute("message", "글이 삭제되었습니다.");
         model.addAttribute("searchUrl", "/board/list");
@@ -133,23 +146,26 @@ public class BoardController {
         return"message";
     }
 
-    @GetMapping("board/modify/{id}")
-    public  String boardUpdate(@PathVariable("id") Integer id, Model model){
-        model.addAttribute("board", boardService.boardView(id));
+    @GetMapping("/board/modify/{boardId}")
+    public  String boardUpdate(@PathVariable("boardId") Integer boardId, Model model){
+        model.addAttribute("board", boardService.boardView(boardId));
+        model.addAttribute("boardFile",boardService.boardFileGet(boardId));
+
         return "boardmodify";
     }
 
-    @PostMapping("/board/update/{id}")
-    public String boardUpdate(@PathVariable("id") Integer id,
+    @PostMapping("/board/update/{boardId}")
+    public String boardUpdate(@PathVariable("boardId") Integer boardId,
                               Board board,
                               Model model,
                               MultipartFile file) throws Exception{
-        Board boardTemp = boardService.boardView(id);
+        Board boardTemp = boardService.boardView(boardId);
+
         boardTemp.setTitle(board.getTitle());
         boardTemp.setContent(board.getContent());
 
         try {
-            boardService.boardWrite(boardTemp, file);
+            boardService.boardModify(boardTemp, file);
         }
         catch (IllegalArgumentException e){
             model.addAttribute("message", e.getMessage());
@@ -162,19 +178,23 @@ public class BoardController {
 
         return "message";
     }
+
     @GetMapping("/board/download/{id}")
     public ResponseEntity<Resource> download(@PathVariable Integer id) throws Exception {
-        Board board = boardService.boardView(id);
+        BoardFile boardFile = boardService.boardFileGet(id);
 
-        String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
-        Path filePath = Path.of(projectPath, board.getFilename());
+        if (boardFile != null) {
+            String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
+            Path filePath = Path.of(projectPath, boardFile.getFilename());
 
-        Resource resource = new FileSystemResource(filePath);
+            Resource resource = new FileSystemResource(filePath);
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"" + board.getOriginal_filename() + "\"")
-                .body(resource);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=\"" + boardFile.getOriginalFilename() + "\"")
+                    .body(resource);
+        }
+        return null;
     }
 
 }

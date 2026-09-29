@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -156,22 +155,22 @@
                 <div class="current-file">
                     <span>현재 파일:</span>
                     <span class="filename"
-                          th:text="${#strings.isEmpty(#strings.trim(board.filename))
+                          th:text="${boardFile == null or #strings.isEmpty(#strings.trim(boardFile.filename))
                           ? '첨부된 파일 없음'
-                          : board.original_filename}">
+                          : boardFile.originalFilename}">
                         첨부된 파일 없음
                     </span>
                     <span class="file-buttons"
-                          th:if="${!#strings.isEmpty(#strings.trim(board.filename))}">
+                          th:if="${!(boardFile == null or #strings.isEmpty(#strings.trim(boardFile.filename)))}">
 
                         <a class="btn btn-view"
-                           th:href="@{${board.filepath}}"
+                           th:href="@{${boardFile.filepath}}"
                            target="_blank"
                            title="파일 보기">
                             <i class="bi bi-eye"></i>
                         </a>
                         <a class="btn btn-download"
-                           th:href="@{/board/download/{id}(id=${board.id})}"
+                           th:href="@{/board/download/{id}(id=${board.boardId})}"
                            title="파일 다운로드">
                             <i class="bi bi-download"></i>
                         </a>
@@ -181,11 +180,11 @@
 
             <div class="btn-area">
                 <a class="btn btn-modify"
-                   th:href="@{/board/modify/{id}(id=${board.id})}">
+                   th:href="@{/board/modify/{boardId}(boardId=${board.boardId})}">
                     수정
                 </a>
                 <a class="btn btn-delete"
-                   th:href="@{/board/delete(id=${board.id})}">
+                   th:href="@{/board/delete(boardId=${board.boardId})}">
                     삭제
                 </a>
             </div>

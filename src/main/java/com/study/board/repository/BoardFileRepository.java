@@ -6,8 +6,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BoardFileRepository extends JpaRepository<BoardFile, Integer> {
-    BoardFile findByBoard_BoardId(Integer boardId);
+    Optional<BoardFile> findByBoard_BoardId(Integer boardId);
+
+    boolean existsByBoard_BoardId(Integer boardId);
+
+    void deleteByBoard_BoardId(Integer boardId);
+
 }

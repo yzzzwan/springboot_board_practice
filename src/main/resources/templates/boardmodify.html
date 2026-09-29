@@ -130,7 +130,7 @@
 <div class="layout">
     <div class="form-card">
         <div class="form-title">게시글 수정</div>
-        <form th:action="@{/board/update/{id}(id=${board.id})}" method="post" enctype="multipart/form-data">
+        <form th:action="@{/board/update/{boardId}(boardId=${board.boardId})}" method="post" enctype="multipart/form-data">
             <div class="field">
                 <label>제목</label>
                 <input name="title" type="text" placeholder="제목을 입력하세요" th:value="${board.title}">
@@ -143,8 +143,8 @@
 
             <div class="field">
                 <label>첨부파일</label>
-                <p class="current-file" th:if="${!#strings.isEmpty(#strings.trim(board.filename))}">
-                    현재 파일: <span th:text="${board.original_filename}"></span>
+                <p class="current-file"  th:if="${boardFile != null and !#strings.isEmpty(#strings.trim(boardFile.filename))}">
+                    현재 파일: <span th:text="${boardFile.originalFilename}"></span>
                 </p>
                 <div class="file-upload">
                     <label class="file-upload-btn" for="file">파일 선택</label>

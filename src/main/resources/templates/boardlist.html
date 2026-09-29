@@ -172,17 +172,24 @@
             </div>
 
             <table>
+                <colgroup>
+                    <col style="width: 70px;">
+                    <col style="width: 90px;">
+                    <col>
+                </colgroup>
                 <thead>
                     <tr>
                         <th>글 번호</th>
+                        <th>글 아이디</th>
                         <th>제목</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="board: ${list}">
-                        <td th:text="${board.id}"></td>
+                    <tr th:each="board, num: ${list}">
+                        <td th:text="${list.totalElements - (nowPage - 1) * list.size - num.index}"></td>
+                        <td th:text="${board.boardId}"></td>
                         <td>
-                            <a th:text="${board.title}" th:href="@{/board/view(id=${board.id})}"></a>
+                            <a th:text="${board.title}" th:href="@{/board/view(boardId=${board.boardId})}"></a>
                         </td> <!-- localhost:8080/board/view?id=1 -->
                     </tr>
                 </tbody>
