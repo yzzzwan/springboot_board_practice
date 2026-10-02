@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>게시물 수정폼</title>
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <style>
         body {
@@ -60,20 +63,11 @@
             resize: vertical;
         }
 
-        .current-file {
-            font-size: 13px;
-            color: #777;
-            margin-bottom: 8px;
-        }
-
-        .current-file span {
-            color: #1976d2;
-        }
-
         .file-upload {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+            margin-bottom: 6px;
         }
 
         .file-upload input[type="file"] {
@@ -82,12 +76,12 @@
 
         .file-upload-btn {
             display: inline-block;
-            padding: 8px 16px;
+            padding: 5px 12px;
             background-color: #eef2f7;
             border: 1px solid #ccc;
             border-radius: 4px;
             color: #333;
-            font-size: 13px;
+            font-size: 12px;
             cursor: pointer;
             white-space: nowrap;
         }
@@ -96,12 +90,62 @@
             background-color: #e2e8f0;
         }
 
-        .file-name {
+        .file-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .file-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 10px 14px;
+            background: #fff;
             font-size: 13px;
-            color: #777;
+        }
+
+        .file-row .file-icon {
+            color: #888;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .file-row .file-name {
+            flex: 1;
+            color: #1976d2;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+        }
+
+        .no-file {
+            font-size: 13px;
+            color: #aaa;
+        }
+
+        .file-remove-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            background: none;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            color: #888;
+            font-size: 13px;
+            cursor: pointer;
+            flex-shrink: 0;
+            padding: 0;
+        }
+
+        .file-remove-btn:hover {
+            background-color: #fee2e2;
+            border-color: #f87171;
+            color: #ef4444;
         }
 
         .btn-area {
@@ -143,14 +187,24 @@
 
             <div class="field">
                 <label>첨부파일</label>
-                <p class="current-file"  th:if="${boardFile != null and !#strings.isEmpty(#strings.trim(boardFile.filename))}">
-                    현재 파일: <span th:text="${boardFile.originalFilename}"></span>
-                </p>
                 <div class="file-upload">
                     <label class="file-upload-btn" for="file">파일 선택</label>
-                    <span class="file-name" id="fileName">선택된 파일 없음</span>
-                    <input type="file" id="file" name="file"
-                           onchange="document.getElementById('fileName').textContent = this.files.length ? this.files[0].name : '선택된 파일 없음'">
+                    <input type="file" id="file" name="files" multiple
+                           onchange="addFileCard(this.files)">
+                </div>
+                <div class="file-list" id="existingFileList">
+                    <div class="file-row" th:each="file : ${boardFile}" th:data-file-id="${file.fileId}">
+                        <i class="bi bi-folder file-icon"></i>
+                        <span class="file-name" th:text="${file.originalFilename}">파일명</span>
+                        <button type="button"
+                                class="file-remove-btn"
+                                th:onclick="|removeExistingFile(this, ${file.fileId})|">
+                            <i class="bi bi-dash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="file-list" id="fileList">
+                    <span class="no-file" th:if="${boardFile.isEmpty()}">선택된 파일 없음</span>
                 </div>
             </div>
 
@@ -160,5 +214,67 @@
         </form>
     </div>
 </div>
+<script>
+    var fileList = [];
+
+    function checkEmpty() {
+        var existingRows = document.querySelectorAll('.file-list:first-of-type .file-row');
+        var newList = document.getElementById('fileList');
+        if (existingRows.length === 0 && fileList.length === 0) {
+            newList.innerHTML = '<span class="no-file">선택된 파일 없음</span>';
+        }
+    }
+
+    function renderFileCards(files) {
+        var list = document.getElementById('fileList');
+
+        if (!files.length) {
+            list.innerHTML = '<span class="no-file">선택된 파일 없음</span>';
+            return;
+        }
+
+        list.innerHTML = fileList.map(function(f) {
+            return `
+            <div class="file-row file-${f.num}">
+                <i class="bi bi-folder file-icon"></i>
+                <span class="file-name">${f.name}</span>
+                <button type="button"
+                        class="file-remove-btn"
+                        onclick="deleteFileCard(${f.num})">
+                    <i class="bi bi-dash"></i>
+                </button>
+            </div>
+        `;
+        }).join('');
+    }
+
+    function syncInput() {
+        var dt = new DataTransfer();
+        fileList.forEach(function(f) { dt.items.add(f); });
+        document.getElementById('file').files = dt.files;
+    }
+
+    function addFileCard(files) {
+        if (!files.length) {
+            renderFileCards([]);
+            return;
+        }
+
+        Array.from(files).forEach(function(f) {
+            f.num = fileList.length;
+            fileList.push(f);
+        });
+
+        renderFileCards(fileList);
+    }
+
+    function deleteFileCard(deleteFileNum) {
+        fileList = fileList.filter(function(f) {
+            return f.num != deleteFileNum;
+        });
+
+        renderFileCards(fileList);
+    }
+</script>
 </body>
 </html>

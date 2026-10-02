@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface BoardFileRepository extends JpaRepository<BoardFile, Integer> {
-    Optional<BoardFile> findByBoard_BoardId(Integer boardId);
+    List<BoardFile> findAllByBoard_BoardId(Integer boardId);
 
     boolean existsByBoard_BoardId(Integer boardId);
 

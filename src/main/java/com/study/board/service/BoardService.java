@@ -35,19 +35,17 @@ public class BoardService {
 
     // 게시글 작성
 
-    public void boardWrite(Board board, MultipartFile file) throws Exception{
-        User user = new User();
-        user = getUserById("admin");
-
+    public void boardWrite(Board board, List<MultipartFile> files) throws Exception{
+        User user = getUserById("admin");
 
         board.setUser(user);
         Board savedBoard = boardRepository.save(board);
 
-       saveBoardFile(file, savedBoard);
+       saveBoardFile(files, savedBoard);
     }
 
     @Transactional
-    public void boardModify(Board board, MultipartFile file) throws Exception{
+    public void boardModify(Board board, List<MultipartFile> files) throws Exception{
         int boardId = board.getBoardId();
 
         User user = new User();
@@ -56,31 +54,35 @@ public class BoardService {
         Board savedBoard = boardRepository.save(board);
 
         boardFileDelete(boardId);
-        saveBoardFile(file, savedBoard);
+        saveBoardFile(files, savedBoard);
     }
 
-    public void saveBoardFile(MultipartFile file, Board board) throws Exception{
-        if(!file.isEmpty()) {
-            // 프로젝트의 root 디렉토리
-            UUID uuid = UUID.randomUUID();
-            String originalFileName = file.getOriginalFilename();
-            String fileName = uuid + "_" + file.getOriginalFilename();
+    public void saveBoardFile(List<MultipartFile> files, Board board) throws Exception{
+        if(!files.isEmpty()) {
+            for (MultipartFile file : files) {
+                if (!file.isEmpty()) {
+                    // 프로젝트의 root 디렉토리
+                    UUID uuid = UUID.randomUUID();
+                    String originalFileName = file.getOriginalFilename();
+                    String fileName = uuid + "_" + file.getOriginalFilename();
 
-            // 확장자 검사
-            if(!checkFileExtension(fileName)){
-                throw new IllegalArgumentException("허용되지 않는 파일 확장자입니다.");
+                    // 확장자 검사
+                    if (!checkFileExtension(fileName)) {
+                        throw new IllegalArgumentException("허용되지 않는 파일 확장자입니다.");
+                    }
+
+                    File saveFile = new File(projectPath, fileName);
+                    file.transferTo(saveFile); // 파일을 로컬에 저장
+
+                    // 파일 정보를 db에 저장
+                    BoardFile boardFile = new BoardFile();
+                    boardFile.setBoard(board);
+                    boardFile.setOriginalFilename(originalFileName);
+                    boardFile.setFilename(fileName);
+                    boardFile.setFilepath("/files/" + fileName);
+                    boardFileRepository.save(boardFile);
+                }
             }
-
-            File saveFile = new File(projectPath,fileName);
-            file.transferTo(saveFile); // 파일을 로컬에 저장
-
-            // 파일 정보를 db에 저장
-            BoardFile boardFile = new BoardFile();
-            boardFile.setBoard(board);
-            boardFile.setOriginalFilename(originalFileName);
-            boardFile.setFilename(fileName);
-            boardFile.setFilepath("/files/" + fileName);
-            boardFileRepository.save(boardFile);
         }
 
     }
@@ -109,8 +111,8 @@ public class BoardService {
     }
 
     // 특정 게시글의 파일 불러오기
-    public BoardFile boardFileGet(Integer board_id){
-        return boardFileRepository.findByBoard_BoardId(board_id).orElse(null);
+    public List<BoardFile> boardFilesGet(Integer board_id){
+        return boardFileRepository.findAllByBoard_BoardId(board_id);
     }
 
     @Transactional

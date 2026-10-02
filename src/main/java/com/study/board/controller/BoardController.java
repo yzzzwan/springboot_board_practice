@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -45,7 +46,7 @@ public class BoardController {
     }
 
     @PostMapping("/board/writepro")
-    public String boardWritePro(Board board, Model model, MultipartFile file)throws Exception{
+    public String boardWritePro(Board board, Model model, List<MultipartFile> files)throws Exception{
 
         if(!StringUtils.hasText(board.getTitle())){
             model.addAttribute("message", "제목을 입력해주세요.");
@@ -61,7 +62,7 @@ public class BoardController {
             return "message";
         }
         try {
-            boardService.boardWrite(board, file);
+            boardService.boardWrite(board, files);
         }
         catch (IllegalArgumentException e){
             model.addAttribute("message", e.getMessage());
@@ -128,10 +129,10 @@ public class BoardController {
 
     @GetMapping("/board/view") //localhost:8080/board/view?id=1
     public String boardView(Model model, Integer boardId){
-        BoardFile boardFile = boardService.boardFileGet(boardId);
+        List<BoardFile> files = boardService.boardFilesGet(boardId);
 
         model.addAttribute("board", boardService.boardView(boardId));
-        model.addAttribute("boardFile", boardFile);
+        model.addAttribute("files", files);
 
         return "boardview";
     }
@@ -149,7 +150,7 @@ public class BoardController {
     @GetMapping("/board/modify/{boardId}")
     public  String boardUpdate(@PathVariable("boardId") Integer boardId, Model model){
         model.addAttribute("board", boardService.boardView(boardId));
-        model.addAttribute("boardFile",boardService.boardFileGet(boardId));
+        model.addAttribute("boardFile", boardService.boardFilesGet(boardId));
 
         return "boardmodify";
     }
@@ -158,14 +159,14 @@ public class BoardController {
     public String boardUpdate(@PathVariable("boardId") Integer boardId,
                               Board board,
                               Model model,
-                              MultipartFile file) throws Exception{
+                              List<MultipartFile> files) throws Exception{
         Board boardTemp = boardService.boardView(boardId);
 
         boardTemp.setTitle(board.getTitle());
         boardTemp.setContent(board.getContent());
 
         try {
-            boardService.boardModify(boardTemp, file);
+            boardService.boardModify(boardTemp, files);
         }
         catch (IllegalArgumentException e){
             model.addAttribute("message", e.getMessage());
@@ -181,19 +182,23 @@ public class BoardController {
 
     @GetMapping("/board/download/{id}")
     public ResponseEntity<Resource> download(@PathVariable Integer id) throws Exception {
-        BoardFile boardFile = boardService.boardFileGet(id);
+        List<BoardFile> files = boardService.boardFilesGet(id);
 
-        if (boardFile != null) {
-            String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
-            Path filePath = Path.of(projectPath, boardFile.getFilename());
-
-            Resource resource = new FileSystemResource(filePath);
-
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION,
-                            "attachment; filename=\"" + boardFile.getOriginalFilename() + "\"")
-                    .body(resource);
-        }
+//        if (!files.isEmpty()) {
+//            if (boardFile != null) {
+//                String projectPath = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\files";
+//                Path filePath = Path.of(projectPath, boardFile.getFilename());
+//
+//                Resource resource = new FileSystemResource(filePath);
+//
+//                return ResponseEntity.ok()
+//                        .header(HttpHeaders.CONTENT_DISPOSITION,
+//                                "attachment; filename=\"" + boardFile.getOriginalFilename() + "\"")
+//                        .body(resource);
+//            }
+//            return null;
+//
+//        }
         return null;
     }
 
